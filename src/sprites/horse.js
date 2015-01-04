@@ -10,32 +10,27 @@ var Dragon = require('dragonjs'),
 module.exports = Sprite({
     name: 'horse',
     collisionSets: [
-        Game.collisions
+        require('../collisions/racetrack.js'),
+        Dragon.collisions
     ],
     mask: Rect(
         Point(),
-        Dimension(64, 64)
+        Dimension(50, 37)
     ),
     strips: {
         'horse': AnimationStrip({
             sheet: SpriteSheet({
                 src: 'horse.png'
             }),
-            start: Point(10, 10),
-            size: Dimension(64, 64),
-            frames: 5,
-            speed: 10
+            size: Dimension(50, 37),
         })
     },
     startingStrip: 'horse',
-    pos: Point(100, 100),
-    depth: 2,
+    pos: Point(0, 200),
+    speed: Point(1, 0),
     on: {
-        'colliding/screentap': function () {
+        'collide/screenedge/right': function () {
+            this.speed.x = 0;
         }
-    }
-}).extend({
-    update: function () {
-        this.base.update();
     }
 });

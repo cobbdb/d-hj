@@ -3,10 +3,11 @@ var Dragon = require('dragonjs'),
 
 module.exports = Screen({
     name: 'racetrack',
-    collisionSets: require('../collisions/ex1.js'),
+    collisionSets: [
+        require('../collisions/racetrack.js')
+    ],
     spriteSet: [
-        require('../sprites/ex1.js'),
-        require('../sprites/ex2.js')
+        require('../sprites/horse.js')
     ],
     one: {
         ready: function () {
