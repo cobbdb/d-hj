@@ -1,0 +1,6 @@
+{
+  "name": "horse-jockey",
+  "main": "dist/horse-jockey.min.js",
+  "dependencies": {
+  }
+}
