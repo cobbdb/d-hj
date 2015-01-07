@@ -4,6 +4,4 @@ var Dragon = require('dragonjs'),
 Game.addScreens([
     require('./screens/racetrack.js')
 ]);
-Game.run({
-    debug: false
-});
+Game.run(false);

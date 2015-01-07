@@ -381,7 +381,54 @@ module.exports = function (opts) {
     };
 };
 
-},{"./dimension.js":15,"./log.js":23,"./point.js":25}],8:[function(require,module,exports){
+},{"./dimension.js":16,"./log.js":24,"./point.js":26}],8:[function(require,module,exports){
+/**
+ * @param {String} opts.src
+ * @param {Boolean} [opts.loop] Defaults to false.
+ * @param {Number} [opts.volume] Defaults to 1. Volume
+ * level between 0 and 1.
+ * @param {Function} [opts.on.load]
+ * @param {Function} [opts.on.play]
+ * @param {Function} [opts.on.playing]
+ * @param {Function} [opts.on.ended]
+ * @return {Audio}
+ */
+module.exports = function (opts) {
+    var audio = document.createElement('audio'),
+        oldplay = audio.play;
+    audio.loop = opts.loop || false;
+    audio.volume = opts.volume || 1;
+
+    /**
+     * @param {Boolean} [force] Defaults to false. Force
+     * immediate play from the start, even if the audio
+     * is already playing.
+     */
+    audio.play = function (force) {
+        if (force) {
+            this.currentTime = 0;
+        }
+        oldplay.call(this);
+    };
+    /**
+     * Pause playback and reset time index.
+     */
+    audio.stop = function () {
+        this.pause();
+        this.currentTime = 0;
+    };
+
+    opts.on = opts.on || {};
+    audio.onloadeddata = opts.on.load;
+    audio.onplay = opts.on.play;
+    audio.onplaying = opts.on.playing;
+    audio.onended = opts.on.ended;
+
+    audio.src = 'assets/sound/' + opts.src;
+    return audio;
+};
+
+},{}],9:[function(require,module,exports){
 var mobile = require('./detect-mobile.js'),
     canvas = document.createElement('canvas');
 
@@ -406,7 +453,7 @@ canvas.ctx = canvas.getContext('2d');
 
 module.exports = canvas;
 
-},{"./detect-mobile.js":14}],9:[function(require,module,exports){
+},{"./detect-mobile.js":15}],10:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Vector = require('./vector.js'),
     Point = require('./point.js'),
@@ -482,7 +529,7 @@ module.exports = function (pos, rad) {
     });
 };
 
-},{"./dimension.js":15,"./point.js":25,"./shape.js":29,"./vector.js":32}],10:[function(require,module,exports){
+},{"./dimension.js":16,"./point.js":26,"./shape.js":30,"./vector.js":33}],11:[function(require,module,exports){
 var Counter = require('./id-counter.js'),
     EventHandler = require('./event-handler.js'),
     BaseClass = require('baseclassjs'),
@@ -552,7 +599,7 @@ module.exports = function (opts) {
     );
 };
 
-},{"./event-handler.js":17,"./id-counter.js":20,"./point.js":25,"./rectangle.js":27,"baseclassjs":2}],11:[function(require,module,exports){
+},{"./event-handler.js":18,"./id-counter.js":21,"./point.js":26,"./rectangle.js":28,"baseclassjs":2}],12:[function(require,module,exports){
 var Rectangle = require('./rectangle.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -660,7 +707,7 @@ module.exports = function (opts) {
     };
 };
 
-},{"./canvas.js":8,"./dimension.js":15,"./point.js":25,"./rectangle.js":27}],12:[function(require,module,exports){
+},{"./canvas.js":9,"./dimension.js":16,"./point.js":26,"./rectangle.js":28}],13:[function(require,module,exports){
 module.exports = {
     Shape: require('./shape.js'),
     Circle: require('./circle.js'),
@@ -679,6 +726,8 @@ module.exports = {
     EventHandler: require('./event-handler.js'),
     SpriteSheet: require('./spritesheet.js'),
     AnimationStrip: require('./animation-strip.js'),
+    Audio: require('./audio.js'),
+
     CollisionHandler: require('./collision-handler.js'),
     collisions: require('./dragon-collisions.js'),
 
@@ -688,20 +737,20 @@ module.exports = {
     Sprite: require('./sprite.js')
 };
 
-},{"./animation-strip.js":7,"./circle.js":9,"./collidable.js":10,"./collision-handler.js":11,"./dimension.js":15,"./dragon-collisions.js":16,"./event-handler.js":17,"./frame-counter.js":18,"./game.js":19,"./id-counter.js":20,"./keyboard.js":22,"./mouse.js":24,"./point.js":25,"./polar.js":26,"./rectangle.js":27,"./screen.js":28,"./shape.js":29,"./sprite.js":30,"./spritesheet.js":31,"./vector.js":32}],13:[function(require,module,exports){
+},{"./animation-strip.js":7,"./audio.js":8,"./circle.js":10,"./collidable.js":11,"./collision-handler.js":12,"./dimension.js":16,"./dragon-collisions.js":17,"./event-handler.js":18,"./frame-counter.js":19,"./game.js":20,"./id-counter.js":21,"./keyboard.js":23,"./mouse.js":25,"./point.js":26,"./polar.js":27,"./rectangle.js":28,"./screen.js":29,"./shape.js":30,"./sprite.js":31,"./spritesheet.js":32,"./vector.js":33}],14:[function(require,module,exports){
 module.exports = {
     show: {
         fps: function () {}
     }
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * @see https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
  */
 module.exports = 'ontouchstart' in window;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 function Dimension(w, h) {
     return {
         width: w || 0,
@@ -726,18 +775,16 @@ function Dimension(w, h) {
 
 module.exports = Dimension;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
-    Dimension = require('./dimension.js'),
-    canvas = require('./canvas.js');
+    Dimension = require('./dimension.js');
 
 module.exports = CollisionHandler({
     name: 'dragon',
-    gridSize: Dimension(4, 4),
-    canvasSize: canvas
+    gridSize: Dimension(4, 4)
 });
 
-},{"./canvas.js":8,"./collision-handler.js":11,"./dimension.js":15}],17:[function(require,module,exports){
+},{"./collision-handler.js":12,"./dimension.js":16}],18:[function(require,module,exports){
 var BaseClass = require('baseclassjs');
 
 /**
@@ -791,13 +838,13 @@ module.exports = function (opts) {
     });
 };
 
-},{"baseclassjs":2}],18:[function(require,module,exports){
+},{"baseclassjs":2}],19:[function(require,module,exports){
 var timeSinceLastSecond = frameCountThisSecond = frameRate = 0,
-    timeLastFrame = new Date().getTime();
+    timeLastFrame = Date.now();
 
 module.exports = {
     countFrame: function () {
-        var timeThisFrame = new Date().getTime(),
+        var timeThisFrame = Date.now(),
             elapsedTime = timeThisFrame - timeLastFrame;
 
         frameCountThisSecond += 1;
@@ -820,7 +867,7 @@ module.exports = {
     }
 };
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -835,25 +882,24 @@ var CollisionHandler = require('./collision-handler.js'),
     log = require('./log.js'),
     dragonCollisions = require('./dragon-collisions.js'),
     debug = false,
-    heartbeat = false,
-    throttle = 30,
     screens = [],
     screenMap = {},
     screensToAdd = [],
     screenRemoved = false,
     loadQueue = {},
+    running = false,
     masks = {
         screentap: Collidable({
             name: 'screentap',
-            mask: Circle(Point(), 15)
+            mask: Circle(Point(), 8)
         }),
         screendrag: Collidable({
             name: 'screendrag',
-            mask: Circle(Point(), 25)
+            mask: Circle(Point(), 8)
         }),
         screenhold: Collidable({
             name: 'screenhold',
-            mask: Circle(Point(), 15)
+            mask: Circle(Point(), 8)
         }),
         screenedge: {
             top: Collidable({
@@ -928,37 +974,32 @@ module.exports = {
         screenRemoved = true;
     },
     /**
-     * @param {Boolean} [opts.debug] Defaults to false.
-     * @param {Number} [opts.speed]
-     * @param {String} [opts.orientation] Defaults to portrait.
+     * @param {Boolean} [debugMode] Defaults to false.
      */
-    run: function (opts) {
-        var speed,
-            that = this;
-
-        opts = opts || {};
-        speed = opts.speed || throttle;
-        debug = opts.debug;
-
-        if (debug) {
-            window.Dragon = this;
-        }
-
-        if (!heartbeat) {
-            screens.forEach(function (screen) {
-                screen.start();
-            });
-            heartbeat = window.setInterval(function () {
+    run: function (debugMode) {
+        var that = this,
+            step = function () {
                 that.update();
                 that.draw();
                 that.teardown();
                 FrameCounter.countFrame();
-            }, speed);
+                if (running) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+
+        debug = debugMode;
+        if (debugMode) {
+            window.Dragon = this;
+        }
+
+        if (!running) {
+            running = true;
+            window.requestAnimationFrame(step);
         }
     },
     kill: function () {
-        window.clearInterval(heartbeat);
-        heartbeat = false;
+        running = false;
         screens.forEach(function (screen) {
             screen.stop();
         });
@@ -1025,7 +1066,7 @@ module.exports = {
     }
 };
 
-},{"./canvas.js":8,"./circle.js":9,"./collidable.js":10,"./collision-handler.js":11,"./debug-console.js":13,"./dimension.js":15,"./dragon-collisions.js":16,"./frame-counter.js":18,"./id-counter.js":20,"./log.js":23,"./mouse.js":24,"./point.js":25,"./rectangle.js":27}],20:[function(require,module,exports){
+},{"./canvas.js":9,"./circle.js":10,"./collidable.js":11,"./collision-handler.js":12,"./debug-console.js":14,"./dimension.js":16,"./dragon-collisions.js":17,"./frame-counter.js":19,"./id-counter.js":21,"./log.js":24,"./mouse.js":25,"./point.js":26,"./rectangle.js":28}],21:[function(require,module,exports){
 var counter = 0;
 
 module.exports = {
@@ -1038,7 +1079,7 @@ module.exports = {
     }
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function (src) {
     var img = new Image();
     img.ready = false;
@@ -1073,7 +1114,7 @@ module.exports = function (src) {
     return img;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var nameMap = {
         alt: false,
         ctrl: false,
@@ -1142,12 +1183,12 @@ module.exports = {
     }
 };
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var Lumberjack = require('lumberjackjs');
 
 module.exports = Lumberjack();
 
-},{"lumberjackjs":6}],24:[function(require,module,exports){
+},{"lumberjackjs":6}],25:[function(require,module,exports){
 (function (global){
 var Point = require('./point.js'),
     Vector = require('./vector.js'),
@@ -1256,7 +1297,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./canvas.js":8,"./point.js":25,"./vector.js":32}],25:[function(require,module,exports){
+},{"./canvas.js":9,"./point.js":26,"./vector.js":33}],26:[function(require,module,exports){
 function Point(x, y) {
     return {
         x: x || 0,
@@ -1275,7 +1316,7 @@ function Point(x, y) {
 
 module.exports = Point;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var Vector = require('./vector.js');
 
 function isEqual(my, other, tfactor, mfactor) {
@@ -1322,7 +1363,7 @@ function Polar(theta, mag) {
 
 module.exports = Polar;
 
-},{"./vector.js":32}],27:[function(require,module,exports){
+},{"./vector.js":33}],28:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -1395,7 +1436,7 @@ module.exports = function (pos, size) {
     });
 };
 
-},{"./dimension.js":15,"./point.js":25,"./shape.js":29,"./vector.js":32}],28:[function(require,module,exports){
+},{"./dimension.js":16,"./point.js":26,"./shape.js":30,"./vector.js":33}],29:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     EventHandler = require('./event-handler.js'),
     Counter = require('./id-counter.js');
@@ -1438,6 +1479,7 @@ module.exports = function (opts) {
             });
             updating = true;
             drawing = true;
+            this.trigger('start');
         },
         pause: function () {
             sprites.forEach(function (sprite) {
@@ -1445,6 +1487,7 @@ module.exports = function (opts) {
             });
             updating = false;
             drawing = true;
+            this.trigger('pause');
         },
         stop: function () {
             sprites.forEach(function (sprite) {
@@ -1452,6 +1495,7 @@ module.exports = function (opts) {
             });
             updating = false;
             drawing = false;
+            this.trigger('stop');
         },
         depth: opts.depth || 0,
         collision: function (name) {
@@ -1587,7 +1631,7 @@ module.exports = function (opts) {
     return self;
 };
 
-},{"./event-handler.js":17,"./id-counter.js":20,"baseclassjs":2}],29:[function(require,module,exports){
+},{"./event-handler.js":18,"./id-counter.js":21,"baseclassjs":2}],30:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Point = require('./point.js');
 
@@ -1615,7 +1659,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./point.js":25,"baseclassjs":2}],30:[function(require,module,exports){
+},{"./point.js":26,"baseclassjs":2}],31:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Collidable = require('./collidable.js'),
     Point = require('./point.js'),
@@ -1653,8 +1697,10 @@ module.exports = function (opts) {
         opts.mask.x,
         opts.mask.y
     );
-    opts.mask.x = pos.x + opts.offset.x;
-    opts.mask.y = pos.y + opts.offset.y;
+    opts.mask.move(
+        pos.x + opts.offset.x,
+        pos.x + opts.offset.y
+    );
 
     return Collidable(opts).extend({
         ready: function () {
@@ -1730,7 +1776,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./collidable.js":10,"./dimension.js":15,"./point.js":25,"./rectangle.js":27,"baseclassjs":2}],31:[function(require,module,exports){
+},{"./collidable.js":11,"./dimension.js":16,"./point.js":26,"./rectangle.js":28,"baseclassjs":2}],32:[function(require,module,exports){
 var createImage = require('./image.js'),
     cache = {};
 
@@ -1755,7 +1801,7 @@ module.exports = function (opts) {
     return img;
 };
 
-},{"./image.js":21}],32:[function(require,module,exports){
+},{"./image.js":22}],33:[function(require,module,exports){
 var Polar = require('./polar.js');
 
 /**
@@ -1803,7 +1849,7 @@ function Vector(x, y) {
 
 module.exports = Vector;
 
-},{"./polar.js":26}],33:[function(require,module,exports){
+},{"./polar.js":27}],34:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     CollisionHandler = Dragon.CollisionHandler;
@@ -1813,18 +1859,16 @@ module.exports = CollisionHandler({
     gridSize: Dimension(5, 5)
 });
 
-},{"dragonjs":12}],34:[function(require,module,exports){
+},{"dragonjs":13}],35:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game;
 
-Game.addScreens(
+Game.addScreens([
     require('./screens/racetrack.js')
-);
-Game.run({
-    debug: false
-});
+]);
+Game.run(false);
 
-},{"./screens/racetrack.js":35,"dragonjs":12}],35:[function(require,module,exports){
+},{"./screens/racetrack.js":36,"dragonjs":13}],36:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen;
 
@@ -1843,7 +1887,7 @@ module.exports = Screen({
     }
 });
 
-},{"../collisions/racetrack.js":33,"../sprites/horse.js":36,"dragonjs":12}],36:[function(require,module,exports){
+},{"../collisions/racetrack.js":34,"../sprites/horse.js":37,"dragonjs":13}],37:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
     Point = Dragon.Point,
@@ -1853,32 +1897,37 @@ var Dragon = require('dragonjs'),
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet;
 
-module.exports = Sprite({
-    name: 'horse',
-    collisionSets: [
-        require('../collisions/racetrack.js'),
-        Dragon.collisions
-    ],
-    mask: Rect(
-        Point(),
-        Dimension(50, 37)
-    ),
-    strips: {
-        'horse': AnimationStrip({
-            sheet: SpriteSheet({
-                src: 'horse.png'
-            }),
-            size: Dimension(50, 37),
-        })
-    },
-    startingStrip: 'horse',
-    pos: Point(0, 200),
-    speed: Point(1, 0),
-    on: {
-        'collide/screenedge/right': function () {
-            this.speed.x = 0;
+module.exports = function (opts) {
+    return Sprite({
+        name: 'horse',
+        collisionSets: [
+            require('../collisions/racetrack.js'),
+            Dragon.collisions
+        ],
+        mask: Rect(
+            Point(),
+            Dimension(50, 37)
+        ),
+        strips: {
+            'horse': AnimationStrip({
+                sheet: SpriteSheet({
+                    src: 'horse.png'
+                }),
+                size: Dimension(50, 37),
+            })
+        },
+        startingStrip: 'horse',
+        pos: Point(0, 200),
+        on: {
+            'collide/screenedge/right': function () {
+                this.speed.x = 0;
+            }
         }
-    }
-});
+    }).extend({
+        race: function () {
+            this.speed.x = 1;
+        }
+    });
+};
 
-},{"../collisions/racetrack.js":33,"dragonjs":12}]},{},[34]);
+},{"../collisions/racetrack.js":34,"dragonjs":13}]},{},[35]);
