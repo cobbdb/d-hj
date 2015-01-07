@@ -285,9 +285,6 @@ module.exports = function (opts) {
         direction = 1;
 
     return {
-        ready: function () {
-            return opts.sheet.ready;
-        },
         size: size,
         frame: 0,
         speed: opts.speed || 0,
@@ -1462,37 +1459,48 @@ module.exports = function (opts) {
         updating = false,
         drawing = false;
 
+    // Load queued sprites into the screen.
+    function ingestSprites() {
+        if (spritesToAdd.length) {
+            // Update the master sprite list after updates.
+            spritesToAdd.forEach(function (sprite) {
+                sprites.push(sprite);
+                if (sprite.name) {
+                    spriteMap[sprite.name] = sprite;
+                }
+                sprite.trigger('ready');
+            });
+            // Sort by descending sprite depths: 3, 2, 1, 0
+            sprites.sort(function (a, b) {
+                return b.depth - a.depth;
+            });
+            spritesToAdd = [];
+        }
+    }
+
     self = BaseClass({
         name: opts.name,
         load: function (cb) {
             if (!loaded) {
                 this.addSprites({
                     set: opts.spriteSet,
-                    onload: cb
+                    onload: cb,
+                    force: true
                 });
                 loaded = true;
             }
         },
         start: function () {
-            sprites.forEach(function (sprite) {
-                sprite.strip.start();
-            });
             updating = true;
             drawing = true;
             this.trigger('start');
         },
         pause: function () {
-            sprites.forEach(function (sprite) {
-                sprite.strip.pause();
-            });
             updating = false;
             drawing = true;
             this.trigger('pause');
         },
         stop: function () {
-            sprites.forEach(function (sprite) {
-                sprite.strip.stop();
-            });
             updating = false;
             drawing = false;
             this.trigger('stop');
@@ -1522,6 +1530,9 @@ module.exports = function (opts) {
          * are ready.
          * @param {Array|Sprite} opts.set
          * @param {Function} [onload]
+         * @param {Boolean} [force] Defaults to false. True
+         * to ingest sprites immediately outside of the normal
+         * game pulse.
          */
         addSprites: function (opts) {
             var id, onload, set;
@@ -1538,6 +1549,9 @@ module.exports = function (opts) {
                         loadQueue[id] -= 1;
                         if (loadQueue[id] === 0) {
                             spritesToAdd = spritesToAdd.concat(set);
+                            if (opts.force) {
+                                ingestSprites();
+                            }
                             onload();
                         }
                     });
@@ -1564,21 +1578,8 @@ module.exports = function (opts) {
                 collisionMap[i].handleCollisions();
             }
 
-            if (spritesToAdd.length) {
-                // Update the master sprite list after updates.
-                spritesToAdd.forEach(function (sprite) {
-                    sprites.push(sprite);
-                    if (sprite.name) {
-                        spriteMap[sprite.name] = sprite;
-                    }
-                    sprite.strip.start();
-                });
-                // Sort by descending sprite depths.
-                sprites.sort(function (a, b) {
-                    return b.depth - a.depth;
-                });
-                spritesToAdd = [];
-            }
+            // Load in any queued sprites.
+            ingestSprites();
         },
         draw: function (ctx, debug) {
             var name;
@@ -1690,7 +1691,9 @@ var BaseClass = require('baseclassjs'),
 module.exports = function (opts) {
     var loaded = false,
         stripMap = opts.strips || {},
-        pos = opts.pos || Point();
+        pos = opts.pos || Point(),
+        updating = false,
+        drawing = false;
 
     opts.mask = opts.mask || Rectangle();
     opts.offset = Point(
@@ -1701,11 +1704,12 @@ module.exports = function (opts) {
         pos.x + opts.offset.x,
         pos.x + opts.offset.y
     );
+    opts.one = opts.one || {};
+    opts.one.ready = opts.one.ready || function () {
+        this.start();
+    };
 
     return Collidable(opts).extend({
-        ready: function () {
-            return this.strip.ready();
-        },
         strip: stripMap[opts.startingStrip],
         useStrip: function (name) {
             // Do nothing if already using this strip.
@@ -1727,22 +1731,46 @@ module.exports = function (opts) {
         rotation: opts.rotation || 0,
         depth: opts.depth || 0,
         speed: opts.speed || Point(),
+        start: function () {
+            updating = true;
+            drawing = true;
+            this.strip.start();
+            this.trigger('start');
+        },
+        pause: function () {
+            updating = false;
+            drawing = true;
+            this.strip.pause();
+            this.trigger('pause');
+        },
+        stop: function () {
+            updating = false;
+            drawing = false;
+            this.strip.stop();
+            this.trigger('stop');
+        },
         update: function () {
-            this.shift();
-            this.strip.update();
-            this.base.update();
+            if (updating) {
+                this.shift();
+                this.strip.update();
+                this.base.update();
+            }
         },
         draw: function (ctx) {
-            var stripSize = this.strip.size;
-            this.strip.draw(
-                ctx,
-                this.pos,
-                Dimension(
-                    this.scale * this.size.width / stripSize.width,
-                    this.scale * this.size.height / stripSize.height
-                ),
-                this.rotation
-            );
+            var stripSize;
+
+            if (drawing) {
+                stripSize = this.strip.size;
+                this.strip.draw(
+                    ctx,
+                    this.pos,
+                    Dimension(
+                        this.scale * this.size.width / stripSize.width,
+                        this.scale * this.size.height / stripSize.height
+                    ),
+                    this.rotation
+                );
+            }
         },
         load: function (cb) {
             var name, loadQueue;
@@ -1861,33 +1889,59 @@ module.exports = CollisionHandler({
 
 },{"dragonjs":13}],35:[function(require,module,exports){
 var Dragon = require('dragonjs'),
-    Game = Dragon.Game;
+    Game = Dragon.Game,
+    Track = require('./screens/racetrack.js');
 
 Game.addScreens([
-    require('./screens/racetrack.js')
+    Track()
 ]);
 Game.run(false);
 
-},{"./screens/racetrack.js":36,"dragonjs":13}],36:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen;
-
-module.exports = Screen({
-    name: 'racetrack',
-    collisionSets: [
-        require('../collisions/racetrack.js')
-    ],
-    spriteSet: [
-        require('../sprites/horse.js')
-    ],
-    one: {
-        ready: function () {
-            this.start();
-        }
+},{"./screens/racetrack.js":38,"dragonjs":13}],36:[function(require,module,exports){
+module.exports = {
+    get next () {
+        return 'clydesdale';
     }
-});
+};
 
-},{"../collisions/racetrack.js":34,"../sprites/horse.js":37,"dragonjs":13}],37:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
+module.exports = {
+    money: 100
+};
+
+},{}],38:[function(require,module,exports){
+var Dragon = require('dragonjs'),
+    Screen = Dragon.Screen,
+    Horse = require('../sprites/horse.js');
+
+module.exports = function (opts) {
+    var horses = [
+        Horse()
+    ];
+
+    return Screen({
+        name: 'racetrack',
+        collisionSets: [
+            require('../collisions/racetrack.js')
+        ],
+        spriteSet: [
+            require('../sprites/button-race.js')
+        ].concat(horses),
+        one: {
+            ready: function () {
+                this.start();
+            }
+        }
+    }).extend({
+        race: function () {
+            horses.forEach(function (horse) {
+                horse.race();
+            });
+        }
+    });
+};
+
+},{"../collisions/racetrack.js":34,"../sprites/button-race.js":39,"../sprites/horse.js":40,"dragonjs":13}],39:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
     Point = Dragon.Point,
@@ -1896,6 +1950,57 @@ var Dragon = require('dragonjs'),
     Sprite = Dragon.Sprite,
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet;
+
+module.exports = Sprite({
+    name: 'button-race',
+    collisionSets: [
+        Dragon.collisions
+    ],
+    mask: Rect(
+        Point(),
+        Dimension(88, 31)
+    ),
+    strips: {
+        'button-race': AnimationStrip({
+            sheet: SpriteSheet({
+                src: 'button.png'
+            }),
+            size: Dimension(88, 31)
+        })
+    },
+    startingStrip: 'button-race',
+    pos: Point(10, 10),
+    size: Dimension(93, 31),
+    on: {
+        'colliding/screentap': function () {
+            Game.screen('racetrack').race();
+            this.strip.frame = 1;
+            this.pause();
+        }
+    }
+}).extend({
+    draw: function (ctx) {
+        this.base.draw(ctx);
+        ctx.font = '30px Verdana';
+        ctx.fillStyle = 'white';
+        ctx.fillText(
+            'RACE',
+            this.pos.x + 5,
+            this.pos.y + 27
+        );
+    }
+});
+
+},{"dragonjs":13}],40:[function(require,module,exports){
+var Dragon = require('dragonjs'),
+    Game = Dragon.Game,
+    Point = Dragon.Point,
+    Dimension = Dragon.Dimension,
+    Rect = Dragon.Rectangle,
+    Sprite = Dragon.Sprite,
+    AnimationStrip = Dragon.AnimationStrip,
+    SpriteSheet = Dragon.SpriteSheet,
+    Namer = require('../namer.js');
 
 module.exports = function (opts) {
     return Sprite({
@@ -1924,10 +2029,19 @@ module.exports = function (opts) {
             }
         }
     }).extend({
+        showname: Namer.next,
+        stat: {
+            speed: 1,
+            jump: 0,
+            strength: 0,
+            smarts: 0,
+            health: 100
+        },
+        sickness: 'none',
         race: function () {
-            this.speed.x = 1;
+            this.speed.x = this.stat.speed;
         }
     });
 };
 
-},{"../collisions/racetrack.js":34,"dragonjs":13}]},{},[35]);
+},{"../collisions/racetrack.js":34,"../namer.js":36,"dragonjs":13}]},{},[35,36,37]);

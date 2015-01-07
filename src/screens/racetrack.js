@@ -1,17 +1,30 @@
 var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen;
+    Screen = Dragon.Screen,
+    Horse = require('../sprites/horse.js');
 
-module.exports = Screen({
-    name: 'racetrack',
-    collisionSets: [
-        require('../collisions/racetrack.js')
-    ],
-    spriteSet: [
-        require('../sprites/horse.js')
-    ],
-    one: {
-        ready: function () {
-            this.start();
+module.exports = function (opts) {
+    var horses = [
+        Horse()
+    ];
+
+    return Screen({
+        name: 'racetrack',
+        collisionSets: [
+            require('../collisions/racetrack.js')
+        ],
+        spriteSet: [
+            require('../sprites/button-race.js')
+        ].concat(horses),
+        one: {
+            ready: function () {
+                this.start();
+            }
         }
-    }
-});
+    }).extend({
+        race: function () {
+            horses.forEach(function (horse) {
+                horse.race();
+            });
+        }
+    });
+};

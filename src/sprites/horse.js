@@ -5,7 +5,8 @@ var Dragon = require('dragonjs'),
     Rect = Dragon.Rectangle,
     Sprite = Dragon.Sprite,
     AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet;
+    SpriteSheet = Dragon.SpriteSheet,
+    Namer = require('../namer.js');
 
 module.exports = function (opts) {
     return Sprite({
@@ -34,8 +35,17 @@ module.exports = function (opts) {
             }
         }
     }).extend({
+        showname: Namer.next,
+        stat: {
+            speed: 1,
+            jump: 0,
+            strength: 0,
+            smarts: 0,
+            health: 100
+        },
+        sickness: 'none',
         race: function () {
-            this.speed.x = 1;
+            this.speed.x = this.stat.speed;
         }
     });
 };

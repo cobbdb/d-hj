@@ -1,7 +1,8 @@
 var Dragon = require('dragonjs'),
-    Game = Dragon.Game;
+    Game = Dragon.Game,
+    Track = require('./screens/racetrack.js');
 
 Game.addScreens([
-    require('./screens/racetrack.js')
+    Track()
 ]);
 Game.run(false);

@@ -2,8 +2,9 @@
   "name": "horse-jockey",
   "devDependencies": {
     "grunt": "latest",
-    "grunt-contrib-uglify": "latest",
     "grunt-browserify": "latest",
+    "grunt-contrib-compress": "latest",
+    "grunt-contrib-uglify": "latest",
     "matchdep": "latest"
   },
   "dependencies": {
