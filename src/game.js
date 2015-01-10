@@ -1,8 +1,14 @@
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
-    Track = require('./screens/racetrack.js');
+    riverton = require('./screens/tracks/riverton.js');
 
 Game.addScreens([
-    Track()
+    riverton
 ]);
+Game.currentTrack = riverton;
+Game.loadTrack = function (track) {
+    this.currentTrack.stop();
+    this.currentTrack = track;
+    this.currentTrack.start();
+};
 Game.run(false);

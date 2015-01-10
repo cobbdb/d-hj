@@ -1,11 +1,20 @@
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
-    Horse = require('../sprites/horse.js');
+    player = require('../player.js'),
+    Util = require('../util.js');
 
+/**
+ * @param {Array} horses
+ */
 module.exports = function (opts) {
-    var horses = [
-        Horse()
-    ];
+    var i,
+        horses = opts.horses.concat(player.horse),
+        lanes = Util.range(horses.length);
+
+    Util.shuffle(lanes);
+    for (i = 0; i < horses.length; i += 1) {
+        horses[i].pos.y = lanes[i] * 45 + 40;
+    }
 
     return Screen({
         name: 'racetrack',
@@ -21,6 +30,7 @@ module.exports = function (opts) {
             }
         }
     }).extend({
+        horses: horses,
         race: function () {
             horses.forEach(function (horse) {
                 horse.race();

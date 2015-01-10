@@ -1,5 +1,6 @@
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
+    canvas = Game.canvas,
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     Rect = Dragon.Rectangle,
@@ -25,11 +26,11 @@ module.exports = Sprite({
         })
     },
     startingStrip: 'button-race',
-    pos: Point(10, 10),
+    pos: Point(10, canvas.height - 40),
     size: Dimension(93, 31),
     on: {
         'colliding/screentap': function () {
-            Game.screen('racetrack').race();
+            Game.currentTrack.race();
             this.strip.frame = 1;
             this.pause();
         }

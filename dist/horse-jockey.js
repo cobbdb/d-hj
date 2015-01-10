@@ -1447,8 +1447,7 @@ var BaseClass = require('baseclassjs'),
  * @param {Object} [opts.one] Dictionary of one-time events.
  */
 module.exports = function (opts) {
-    var self,
-        loaded = false,
+    var loaded = false,
         sprites = [],
         spriteMap = {},
         spritesToAdd = [],
@@ -1478,10 +1477,11 @@ module.exports = function (opts) {
         }
     }
 
-    self = BaseClass({
+    return BaseClass({
         name: opts.name,
         load: function (cb) {
             if (!loaded) {
+                this.addCollisionSets(opts.collisionSets);
                 this.addSprites({
                     set: opts.spriteSet,
                     onload: cb,
@@ -1565,17 +1565,19 @@ module.exports = function (opts) {
         update: function () {
             var i;
 
-            // Update sprites.
-            sprites.forEach(function (sprite) {
-                if (updating && !sprite.removed) {
-                    // Don't update dead sprites.
-                    sprite.update();
-                }
-            });
+            if (updating) {
+                // Update sprites.
+                sprites.forEach(function (sprite) {
+                    if (updating && !sprite.removed) {
+                        // Don't update dead sprites.
+                        sprite.update();
+                    }
+                });
 
-            // Process collisions.
-            for (i in collisionMap) {
-                collisionMap[i].handleCollisions();
+                // Process collisions.
+                for (i in collisionMap) {
+                    collisionMap[i].handleCollisions();
+                }
             }
 
             // Load in any queued sprites.
@@ -1600,7 +1602,7 @@ module.exports = function (opts) {
             if (updating) {
                 sprites.forEach(function (sprite) {
                     if (!sprite.removed) {
-                        // Don't update dead sprites.
+                        // Don't teardown dead sprites.
                         sprite.teardown();
                     }
                 });
@@ -1625,11 +1627,6 @@ module.exports = function (opts) {
             singles: opts.one
         })
     );
-
-    // Load in collision handlers.
-    self.addCollisionSets(opts.collisionSets);
-
-    return self;
 };
 
 },{"./event-handler.js":18,"./id-counter.js":21,"baseclassjs":2}],30:[function(require,module,exports){
@@ -1890,34 +1887,68 @@ module.exports = CollisionHandler({
 },{"dragonjs":13}],35:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
-    Track = require('./screens/racetrack.js');
+    riverton = require('./screens/tracks/riverton.js');
 
 Game.addScreens([
-    Track()
+    riverton
 ]);
+Game.currentTrack = riverton;
+Game.loadTrack = function (track) {
+    this.currentTrack.stop();
+    this.currentTrack = track;
+    this.currentTrack.start();
+};
 Game.run(false);
 
-},{"./screens/racetrack.js":38,"dragonjs":13}],36:[function(require,module,exports){
+},{"./screens/tracks/riverton.js":40,"dragonjs":13}],36:[function(require,module,exports){
+module.exports = {
+    none: {},
+    flu: {
+        speed: 0.8,
+        jump: 0.8,
+        strength: 0.8
+    },
+    thrush: {
+        speed: 0.2
+    },
+    tetanus: {},
+    rainRot: {},
+    swampFever: {}
+};
+
+},{}],37:[function(require,module,exports){
 module.exports = {
     get next () {
         return 'clydesdale';
     }
 };
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
+var Horse = require('./sprites/horse.js');
+
 module.exports = {
-    money: 100
+    money: 100,
+    horse: Horse()
 };
 
-},{}],38:[function(require,module,exports){
+},{"./sprites/horse.js":42}],39:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
-    Horse = require('../sprites/horse.js');
+    player = require('../player.js'),
+    Util = require('../util.js');
 
+/**
+ * @param {Array} horses
+ */
 module.exports = function (opts) {
-    var horses = [
-        Horse()
-    ];
+    var i,
+        horses = opts.horses.concat(player.horse),
+        lanes = Util.range(horses.length);
+
+    Util.shuffle(lanes);
+    for (i = 0; i < horses.length; i += 1) {
+        horses[i].pos.y = lanes[i] * 45 + 40;
+    }
 
     return Screen({
         name: 'racetrack',
@@ -1933,6 +1964,7 @@ module.exports = function (opts) {
             }
         }
     }).extend({
+        horses: horses,
         race: function () {
             horses.forEach(function (horse) {
                 horse.race();
@@ -1941,9 +1973,21 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":34,"../sprites/button-race.js":39,"../sprites/horse.js":40,"dragonjs":13}],39:[function(require,module,exports){
+},{"../collisions/racetrack.js":34,"../player.js":38,"../sprites/button-race.js":41,"../util.js":44,"dragonjs":13}],40:[function(require,module,exports){
+var Track = require('../track.js'),
+    Horse = require('../../sprites/horse.js'),
+    player = require('../../player.js');
+
+module.exports = Track({
+    horses: [
+        Horse()
+    ]
+});
+
+},{"../../player.js":38,"../../sprites/horse.js":42,"../track.js":39}],41:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
+    canvas = Game.canvas,
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     Rect = Dragon.Rectangle,
@@ -1969,11 +2013,11 @@ module.exports = Sprite({
         })
     },
     startingStrip: 'button-race',
-    pos: Point(10, 10),
+    pos: Point(10, canvas.height - 40),
     size: Dimension(93, 31),
     on: {
         'colliding/screentap': function () {
-            Game.screen('racetrack').race();
+            Game.currentTrack.race();
             this.strip.frame = 1;
             this.pause();
         }
@@ -1991,7 +2035,7 @@ module.exports = Sprite({
     }
 });
 
-},{"dragonjs":13}],40:[function(require,module,exports){
+},{"dragonjs":13}],42:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
     Point = Dragon.Point,
@@ -2000,9 +2044,12 @@ var Dragon = require('dragonjs'),
     Sprite = Dragon.Sprite,
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet,
-    Namer = require('../namer.js');
+    Namer = require('../namer.js'),
+    Illness = require('../illness.js'),
+    Stats = require('../stats.js');
 
 module.exports = function (opts) {
+    opts = opts || {};
     return Sprite({
         name: 'horse',
         collisionSets: [
@@ -2022,26 +2069,79 @@ module.exports = function (opts) {
             })
         },
         startingStrip: 'horse',
-        pos: Point(0, 200),
         on: {
             'collide/screenedge/right': function () {
                 this.speed.x = 0;
             }
         }
     }).extend({
-        showname: Namer.next,
-        stat: {
-            speed: 1,
-            jump: 0,
-            strength: 0,
-            smarts: 0,
-            health: 100
+        showname: opts.showname || Namer.next,
+        coreStats: opts.stats || Stats(),
+        adjStats: Stats(),
+        refreshStats: function (mod) {
+            this.adjStats = this.coreStats.scale(mod || {});
+            this.adjStats = this.adjStats.scale(this.sickness);
         },
-        sickness: 'none',
+        sickness: Illness.none,
         race: function () {
-            this.speed.x = this.stat.speed;
+            this.refreshStats();
+            this.speed.x = this.adjStats.speed;
         }
     });
 };
 
-},{"../collisions/racetrack.js":34,"../namer.js":36,"dragonjs":13}]},{},[35,36,37]);
+},{"../collisions/racetrack.js":34,"../illness.js":36,"../namer.js":37,"../stats.js":43,"dragonjs":13}],43:[function(require,module,exports){
+function Stats(opts) {
+    opts = opts || {};
+    return {
+        speed: opts.speed || 1,
+        jump: opts.jump || 1,
+        strength: opts.strength || 1,
+        smarts: opts.smarts || 1,
+        health: opts.health || 1,
+        scale: function (mod) {
+            return Stats({
+                speed: this.speed * (mod.speed || 1),
+                jump: this.jump * (mod.jump || 1),
+                strength: this.strength * (mod.strength || 1),
+                smarts: this.smarts * (mod.smarts || 1),
+                health: this.health * (mod.health || 1)
+            });
+        }
+    };
+}
+
+module.exports = Stats;
+
+},{}],44:[function(require,module,exports){
+module.exports = {
+    shuffle: function (arr) {
+        var i, j, x;
+        for (i = 0; i < arr.length; i += 1) {
+            j = parseInt(
+                Math.random() * (i + 1)
+            );
+            x = arr[i];
+            arr[i] = arr[j];
+            arr[j] = x;
+        }
+        return arr;
+    },
+    range: function (start, end) {
+        var i, len,
+            arr = [];
+
+        if (!end) {
+            end = start;
+            start = 0;
+        }
+
+        len = end - start;
+        for (i = 0; i < len; i += 1) {
+            arr.push(i + start);
+        }
+        return arr;
+    }
+};
+
+},{}]},{},[35,36,37,38,43,44]);

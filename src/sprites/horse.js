@@ -7,9 +7,11 @@ var Dragon = require('dragonjs'),
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet,
     Namer = require('../namer.js'),
-    Illness = require('../illness.js');
+    Illness = require('../illness.js'),
+    Stats = require('../stats.js');
 
 module.exports = function (opts) {
+    opts = opts || {};
     return Sprite({
         name: 'horse',
         collisionSets: [
@@ -29,7 +31,6 @@ module.exports = function (opts) {
             })
         },
         startingStrip: 'horse',
-        pos: Point(0, 200),
         on: {
             'collide/screenedge/right': function () {
                 this.speed.x = 0;
@@ -37,16 +38,16 @@ module.exports = function (opts) {
         }
     }).extend({
         showname: opts.showname || Namer.next,
-        stat: {
-            speed: 1,
-            jump: 0,
-            strength: 0,
-            smarts: 0,
-            health: 100
+        coreStats: opts.stats || Stats(),
+        adjStats: Stats(),
+        refreshStats: function (mod) {
+            this.adjStats = this.coreStats.scale(mod || {});
+            this.adjStats = this.adjStats.scale(this.sickness);
         },
         sickness: Illness.none,
         race: function () {
-            this.speed.x = this.stat.speed;
+            this.refreshStats();
+            this.speed.x = this.adjStats.speed;
         }
     });
 };
