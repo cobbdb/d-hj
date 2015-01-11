@@ -23,12 +23,7 @@ module.exports = function (opts) {
         ],
         spriteSet: [
             require('../sprites/button-race.js')
-        ].concat(horses),
-        one: {
-            ready: function () {
-                this.start();
-            }
-        }
+        ].concat(horses)
     }).extend({
         horses: horses,
         race: function () {
