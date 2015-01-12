@@ -1,14 +1,14 @@
 module.exports = {
-    none: {},
-    flu: {
-        speed: 0.8,
-        jump: 0.8,
-        strength: 0.8
+    none: function () {},
+    flu: function (set) {
+        set.speed *= 0.8;
+        set.jump *= 0.8;
+        set.strength *= 0.8;
     },
-    thrush: {
-        speed: 0.2
+    thrush: function (set) {
+        set.speed *= 0.2;
     },
-    tetanus: {},
-    rainRot: {},
-    swampFever: {}
+    tetanus: function () {},
+    rainRot: function () {},
+    swampFever: function () {}
 };

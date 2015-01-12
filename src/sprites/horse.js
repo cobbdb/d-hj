@@ -41,8 +41,12 @@ module.exports = function (opts) {
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {
-            this.adjStats = this.coreStats.scale(mod || {});
-            this.adjStats = this.adjStats.scale(this.sickness);
+            var set = this.coreStats.clone();
+            mod = mod || function () {};
+
+            mod(set);
+            this.sickness(set);
+            this.adjStats = set;
         },
         sickness: Illness.none,
         race: function () {
