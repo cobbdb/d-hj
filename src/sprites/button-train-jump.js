@@ -4,13 +4,13 @@ var Dragon = require('dragonjs'),
     Trainer = require('./button-train.js');
 
 module.exports = Trainer({
-    title: '+SPD',
+    title: '+JMP',
     pos: Point(
-        3 / 8 * canvas.width - canvas.height / (3 * 1.73),
-        canvas.height / 2 - canvas.height / 3
+        3 * canvas.width / 16,
+        canvas.height / 2 - 1.73 / 16 * canvas.width
     ),
     effect: function (set) {
-        set.speed += 2;
+        set.jump += 2;
         console.log(this.title);
     }
 });

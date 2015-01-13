@@ -1,16 +1,12 @@
-var Button = require('./button.js'),
+var RadialButton = require('./radial-button.js'),
     Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
-    Point = Dragon.Point,
-    Game = Dragon.Game,
-    canvas = Game.canvas,
     player = require('../player.js');
 
 module.exports = function (opts) {
-    return Button({
+    return RadialButton({
         title: opts.title,
-        size: Dimension(93, 31),
-        pos: Point(10, canvas.height - 40)
+        pos: opts.pos
     }).extend({
         click: function () {
             opts.effect(
