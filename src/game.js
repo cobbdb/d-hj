@@ -13,6 +13,3 @@ Game.loadTrack = function (track) {
     this.currentTrack.start();
 };
 Game.run(true);
-Dragon.Mouse.on.down(function () {
-    console.log(Dragon.Mouse.offset);
-});

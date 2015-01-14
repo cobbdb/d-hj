@@ -593,19 +593,17 @@ module.exports = function (opts) {
         },
         removeCollision: function (id) {
             activeCollisions[id] = false;
-            collisionsThisFrame[id] = false;
         },
         clearCollisions: function () {
             activeCollisions = {};
             collisionsThisFrame = {};
         },
         isCollidingWith: function (id) {
-            // Return type is always boolean.
             return activeCollisions[id] || false;
         },
         canCollideWith: function (id) {
             var self = this.id === id,
-                already = collisionsThisFrame[id] || false;
+                already = collisionsThisFrame[id];
             return !self && !already;
         }
     }).implement(
@@ -702,8 +700,8 @@ module.exports = function (opts) {
                              * (miss) ongoing separation
                              */
                             if (intersects) {
+                                pivot.addCollision(other.id);
                                 if (!colliding) {
-                                    pivot.addCollision(other.id);
                                     pivot.trigger('collide/' + other.name, other);
                                 }
                                 pivot.trigger('colliding/' + other.name, other);
@@ -954,6 +952,9 @@ var CollisionHandler = require('./collision-handler.js'),
 Mouse.on.down(function () {
     masks.screentap.move(Mouse.offset);
     dragonCollisions.update(masks.screentap);
+});
+Mouse.on.up(function () {
+    masks.screentap.clearCollisions();
 });
 
 module.exports = {
@@ -1921,9 +1922,6 @@ Game.loadTrack = function (track) {
     this.currentTrack.start();
 };
 Game.run(true);
-Dragon.Mouse.on.down(function () {
-    console.log(Dragon.Mouse.offset);
-});
 
 },{"./screens/tracks/riverton.js":45,"./screens/training.js":46,"dragonjs":18}],41:[function(require,module,exports){
 module.exports = {
@@ -2015,7 +2013,9 @@ var Dragon = require('dragonjs'),
             require('../sprites/button-train-jump.js'),
             require('../sprites/button-train-smarts.js')
         ]
-    };
+    },
+    allbuttons = [].
+        concat(buttons.horse);
 
 module.exports = Screen({
     name: 'training',
@@ -2029,8 +2029,8 @@ module.exports = Screen({
     }
 }).extend({
     update: function () {
-        buttons.horse.forEach(function (btn) {
-            Dragon.collisions.update(btn);
+        allbuttons.forEach(function (btn) {
+            btn.update();
         });
         Dragon.collisions.update(
             Dragon.Collidable({
@@ -2045,6 +2045,12 @@ module.exports = Screen({
             })
         );
         this.base.update();
+    },
+    teardown: function () {
+        allbuttons.forEach(function (btn) {
+            btn.teardown();
+        });
+        this.base.teardown();
     }
 });
 

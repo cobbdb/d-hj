@@ -8,7 +8,9 @@ var Dragon = require('dragonjs'),
             require('../sprites/button-train-jump.js'),
             require('../sprites/button-train-smarts.js')
         ]
-    };
+    },
+    allbuttons = [].
+        concat(buttons.horse);
 
 module.exports = Screen({
     name: 'training',
@@ -22,8 +24,8 @@ module.exports = Screen({
     }
 }).extend({
     update: function () {
-        buttons.horse.forEach(function (btn) {
-            Dragon.collisions.update(btn);
+        allbuttons.forEach(function (btn) {
+            btn.update();
         });
         Dragon.collisions.update(
             Dragon.Collidable({
@@ -38,5 +40,11 @@ module.exports = Screen({
             })
         );
         this.base.update();
+    },
+    teardown: function () {
+        allbuttons.forEach(function (btn) {
+            btn.teardown();
+        });
+        this.base.teardown();
     }
 });
