@@ -552,6 +552,7 @@ var Counter = require('./id-counter.js'),
  */
 module.exports = function (opts) {
     var activeCollisions = {},
+        collisionsThisFrame = {},
         collisionSets = [],
         updated = false;
 
@@ -584,19 +585,28 @@ module.exports = function (opts) {
         },
         teardown: function () {
             updated = false;
+            collisionsThisFrame = {};
         },
         addCollision: function (id) {
             activeCollisions[id] = true;
+            collisionsThisFrame[id] = true;
         },
         removeCollision: function (id) {
             activeCollisions[id] = false;
+            collisionsThisFrame[id] = false;
         },
         clearCollisions: function () {
             activeCollisions = {};
+            collisionsThisFrame = {};
         },
         isCollidingWith: function (id) {
             // Return type is always boolean.
             return activeCollisions[id] || false;
+        },
+        canCollideWith: function (id) {
+            var self = this.id === id,
+                already = collisionsThisFrame[id] || false;
+            return !self && !already;
         }
     }).implement(
         EventHandler({
@@ -679,9 +689,10 @@ module.exports = function (opts) {
                 set = activeCollisions[i];
                 set.forEach(function (pivot) {
                     set.forEach(function (other) {
-                        var intersects, colliding;
+                        var intersects, colliding,
+                            valid = pivot.canCollideWith(other.id);
 
-                        if (pivot.id !== other.id) {
+                        if (valid) {
                             intersects = pivot.intersects(other.mask),
                             colliding = pivot.isCollidingWith(other.id);
                             /**
