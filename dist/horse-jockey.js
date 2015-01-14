@@ -596,7 +596,6 @@ module.exports = function (opts) {
         },
         clearCollisions: function () {
             activeCollisions = {};
-            collisionsThisFrame = {};
         },
         isCollidingWith: function (id) {
             return activeCollisions[id] || false;
@@ -955,6 +954,8 @@ Mouse.on.down(function () {
 });
 Mouse.on.up(function () {
     masks.screentap.clearCollisions();
+    masks.screendrag.clearCollisions();
+    masks.screenhold.clearCollisions();
 });
 
 module.exports = {
