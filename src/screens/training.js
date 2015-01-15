@@ -3,48 +3,31 @@ var Dragon = require('dragonjs'),
     player = require('../player.js'),
     buttons = {
         horse: [
-            require('../sprites/button-train-speed.js'),
-            require('../sprites/button-train-strength.js'),
-            require('../sprites/button-train-jump.js'),
-            require('../sprites/button-train-smarts.js')
+            require('../sprites/buttons/train-speed.js'),
+            require('../sprites/buttons/train-strength.js'),
+            require('../sprites/buttons/train-jump.js'),
+            require('../sprites/buttons/train-smarts.js')
+        ],
+        jockey: [
+            require('../sprites/buttons/train-jsmarts.js'),
+            require('../sprites/buttons/train-size.js'),
+            require('../sprites/buttons/train-temper.js')
         ]
     },
     allbuttons = [].
-        concat(buttons.horse);
+        concat(buttons.horse).
+        concat(buttons.jockey);
 
 module.exports = Screen({
     name: 'training',
     spriteSet: [
-        player.horse
-    ],
+        require('../sprites/bkg-training.js'),
+        require('../sprites/buttons/open-shop.js')
+    ].concat(allbuttons),
     one: {
         ready: function () {
             this.start();
         }
     }
 }).extend({
-    update: function () {
-        allbuttons.forEach(function (btn) {
-            btn.update();
-        });
-        Dragon.collisions.update(
-            Dragon.Collidable({
-                name: 'temp',
-                mask: Dragon.Circle(
-                    Dragon.Point(
-                        Dragon.Game.canvas.width * 3 / 8,
-                        Dragon.Game.canvas.height / 2
-                    ),
-                    5
-                )
-            })
-        );
-        this.base.update();
-    },
-    teardown: function () {
-        allbuttons.forEach(function (btn) {
-            btn.teardown();
-        });
-        this.base.teardown();
-    }
 });

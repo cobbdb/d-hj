@@ -22,7 +22,7 @@ module.exports = function (opts) {
             require('../collisions/racetrack.js')
         ],
         spriteSet: [
-            require('../sprites/button-race.js')
+            //require('../sprites/buttons/race.js')
         ].concat(horses)
     }).extend({
         horses: horses,

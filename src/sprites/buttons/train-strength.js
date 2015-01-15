@@ -1,12 +1,14 @@
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
+    Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./button-train.js');
+    Trainer = require('./train.js');
 
 module.exports = Trainer({
     title: '+STR',
+    src: 'buttons/strength.png',
     pos: Point(
-        3 / 8 * canvas.width - canvas.height / (3 * 1.73),
+        27 * canvas.width / 100,
         canvas.height / 2 + canvas.height / 3
     ),
     effect: function (set) {

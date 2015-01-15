@@ -1,17 +1,18 @@
 var Dragon = require('dragonjs'),
+    Circle = Dragon.Circle,
+    Sprite = Dragon.Sprite,
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
-    Rect = Dragon.Rectangle,
-    Sprite = Dragon.Sprite,
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet,
-    BaseClass = require('baseclassjs');
+    player = require('../../player.js');
 
 /**
  * @param {String} opts.title
  * @param {String} [opts.name] Defaults to title.
- * @param {Dimension} opts.size
  * @param {Point} opts.pos
+ * @param {Dimension} opts.size
+ * @param {String} opts.src
  */
 module.exports = function (opts) {
     return Sprite({
@@ -19,21 +20,25 @@ module.exports = function (opts) {
         collisionSets: [
             Dragon.collisions
         ],
-        mask: Rect(
-            Point(),
-            opts.size
+        mask: Circle(
+            opts.pos,
+            40
         ),
+        freemask: true,
         strips: {
-            'button-race': AnimationStrip({
+            'up': AnimationStrip({
                 sheet: SpriteSheet({
-                    src: 'button.png'
+                    src: opts.src
                 }),
-                size: Dimension(88, 31)
+                size: Dimension(256, 64)
             })
         },
-        startingStrip: 'button-race',
-        pos: opts.pos,
-        size: opts.size,
+        startingStrip: 'up',
+        size: Dimension(128, 32),
+        pos: Point(
+            opts.pos.x - 64,
+            opts.pos.y - 16
+        ),
         on: {
             'colliding/screentap': function () {
                 this.click();
@@ -41,16 +46,11 @@ module.exports = function (opts) {
         }
     }).extend({
         title: opts.title,
-        click: BaseClass.Abstract,
-        draw: function (ctx) {
-            this.base.draw(ctx);
-            ctx.font = '30px Verdana';
-            ctx.fillStyle = 'white';
-            ctx.fillText(
-                this.title,
-                this.pos.x + 5,
-                this.pos.y + 27
+        click: function () {
+            opts.effect(
+                player.horse.coreStats
             );
+            player.horse.refreshStats();
         }
     });
 };

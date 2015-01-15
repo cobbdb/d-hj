@@ -1,16 +1,18 @@
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
+    Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./button-train.js');
+    Trainer = require('./train.js');
 
 module.exports = Trainer({
-    title: '+JMP',
+    title: '+TPR',
+    src: 'buttons/temper.png',
     pos: Point(
-        3 * canvas.width / 16,
-        canvas.height / 2 - 1.73 / 16 * canvas.width
+        31 * canvas.width / 50,
+        canvas.height / 2
     ),
     effect: function (set) {
-        set.jump += 2;
+        set.smarts += 2;
         console.log(this.title);
     }
 });
