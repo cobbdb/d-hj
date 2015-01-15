@@ -79,6 +79,244 @@ module.exports = function (key, root, base, self) {
 module.exports = function () {};
 
 },{}],6:[function(require,module,exports){
+module.exports=require(1)
+},{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\abstract.js":1}],7:[function(require,module,exports){
+module.exports=require(2)
+},{"./abstract.js":6,"./interface.js":8,"./rebind.js":9,"./stub.js":10,"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\baseclass.js":2}],8:[function(require,module,exports){
+module.exports=require(3)
+},{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\interface.js":3}],9:[function(require,module,exports){
+module.exports=require(4)
+},{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\rebind.js":4}],10:[function(require,module,exports){
+module.exports=require(5)
+},{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\stub.js":5}],11:[function(require,module,exports){
+var ld = require('lodash.values');
+module.exports = function () {
+    var args = ld(arguments);
+    var str = args.shift();
+    args.forEach(function (pivot) {
+        str = str.replace(/%s/, pivot);
+    });
+    return str;
+};
+
+},{"lodash.values":12}],12:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var keys = require('lodash.keys');
+
+/**
+ * Creates an array composed of the own enumerable property values of `object`.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property values.
+ * @example
+ *
+ * _.values({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => [1, 2, 3] (property order is not guaranteed across environments)
+ */
+function values(object) {
+  var index = -1,
+      props = keys(object),
+      length = props.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = object[props[index]];
+  }
+  return result;
+}
+
+module.exports = values;
+
+},{"lodash.keys":13}],13:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array composed of the own enumerable property names of an object.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ * @example
+ *
+ * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (!isObject(object)) {
+    return [];
+  }
+  return nativeKeys(object);
+};
+
+module.exports = keys;
+
+},{"lodash._isnative":14,"lodash._shimkeys":15,"lodash.isobject":17}],14:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Used to detect if a method is native */
+var reNative = RegExp('^' +
+  String(toString)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/toString| for [^\]]+/g, '.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+ */
+function isNative(value) {
+  return typeof value == 'function' && reNative.test(value);
+}
+
+module.exports = isNative;
+
+},{}],15:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which produces an array of the
+ * given object's own enumerable property names.
+ *
+ * @private
+ * @type Function
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ */
+var shimKeys = function(object) {
+  var index, iterable = object, result = [];
+  if (!iterable) return result;
+  if (!(objectTypes[typeof object])) return result;
+    for (index in iterable) {
+      if (hasOwnProperty.call(iterable, index)) {
+        result.push(index);
+      }
+    }
+  return result
+};
+
+module.exports = shimKeys;
+
+},{"lodash._objecttypes":16}],16:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to determine if values are of the language type Object */
+var objectTypes = {
+  'boolean': false,
+  'function': true,
+  'object': true,
+  'number': false,
+  'string': false,
+  'undefined': false
+};
+
+module.exports = objectTypes;
+
+},{}],17:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/**
+ * Checks if `value` is the language type of Object.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // check if the value is the ECMAScript language type of Object
+  // http://es5.github.io/#x8
+  // and avoid a V8 bug
+  // http://code.google.com/p/v8/issues/detail?id=2291
+  return !!(value && objectTypes[typeof value]);
+}
+
+module.exports = isObject;
+
+},{"lodash._objecttypes":18}],18:[function(require,module,exports){
+module.exports=require(16)
+},{"F:\\wamp\\www\\horse-jockey\\node_modules\\dragonjs\\node_modules\\curb\\node_modules\\lodash.values\\node_modules\\lodash.keys\\node_modules\\lodash._shimkeys\\node_modules\\lodash._objecttypes\\index.js":16}],19:[function(require,module,exports){
 (function (global){
 /**
  * # Lumberjack
@@ -254,7 +492,7 @@ module.exports = function (enabled) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Dimension = require('./dimension.js'),
     Point = require('./point.js'),
     log = require('./log.js');
@@ -378,7 +616,7 @@ module.exports = function (opts) {
     };
 };
 
-},{"./dimension.js":16,"./log.js":24,"./point.js":26}],8:[function(require,module,exports){
+},{"./dimension.js":29,"./log.js":38,"./point.js":40}],21:[function(require,module,exports){
 /**
  * @param {String} opts.src
  * @param {Boolean} [opts.loop] Defaults to false.
@@ -425,14 +663,13 @@ module.exports = function (opts) {
     return audio;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var mobile = require('./detect-mobile.js'),
     canvas = document.createElement('canvas');
 
 if (mobile) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    document.body.style.height = canvas.height + 'px';
 } else {
     if (localStorage.drago === 'landscape') {
         canvas.width = 480;
@@ -450,7 +687,7 @@ canvas.ctx = canvas.getContext('2d');
 
 module.exports = canvas;
 
-},{"./detect-mobile.js":15}],10:[function(require,module,exports){
+},{"./detect-mobile.js":28}],23:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Vector = require('./vector.js'),
     Point = require('./point.js'),
@@ -526,7 +763,7 @@ module.exports = function (pos, rad) {
     });
 };
 
-},{"./dimension.js":16,"./point.js":26,"./shape.js":30,"./vector.js":33}],11:[function(require,module,exports){
+},{"./dimension.js":29,"./point.js":40,"./shape.js":44,"./vector.js":47}],24:[function(require,module,exports){
 var Counter = require('./id-counter.js'),
     EventHandler = require('./event-handler.js'),
     BaseClass = require('baseclassjs'),
@@ -603,7 +840,7 @@ module.exports = function (opts) {
     );
 };
 
-},{"./event-handler.js":18,"./id-counter.js":21,"./point.js":26,"./rectangle.js":28,"baseclassjs":2}],12:[function(require,module,exports){
+},{"./event-handler.js":31,"./id-counter.js":35,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],25:[function(require,module,exports){
 var Rectangle = require('./rectangle.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -712,7 +949,7 @@ module.exports = function (opts) {
     };
 };
 
-},{"./canvas.js":9,"./dimension.js":16,"./point.js":26,"./rectangle.js":28}],13:[function(require,module,exports){
+},{"./canvas.js":22,"./dimension.js":29,"./point.js":40,"./rectangle.js":42}],26:[function(require,module,exports){
 module.exports = {
     Shape: require('./shape.js'),
     Circle: require('./circle.js'),
@@ -732,6 +969,7 @@ module.exports = {
     SpriteSheet: require('./spritesheet.js'),
     AnimationStrip: require('./animation-strip.js'),
     Audio: require('./audio.js'),
+    Font: require('./font.js'),
 
     CollisionHandler: require('./collision-handler.js'),
     collisions: require('./dragon-collisions.js'),
@@ -742,20 +980,20 @@ module.exports = {
     Sprite: require('./sprite.js')
 };
 
-},{"./animation-strip.js":7,"./audio.js":8,"./circle.js":10,"./collidable.js":11,"./collision-handler.js":12,"./dimension.js":16,"./dragon-collisions.js":17,"./event-handler.js":18,"./frame-counter.js":19,"./game.js":20,"./id-counter.js":21,"./keyboard.js":23,"./mouse.js":25,"./point.js":26,"./polar.js":27,"./rectangle.js":28,"./screen.js":29,"./shape.js":30,"./sprite.js":31,"./spritesheet.js":32,"./vector.js":33}],14:[function(require,module,exports){
+},{"./animation-strip.js":20,"./audio.js":21,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./dimension.js":29,"./dragon-collisions.js":30,"./event-handler.js":31,"./font.js":32,"./frame-counter.js":33,"./game.js":34,"./id-counter.js":35,"./keyboard.js":37,"./mouse.js":39,"./point.js":40,"./polar.js":41,"./rectangle.js":42,"./screen.js":43,"./shape.js":44,"./sprite.js":45,"./spritesheet.js":46,"./vector.js":47}],27:[function(require,module,exports){
 module.exports = {
     show: {
         fps: function () {}
     }
 };
 
-},{}],15:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /**
  * @see https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
  */
 module.exports = 'ontouchstart' in window;
 
-},{}],16:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 function Dimension(w, h) {
     return {
         width: w || 0,
@@ -780,7 +1018,7 @@ function Dimension(w, h) {
 
 module.exports = Dimension;
 
-},{}],17:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
     Dimension = require('./dimension.js');
 
@@ -789,7 +1027,7 @@ module.exports = CollisionHandler({
     gridSize: Dimension(4, 4)
 });
 
-},{"./collision-handler.js":12,"./dimension.js":16}],18:[function(require,module,exports){
+},{"./collision-handler.js":25,"./dimension.js":29}],31:[function(require,module,exports){
 var BaseClass = require('baseclassjs');
 
 /**
@@ -843,7 +1081,40 @@ module.exports = function (opts) {
     });
 };
 
-},{"baseclassjs":2}],19:[function(require,module,exports){
+},{"baseclassjs":7}],32:[function(require,module,exports){
+/**
+ * Cocoon only supports .tff fonts! oops
+ */
+
+var $ = require('curb'),
+    tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(assets/fonts/%s.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}",
+    cache = {};
+
+module.exports = {
+    /**
+     * @param {String} opts.name
+     * @param {String} [opts.style]
+     * @param {String|Number} [opts.weight]
+     * @param {String} opts.src
+     */
+    load: function (opts) {
+        var style;
+
+        if (!cache[opts.name]) {
+            style = document.createElement('style');
+            style.innerHTML = $(tpl,
+                opts.name,
+                opts.style || 'normal',
+                opts.weight || '400',
+                opts.src
+            );
+            document.body.appendChild(style);
+            cache[opts.name] = true;
+        }
+    }
+};
+
+},{"curb":11}],33:[function(require,module,exports){
 var timeSinceLastSecond = frameCountThisSecond = frameRate = 0,
     timeLastFrame = Date.now();
 
@@ -872,7 +1143,7 @@ module.exports = {
     }
 };
 
-},{}],20:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -1076,7 +1347,7 @@ module.exports = {
     }
 };
 
-},{"./canvas.js":9,"./circle.js":10,"./collidable.js":11,"./collision-handler.js":12,"./debug-console.js":14,"./dimension.js":16,"./dragon-collisions.js":17,"./frame-counter.js":19,"./id-counter.js":21,"./log.js":24,"./mouse.js":25,"./point.js":26,"./rectangle.js":28}],21:[function(require,module,exports){
+},{"./canvas.js":22,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./debug-console.js":27,"./dimension.js":29,"./dragon-collisions.js":30,"./frame-counter.js":33,"./id-counter.js":35,"./log.js":38,"./mouse.js":39,"./point.js":40,"./rectangle.js":42}],35:[function(require,module,exports){
 var counter = 0;
 
 module.exports = {
@@ -1089,7 +1360,7 @@ module.exports = {
     }
 };
 
-},{}],22:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 module.exports = function (src) {
     var img = new Image();
     img.ready = false;
@@ -1124,7 +1395,7 @@ module.exports = function (src) {
     return img;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var nameMap = {
         alt: false,
         ctrl: false,
@@ -1193,12 +1464,12 @@ module.exports = {
     }
 };
 
-},{}],24:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var Lumberjack = require('lumberjackjs');
 
 module.exports = Lumberjack();
 
-},{"lumberjackjs":6}],25:[function(require,module,exports){
+},{"lumberjackjs":19}],39:[function(require,module,exports){
 (function (global){
 var Point = require('./point.js'),
     Vector = require('./vector.js'),
@@ -1307,7 +1578,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./canvas.js":9,"./point.js":26,"./vector.js":33}],26:[function(require,module,exports){
+},{"./canvas.js":22,"./point.js":40,"./vector.js":47}],40:[function(require,module,exports){
 function Point(x, y) {
     return {
         x: x || 0,
@@ -1326,7 +1597,7 @@ function Point(x, y) {
 
 module.exports = Point;
 
-},{}],27:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var Vector = require('./vector.js');
 
 function isEqual(my, other, tfactor, mfactor) {
@@ -1373,7 +1644,7 @@ function Polar(theta, mag) {
 
 module.exports = Polar;
 
-},{"./vector.js":33}],28:[function(require,module,exports){
+},{"./vector.js":47}],42:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -1446,7 +1717,7 @@ module.exports = function (pos, size) {
     });
 };
 
-},{"./dimension.js":16,"./point.js":26,"./shape.js":30,"./vector.js":33}],29:[function(require,module,exports){
+},{"./dimension.js":29,"./point.js":40,"./shape.js":44,"./vector.js":47}],43:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     EventHandler = require('./event-handler.js'),
     Counter = require('./id-counter.js');
@@ -1643,7 +1914,7 @@ module.exports = function (opts) {
     );
 };
 
-},{"./event-handler.js":18,"./id-counter.js":21,"baseclassjs":2}],30:[function(require,module,exports){
+},{"./event-handler.js":31,"./id-counter.js":35,"baseclassjs":7}],44:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Point = require('./point.js');
 
@@ -1671,12 +1942,13 @@ module.exports = function (opts) {
     });
 };
 
-},{"./point.js":26,"baseclassjs":2}],31:[function(require,module,exports){
+},{"./point.js":40,"baseclassjs":7}],45:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Collidable = require('./collidable.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
-    Rectangle = require('./rectangle.js');
+    Rectangle = require('./rectangle.js'),
+    AnimationStrip = require('./animation-strip.js');
 
 /**
  * ##### Sprite
@@ -1737,7 +2009,7 @@ module.exports = function (opts) {
         },
         pos: pos,
         scale: opts.scale || 1,
-        size: opts.size || stripMap[opts.startingStrip].size,
+        size: opts.size || (stripMap[opts.startingStrip] || {}).size,
         trueSize: function () {
             return this.size.scale(this.scale);
         },
@@ -1817,7 +2089,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./collidable.js":11,"./dimension.js":16,"./point.js":26,"./rectangle.js":28,"baseclassjs":2}],32:[function(require,module,exports){
+},{"./animation-strip.js":20,"./collidable.js":24,"./dimension.js":29,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],46:[function(require,module,exports){
 var createImage = require('./image.js'),
     cache = {};
 
@@ -1842,7 +2114,7 @@ module.exports = function (opts) {
     return img;
 };
 
-},{"./image.js":22}],33:[function(require,module,exports){
+},{"./image.js":36}],47:[function(require,module,exports){
 var Polar = require('./polar.js');
 
 /**
@@ -1890,7 +2162,7 @@ function Vector(x, y) {
 
 module.exports = Vector;
 
-},{"./polar.js":27}],34:[function(require,module,exports){
+},{"./polar.js":41}],48:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     CollisionHandler = Dragon.CollisionHandler;
@@ -1900,9 +2172,10 @@ module.exports = CollisionHandler({
     gridSize: Dimension(5, 5)
 });
 
-},{"dragonjs":13}],35:[function(require,module,exports){
+},{"dragonjs":26}],49:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
+    Font = Dragon.Font,
     riverton = require('./screens/tracks/riverton.js');
 
 Game.addScreens([
@@ -1915,9 +2188,9 @@ Game.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };
-Game.run(true);
+Game.run(false);
 
-},{"./screens/tracks/riverton.js":41,"./screens/training.js":42,"dragonjs":13}],36:[function(require,module,exports){
+},{"./screens/tracks/riverton.js":55,"./screens/training.js":56,"dragonjs":26}],50:[function(require,module,exports){
 module.exports = {
     none: function () {},
     flu: function (set) {
@@ -1933,28 +2206,33 @@ module.exports = {
     swampFever: function () {}
 };
 
-},{}],37:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function (opts) {
     return {
     };
 };
 
-},{}],38:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = {
     get next () {
         return 'clydesdale';
     }
 };
 
-},{}],39:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 var Horse = require('./sprites/horse.js');
 
 module.exports = {
     money: 100,
-    horse: Horse()
+    horse: Horse(),
+    jockey: {
+        coreStats: {    
+            
+        }
+    }
 };
 
-},{"./sprites/horse.js":53}],40:[function(require,module,exports){
+},{"./sprites/horse.js":67}],54:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
     player = require('../player.js'),
@@ -1991,7 +2269,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":34,"../player.js":39,"../util.js":55,"dragonjs":13}],41:[function(require,module,exports){
+},{"../collisions/racetrack.js":48,"../player.js":53,"../util.js":70,"dragonjs":26}],55:[function(require,module,exports){
 var Track = require('../track.js'),
     Horse = require('../../sprites/horse.js'),
     player = require('../../player.js');
@@ -2002,7 +2280,7 @@ module.exports = Track({
     ]
 });
 
-},{"../../player.js":39,"../../sprites/horse.js":53,"../track.js":40}],42:[function(require,module,exports){
+},{"../../player.js":53,"../../sprites/horse.js":67,"../track.js":54}],56:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
     player = require('../player.js'),
@@ -2027,7 +2305,8 @@ module.exports = Screen({
     name: 'training',
     spriteSet: [
         require('../sprites/bkg-training.js'),
-        require('../sprites/buttons/open-shop.js')
+        require('../sprites/buttons/open-shop.js'),
+        require('../sprites/stats.js')
     ].concat(allbuttons),
     one: {
         ready: function () {
@@ -2037,7 +2316,7 @@ module.exports = Screen({
 }).extend({
 });
 
-},{"../player.js":39,"../sprites/bkg-training.js":43,"../sprites/buttons/open-shop.js":44,"../sprites/buttons/train-jsmarts.js":45,"../sprites/buttons/train-jump.js":46,"../sprites/buttons/train-size.js":47,"../sprites/buttons/train-smarts.js":48,"../sprites/buttons/train-speed.js":49,"../sprites/buttons/train-strength.js":50,"../sprites/buttons/train-temper.js":51,"dragonjs":13}],43:[function(require,module,exports){
+},{"../player.js":53,"../sprites/bkg-training.js":57,"../sprites/buttons/open-shop.js":58,"../sprites/buttons/train-jsmarts.js":59,"../sprites/buttons/train-jump.js":60,"../sprites/buttons/train-size.js":61,"../sprites/buttons/train-smarts.js":62,"../sprites/buttons/train-speed.js":63,"../sprites/buttons/train-strength.js":64,"../sprites/buttons/train-temper.js":65,"../sprites/stats.js":68,"dragonjs":26}],57:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     Sprite = Dragon.Sprite,
@@ -2059,7 +2338,7 @@ module.exports = Sprite({
     size: Dragon.Game.canvas
 });
 
-},{"dragonjs":13}],44:[function(require,module,exports){
+},{"dragonjs":26}],58:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     canvas = Dragon.Game.canvas,
     Point = Dragon.Point,
@@ -2074,18 +2353,22 @@ var Dragon = require('dragonjs'),
     );
 
 module.exports = Sprite({
-    name: 'quit-button',
+    name: 'shop-button',
     collisionSets: [
         Dragon.collisions
     ],
     mask: Rect(
-        Point(),
+        Point(
+            canvas.width - size.width,
+            canvas.height - size.height
+        ),
         size
     ),
+    freemask: true,
     strips: {
         'up': AnimationStrip({
             sheet: SpriteSheet({
-                src: 'buttons/quit.png'
+                src: 'buttons/shop.png'
             }),
             size: Dimension(128, 64)
         })
@@ -2093,7 +2376,7 @@ module.exports = Sprite({
     startingStrip: 'up',
     pos: Point(
         canvas.width - size.width,
-        canvas.height - size.height
+        canvas.height - size.height + 5
     ),
     size: size,
     on: {
@@ -2108,7 +2391,7 @@ module.exports = Sprite({
     }
 });
 
-},{"dragonjs":13}],45:[function(require,module,exports){
+},{"dragonjs":26}],59:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2123,12 +2406,11 @@ module.exports = Trainer({
         canvas.height / 2 - canvas.height / 3
     ),
     effect: function (set) {
-        set.smarts += 2;
-        console.log(this.title);
+        set.smarts += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],46:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],60:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2143,12 +2425,11 @@ module.exports = Trainer({
         canvas.height / 2 - canvas.height / 6
     ),
     effect: function (set) {
-        set.jump += 2;
-        console.log(this.title);
+        set.jump += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],47:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],61:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2163,12 +2444,11 @@ module.exports = Trainer({
         canvas.height / 2 + canvas.height / 3
     ),
     effect: function (set) {
-        set.smarts += 2;
-        console.log(this.title);
+        set.smarts += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],48:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],62:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2183,12 +2463,11 @@ module.exports = Trainer({
         canvas.height / 2 + canvas.height / 6
     ),
     effect: function (set) {
-        set.smarts += 2;
-        console.log(this.title);
+        set.smarts += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],49:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],63:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2203,12 +2482,11 @@ module.exports = Trainer({
         canvas.height / 2 - canvas.height / 3
     ),
     effect: function (set) {
-        set.speed += 2;
-        console.log(this.title);
+        set.speed += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],50:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],64:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2223,12 +2501,11 @@ module.exports = Trainer({
         canvas.height / 2 + canvas.height / 3
     ),
     effect: function (set) {
-        set.strength += 2;
-        console.log(this.title);
+        set.strength += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],51:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],65:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
@@ -2243,12 +2520,11 @@ module.exports = Trainer({
         canvas.height / 2
     ),
     effect: function (set) {
-        set.smarts += 2;
-        console.log(this.title);
+        set.smarts += 1;
     }
 });
 
-},{"./train.js":52,"dragonjs":13}],52:[function(require,module,exports){
+},{"./train.js":66,"dragonjs":26}],66:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Circle = Dragon.Circle,
     Sprite = Dragon.Sprite,
@@ -2306,7 +2582,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../../player.js":39,"dragonjs":13}],53:[function(require,module,exports){
+},{"../../player.js":53,"dragonjs":26}],67:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
     Point = Dragon.Point,
@@ -2365,7 +2641,83 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":34,"../illness.js":36,"../namer.js":38,"../stats.js":54,"dragonjs":13}],54:[function(require,module,exports){
+},{"../collisions/racetrack.js":48,"../illness.js":50,"../namer.js":52,"../stats.js":69,"dragonjs":26}],68:[function(require,module,exports){
+var Dragon = require('dragonjs'),
+    canvas = Dragon.Game.canvas,
+    Point = Dragon.Point,
+    Sprite = Dragon.Sprite,
+    BaseClass = require('baseclassjs'),
+    player = require('../player.js'),
+    marks = {
+        horse: {
+            speed: Point(
+                canvas.width * 0.29,
+                canvas.height / 2 - canvas.height * 0.15
+            ),
+            jump: Point(
+                canvas.width * 0.18,
+                canvas.height / 2 - canvas.height * 0.06
+            ),
+            smarts: Point(
+                canvas.width * 0.18,
+                canvas.height / 2 + canvas.height * 0.06
+            ),
+            strength: Point(
+                canvas.width * 0.29,
+                canvas.height / 2 + canvas.height * 0.15
+            )
+        },
+        jockey: {
+            size: Point(
+                canvas.width * 0.435,
+                canvas.height / 2 - canvas.height * 0.14
+            ),
+            temper: Point(
+                canvas.width * 0.505,
+                canvas.height / 2
+            ),
+            jsmarts: Point(
+                canvas.width * 0.435,
+                canvas.height / 2 + canvas.height * 0.14
+            )
+        }
+    };
+
+module.exports = Sprite({
+    name: 'stats',
+    depth: 2
+}).extend({
+    load: function (cb) {
+        cb();
+    },
+    start: BaseClass.Stub,
+    update: BaseClass.Stub,
+    draw: function (ctx) {
+        var name, mark;
+        ctx.font = '14px Impact, Charcoal, sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'black';
+        for (name in marks.horse) {
+            mark = marks.horse[name];
+            ctx.fillText(
+                player.horse.coreStats[name],
+                mark.x,
+                mark.y
+            );
+        }
+        for (name in marks.jockey) {
+            mark = marks.jockey[name];
+            ctx.fillText(
+                player.horse.coreStats.smarts,
+                mark.x,
+                mark.y
+            );
+        }
+    }
+});
+
+},{"../player.js":53,"baseclassjs":2,"dragonjs":26}],69:[function(require,module,exports){
 function Stats(opts) {
     opts = opts || {};
     return {
@@ -2382,7 +2734,7 @@ function Stats(opts) {
 
 module.exports = Stats;
 
-},{}],55:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports = {
     shuffle: function (arr) {
         var i, j, x;
@@ -2413,4 +2765,4 @@ module.exports = {
     }
 };
 
-},{}]},{},[35,36,37,38,39,54,55]);
+},{}]},{},[49,50,51,52,53,69,70]);

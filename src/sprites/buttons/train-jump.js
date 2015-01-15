@@ -12,7 +12,6 @@ module.exports = Trainer({
         canvas.height / 2 - canvas.height / 6
     ),
     effect: function (set) {
-        set.jump += 2;
-        console.log(this.title);
+        set.jump += 1;
     }
 });

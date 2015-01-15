@@ -1,5 +1,6 @@
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
+    Font = Dragon.Font,
     riverton = require('./screens/tracks/riverton.js');
 
 Game.addScreens([
@@ -12,4 +13,4 @@ Game.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };
-Game.run(true);
+Game.run(false);

@@ -12,18 +12,22 @@ var Dragon = require('dragonjs'),
     );
 
 module.exports = Sprite({
-    name: 'quit-button',
+    name: 'shop-button',
     collisionSets: [
         Dragon.collisions
     ],
     mask: Rect(
-        Point(),
+        Point(
+            canvas.width - size.width,
+            canvas.height - size.height
+        ),
         size
     ),
+    freemask: true,
     strips: {
         'up': AnimationStrip({
             sheet: SpriteSheet({
-                src: 'buttons/quit.png'
+                src: 'buttons/shop.png'
             }),
             size: Dimension(128, 64)
         })
@@ -31,7 +35,7 @@ module.exports = Sprite({
     startingStrip: 'up',
     pos: Point(
         canvas.width - size.width,
-        canvas.height - size.height
+        canvas.height - size.height + 5
     ),
     size: size,
     on: {

@@ -22,7 +22,8 @@ module.exports = Screen({
     name: 'training',
     spriteSet: [
         require('../sprites/bkg-training.js'),
-        require('../sprites/buttons/open-shop.js')
+        require('../sprites/buttons/open-shop.js'),
+        require('../sprites/stats.js')
     ].concat(allbuttons),
     one: {
         ready: function () {
