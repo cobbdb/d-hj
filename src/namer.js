@@ -1,5 +1,10 @@
 module.exports = {
-    get next () {
-        return 'clydesdale';
+    next: {
+        get horse () {
+            return 'clydesdale';
+        },
+        get jockey () {
+            return 'jimmy';
+        }
     }
 };

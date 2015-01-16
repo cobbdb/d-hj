@@ -3,6 +3,10 @@ var Dragon = require('dragonjs'),
     Font = Dragon.Font,
     riverton = require('./screens/tracks/riverton.js');
 
+Font.load({
+    name: 'Wonder',
+    src: '8-bit-wonder.ttf'
+});
 Game.addScreens([
     require('./screens/training.js'),
     riverton

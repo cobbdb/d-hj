@@ -2,7 +2,8 @@ var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+JBRN',
@@ -10,8 +11,10 @@ module.exports = Trainer({
     pos: Point(
         canvas.width / 2,
         canvas.height / 2 - canvas.height / 3
-    ),
-    effect: function (set) {
-        set.smarts += 1;
+    )
+}).extend({
+    click: function () {
+        player.jockey.coreStats.smarts += 1;
+        player.jockey.refreshStats();
     }
 });

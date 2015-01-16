@@ -5,7 +5,7 @@ var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet,
-    player = require('../../player.js');
+    BaseClass = require('baseclassjs');
 
 /**
  * @param {String} opts.title
@@ -46,11 +46,6 @@ module.exports = function (opts) {
         }
     }).extend({
         title: opts.title,
-        click: function () {
-            opts.effect(
-                player.horse.coreStats
-            );
-            player.horse.refreshStats();
-        }
+        click: BaseClass.Abstract
     });
 };

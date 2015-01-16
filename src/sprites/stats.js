@@ -24,7 +24,7 @@ var Dragon = require('dragonjs'),
             )
         },
         jockey: {
-            size: Point(
+            smarts: Point(
                 canvas.width * 0.435,
                 canvas.height / 2 - canvas.height * 0.14
             ),
@@ -32,7 +32,7 @@ var Dragon = require('dragonjs'),
                 canvas.width * 0.505,
                 canvas.height / 2
             ),
-            jsmarts: Point(
+            size: Point(
                 canvas.width * 0.435,
                 canvas.height / 2 + canvas.height * 0.14
             )
@@ -50,7 +50,7 @@ module.exports = Sprite({
     update: BaseClass.Stub,
     draw: function (ctx) {
         var name, mark;
-        ctx.font = '14px Impact, Charcoal, sans-serif';
+        ctx.font = '16px Wonder';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         ctx.fillStyle = 'black';
@@ -65,7 +65,7 @@ module.exports = Sprite({
         for (name in marks.jockey) {
             mark = marks.jockey[name];
             ctx.fillText(
-                player.horse.coreStats.smarts,
+                player.jockey.coreStats[name],
                 mark.x,
                 mark.y
             );

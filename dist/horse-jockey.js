@@ -1087,7 +1087,7 @@ module.exports = function (opts) {
  */
 
 var $ = require('curb'),
-    tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(assets/fonts/%s.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}",
+    tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(assets/fonts/%s);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}",
     cache = {};
 
 module.exports = {
@@ -1947,8 +1947,7 @@ var BaseClass = require('baseclassjs'),
     Collidable = require('./collidable.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
-    Rectangle = require('./rectangle.js'),
-    AnimationStrip = require('./animation-strip.js');
+    Rectangle = require('./rectangle.js');
 
 /**
  * ##### Sprite
@@ -2089,7 +2088,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./animation-strip.js":20,"./collidable.js":24,"./dimension.js":29,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],46:[function(require,module,exports){
+},{"./collidable.js":24,"./dimension.js":29,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],46:[function(require,module,exports){
 var createImage = require('./image.js'),
     cache = {};
 
@@ -2178,6 +2177,10 @@ var Dragon = require('dragonjs'),
     Font = Dragon.Font,
     riverton = require('./screens/tracks/riverton.js');
 
+Font.load({
+    name: 'Wonder',
+    src: '8-bit-wonder.ttf'
+});
 Game.addScreens([
     require('./screens/training.js'),
     riverton
@@ -2190,7 +2193,24 @@ Game.loadTrack = function (track) {
 };
 Game.run(false);
 
-},{"./screens/tracks/riverton.js":55,"./screens/training.js":56,"dragonjs":26}],50:[function(require,module,exports){
+},{"./screens/tracks/riverton.js":56,"./screens/training.js":57,"dragonjs":26}],50:[function(require,module,exports){
+function Stats(opts) {
+    opts = opts || {};
+    return {
+        speed: opts.speed || 1,
+        jump: opts.jump || 1,
+        strength: opts.strength || 1,
+        smarts: opts.smarts || 1,
+        health: opts.health || 1,
+        clone: function () {
+            return Stats(this);
+        }
+    };
+}
+
+module.exports = Stats;
+
+},{}],51:[function(require,module,exports){
 module.exports = {
     none: function () {},
     flu: function (set) {
@@ -2206,33 +2226,44 @@ module.exports = {
     swampFever: function () {}
 };
 
-},{}],51:[function(require,module,exports){
-module.exports = function (opts) {
-    return {
-    };
-};
-
 },{}],52:[function(require,module,exports){
-module.exports = {
-    get next () {
-        return 'clydesdale';
-    }
-};
+function Stats(opts) {
+    opts = opts || {};
+    return {
+        size: opts.size || 1,
+        temper: opts.temper || 1,
+        smarts: opts.smarts || 1,
+        clone: function () {
+            return Stats(this);
+        }
+    };
+}
+
+module.exports = Stats;
 
 },{}],53:[function(require,module,exports){
-var Horse = require('./sprites/horse.js');
-
 module.exports = {
-    money: 100,
-    horse: Horse(),
-    jockey: {
-        coreStats: {    
-            
+    next: {
+        get horse () {
+            return 'clydesdale';
+        },
+        get jockey () {
+            return 'jimmy';
         }
     }
 };
 
-},{"./sprites/horse.js":67}],54:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
+var Horse = require('./sprites/horse.js'),
+    Jockey = require('./sprites/jockey.js');
+
+module.exports = {
+    money: 100,
+    horse: Horse(),
+    jockey: Jockey()
+};
+
+},{"./sprites/horse.js":68,"./sprites/jockey.js":69}],55:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
     player = require('../player.js'),
@@ -2269,7 +2300,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":48,"../player.js":53,"../util.js":70,"dragonjs":26}],55:[function(require,module,exports){
+},{"../collisions/racetrack.js":48,"../player.js":54,"../util.js":71,"dragonjs":26}],56:[function(require,module,exports){
 var Track = require('../track.js'),
     Horse = require('../../sprites/horse.js'),
     player = require('../../player.js');
@@ -2280,7 +2311,7 @@ module.exports = Track({
     ]
 });
 
-},{"../../player.js":53,"../../sprites/horse.js":67,"../track.js":54}],56:[function(require,module,exports){
+},{"../../player.js":54,"../../sprites/horse.js":68,"../track.js":55}],57:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Screen = Dragon.Screen,
     player = require('../player.js'),
@@ -2316,7 +2347,7 @@ module.exports = Screen({
 }).extend({
 });
 
-},{"../player.js":53,"../sprites/bkg-training.js":57,"../sprites/buttons/open-shop.js":58,"../sprites/buttons/train-jsmarts.js":59,"../sprites/buttons/train-jump.js":60,"../sprites/buttons/train-size.js":61,"../sprites/buttons/train-smarts.js":62,"../sprites/buttons/train-speed.js":63,"../sprites/buttons/train-strength.js":64,"../sprites/buttons/train-temper.js":65,"../sprites/stats.js":68,"dragonjs":26}],57:[function(require,module,exports){
+},{"../player.js":54,"../sprites/bkg-training.js":58,"../sprites/buttons/open-shop.js":59,"../sprites/buttons/train-jsmarts.js":60,"../sprites/buttons/train-jump.js":61,"../sprites/buttons/train-size.js":62,"../sprites/buttons/train-smarts.js":63,"../sprites/buttons/train-speed.js":64,"../sprites/buttons/train-strength.js":65,"../sprites/buttons/train-temper.js":66,"../sprites/stats.js":70,"dragonjs":26}],58:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     Sprite = Dragon.Sprite,
@@ -2338,7 +2369,7 @@ module.exports = Sprite({
     size: Dragon.Game.canvas
 });
 
-},{"dragonjs":26}],58:[function(require,module,exports){
+},{"dragonjs":26}],59:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     canvas = Dragon.Game.canvas,
     Point = Dragon.Point,
@@ -2391,12 +2422,13 @@ module.exports = Sprite({
     }
 });
 
-},{"dragonjs":26}],59:[function(require,module,exports){
+},{"dragonjs":26}],60:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+JBRN',
@@ -2404,18 +2436,21 @@ module.exports = Trainer({
     pos: Point(
         canvas.width / 2,
         canvas.height / 2 - canvas.height / 3
-    ),
-    effect: function (set) {
-        set.smarts += 1;
+    )
+}).extend({
+    click: function () {
+        player.jockey.coreStats.smarts += 1;
+        player.jockey.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],60:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],61:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+JMP',
@@ -2423,18 +2458,21 @@ module.exports = Trainer({
     pos: Point(
         9 * canvas.width / 100,
         canvas.height / 2 - canvas.height / 6
-    ),
-    effect: function (set) {
-        set.jump += 1;
+    )
+}).extend({
+    click: function () {
+        player.horse.coreStats.jump += 1;
+        player.horse.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],61:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],62:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+SZE',
@@ -2442,18 +2480,21 @@ module.exports = Trainer({
     pos: Point(
         canvas.width / 2,
         canvas.height / 2 + canvas.height / 3
-    ),
-    effect: function (set) {
-        set.smarts += 1;
+    )
+}).extend({
+    click: function () {
+        player.jockey.coreStats.size += 1;
+        player.jockey.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],62:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],63:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+BRN',
@@ -2461,18 +2502,21 @@ module.exports = Trainer({
     pos: Point(
         9 * canvas.width / 100,
         canvas.height / 2 + canvas.height / 6
-    ),
-    effect: function (set) {
-        set.smarts += 1;
+    )
+}).extend({
+    click: function () {
+        player.horse.coreStats.smarts += 1;
+        player.horse.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],63:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],64:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+SPD',
@@ -2480,18 +2524,21 @@ module.exports = Trainer({
     pos: Point(
         27 * canvas.width / 100,
         canvas.height / 2 - canvas.height / 3
-    ),
-    effect: function (set) {
-        set.speed += 1;
+    )
+}).extend({
+    click: function () {
+        player.horse.coreStats.speed += 1;
+        player.horse.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],64:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],65:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+STR',
@@ -2499,18 +2546,21 @@ module.exports = Trainer({
     pos: Point(
         27 * canvas.width / 100,
         canvas.height / 2 + canvas.height / 3
-    ),
-    effect: function (set) {
-        set.strength += 1;
+    )
+}).extend({
+    click: function () {
+        player.horse.coreStats.strength += 1;
+        player.horse.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],65:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],66:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Point = Dragon.Point,
     Dimension = Dragon.Dimension,
     canvas = Dragon.Game.canvas,
-    Trainer = require('./train.js');
+    Trainer = require('./train.js'),
+    player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+TPR',
@@ -2518,13 +2568,15 @@ module.exports = Trainer({
     pos: Point(
         31 * canvas.width / 50,
         canvas.height / 2
-    ),
-    effect: function (set) {
-        set.smarts += 1;
+    )
+}).extend({
+    click: function () {
+        player.jockey.coreStats.temper += 1;
+        player.jockey.refreshStats();
     }
 });
 
-},{"./train.js":66,"dragonjs":26}],66:[function(require,module,exports){
+},{"../../player.js":54,"./train.js":67,"dragonjs":26}],67:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Circle = Dragon.Circle,
     Sprite = Dragon.Sprite,
@@ -2532,7 +2584,7 @@ var Dragon = require('dragonjs'),
     Dimension = Dragon.Dimension,
     AnimationStrip = Dragon.AnimationStrip,
     SpriteSheet = Dragon.SpriteSheet,
-    player = require('../../player.js');
+    BaseClass = require('baseclassjs');
 
 /**
  * @param {String} opts.title
@@ -2573,16 +2625,11 @@ module.exports = function (opts) {
         }
     }).extend({
         title: opts.title,
-        click: function () {
-            opts.effect(
-                player.horse.coreStats
-            );
-            player.horse.refreshStats();
-        }
+        click: BaseClass.Abstract
     });
 };
 
-},{"../../player.js":53,"dragonjs":26}],67:[function(require,module,exports){
+},{"baseclassjs":2,"dragonjs":26}],68:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     Game = Dragon.Game,
     Point = Dragon.Point,
@@ -2593,10 +2640,11 @@ var Dragon = require('dragonjs'),
     SpriteSheet = Dragon.SpriteSheet,
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
-    Stats = require('../stats.js');
+    Stats = require('../horse-stats.js');
 
 module.exports = function (opts) {
     opts = opts || {};
+
     return Sprite({
         name: 'horse',
         collisionSets: [
@@ -2622,13 +2670,12 @@ module.exports = function (opts) {
             }
         }
     }).extend({
-        showname: opts.showname || Namer.next,
+        showname: opts.showname || Namer.next.horse,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {
             var set = this.coreStats.clone();
             mod = mod || function () {};
-
             mod(set);
             this.sickness(set);
             this.adjStats = set;
@@ -2641,7 +2688,46 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":48,"../illness.js":50,"../namer.js":52,"../stats.js":69,"dragonjs":26}],68:[function(require,module,exports){
+},{"../collisions/racetrack.js":48,"../horse-stats.js":50,"../illness.js":51,"../namer.js":53,"dragonjs":26}],69:[function(require,module,exports){
+var Dragon = require('dragonjs'),
+    Point = Dragon.Point,
+    Dimension = Dragon.Dimension,
+    Sprite = Dragon.Sprite,
+    AnimationStrip = Dragon.AnimationStrip,
+    SpriteSheet = Dragon.SpriteSheet,
+    Namer = require('../namer.js'),
+    Stats = require('../jockey-stats.js');
+
+module.exports = function (opts) {
+    opts = opts || {};
+
+    return Sprite({
+        name: 'jockey',
+        strips: {
+            'jockey': AnimationStrip({
+                sheet: SpriteSheet({
+                    src: 'jockey.png'
+                }),
+                size: Dimension(64, 64),
+            })
+        },
+        startingStrip: 'jockey',
+        pos: Point(100, 100),
+        depth: 2
+    }).extend({
+        showname: opts.showname || Namer.next.jockey,
+        coreStats: opts.stats || Stats(),
+        adjStats: Stats(),
+        refreshStats: function (mod) {
+            var set = this.coreStats.clone();
+            mod = mod || function () {};
+            mod(set);
+            this.adjStats = set;
+        }
+    });
+};
+
+},{"../jockey-stats.js":52,"../namer.js":53,"dragonjs":26}],70:[function(require,module,exports){
 var Dragon = require('dragonjs'),
     canvas = Dragon.Game.canvas,
     Point = Dragon.Point,
@@ -2668,7 +2754,7 @@ var Dragon = require('dragonjs'),
             )
         },
         jockey: {
-            size: Point(
+            smarts: Point(
                 canvas.width * 0.435,
                 canvas.height / 2 - canvas.height * 0.14
             ),
@@ -2676,7 +2762,7 @@ var Dragon = require('dragonjs'),
                 canvas.width * 0.505,
                 canvas.height / 2
             ),
-            jsmarts: Point(
+            size: Point(
                 canvas.width * 0.435,
                 canvas.height / 2 + canvas.height * 0.14
             )
@@ -2694,7 +2780,7 @@ module.exports = Sprite({
     update: BaseClass.Stub,
     draw: function (ctx) {
         var name, mark;
-        ctx.font = '14px Impact, Charcoal, sans-serif';
+        ctx.font = '16px Wonder';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         ctx.fillStyle = 'black';
@@ -2709,7 +2795,7 @@ module.exports = Sprite({
         for (name in marks.jockey) {
             mark = marks.jockey[name];
             ctx.fillText(
-                player.horse.coreStats.smarts,
+                player.jockey.coreStats[name],
                 mark.x,
                 mark.y
             );
@@ -2717,24 +2803,7 @@ module.exports = Sprite({
     }
 });
 
-},{"../player.js":53,"baseclassjs":2,"dragonjs":26}],69:[function(require,module,exports){
-function Stats(opts) {
-    opts = opts || {};
-    return {
-        speed: opts.speed || 1,
-        jump: opts.jump || 1,
-        strength: opts.strength || 1,
-        smarts: opts.smarts || 1,
-        health: opts.health || 1,
-        clone: function () {
-            return Stats(this);
-        }
-    };
-}
-
-module.exports = Stats;
-
-},{}],70:[function(require,module,exports){
+},{"../player.js":54,"baseclassjs":2,"dragonjs":26}],71:[function(require,module,exports){
 module.exports = {
     shuffle: function (arr) {
         var i, j, x;
@@ -2765,4 +2834,4 @@ module.exports = {
     }
 };
 
-},{}]},{},[49,50,51,52,53,69,70]);
+},{}]},{},[49,50,51,52,53,54,71]);

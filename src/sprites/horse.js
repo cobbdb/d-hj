@@ -8,10 +8,11 @@ var Dragon = require('dragonjs'),
     SpriteSheet = Dragon.SpriteSheet,
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
-    Stats = require('../stats.js');
+    Stats = require('../horse-stats.js');
 
 module.exports = function (opts) {
     opts = opts || {};
+
     return Sprite({
         name: 'horse',
         collisionSets: [
@@ -37,13 +38,12 @@ module.exports = function (opts) {
             }
         }
     }).extend({
-        showname: opts.showname || Namer.next,
+        showname: opts.showname || Namer.next.horse,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {
             var set = this.coreStats.clone();
             mod = mod || function () {};
-
             mod(set);
             this.sickness(set);
             this.adjStats = set;
