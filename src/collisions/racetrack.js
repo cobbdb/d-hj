@@ -1,8 +1,6 @@
-var Dragon = require('dragonjs'),
-    Dimension = Dragon.Dimension,
-    CollisionHandler = Dragon.CollisionHandler;
+var $ = require('dragonjs');
 
-module.exports = CollisionHandler({
+module.exports = $.CollisionHandler({
     name: 'racetrack',
-    gridSize: Dimension(5, 5)
+    gridSize: $.Dimension(5, 5)
 });

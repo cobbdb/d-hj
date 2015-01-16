@@ -1,5 +1,4 @@
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen,
+var $ = require('dragonjs'),
     player = require('../player.js'),
     Util = require('../util.js');
 
@@ -16,7 +15,7 @@ module.exports = function (opts) {
         horses[i].pos.y = lanes[i] * 45 + 40;
     }
 
-    return Screen({
+    return $.Screen({
         name: 'racetrack',
         collisionSets: [
             require('../collisions/racetrack.js')

@@ -1,6 +1,4 @@
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen;
+var $ = require('dragonjs');
 
-module.exports = Screen({
-    
+module.exports = $.Screen({
 });

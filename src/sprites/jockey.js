@@ -1,27 +1,22 @@
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
+var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Stats = require('../jockey-stats.js');
 
 module.exports = function (opts) {
     opts = opts || {};
 
-    return Sprite({
+    return $.Sprite({
         name: 'jockey',
         strips: {
-            'jockey': AnimationStrip({
-                sheet: SpriteSheet({
+            'jockey': $.AnimationStrip({
+                sheet: $.SpriteSheet({
                     src: 'jockey.png'
                 }),
-                size: Dimension(64, 64),
+                size: $.Dimension(64, 64),
             })
         },
         startingStrip: 'jockey',
-        pos: Point(100, 100),
+        pos: $.Point(100, 100),
         depth: 2
     }).extend({
         showname: opts.showname || Namer.next.jockey,

@@ -1,45 +1,42 @@
-var Dragon = require('dragonjs'),
-    canvas = Dragon.Game.canvas,
-    Point = Dragon.Point,
-    Sprite = Dragon.Sprite,
+var $ = require('dragonjs'),
     BaseClass = require('baseclassjs'),
     player = require('../player.js'),
     marks = {
         horse: {
-            speed: Point(
-                canvas.width * 0.29,
-                canvas.height / 2 - canvas.height * 0.15
+            speed: $.Point(
+                $.canvas.width * 0.29,
+                $.canvas.height / 2 - $.canvas.height * 0.15
             ),
-            jump: Point(
-                canvas.width * 0.18,
-                canvas.height / 2 - canvas.height * 0.06
+            jump: $.Point(
+                $.canvas.width * 0.18,
+                $.canvas.height / 2 - $.canvas.height * 0.06
             ),
-            smarts: Point(
-                canvas.width * 0.18,
-                canvas.height / 2 + canvas.height * 0.06
+            smarts: $.Point(
+                $.canvas.width * 0.18,
+                $.canvas.height / 2 + $.canvas.height * 0.06
             ),
-            strength: Point(
-                canvas.width * 0.29,
-                canvas.height / 2 + canvas.height * 0.15
+            strength: $.Point(
+                $.canvas.width * 0.29,
+                $.canvas.height / 2 + $.canvas.height * 0.15
             )
         },
         jockey: {
-            smarts: Point(
-                canvas.width * 0.435,
-                canvas.height / 2 - canvas.height * 0.14
+            smarts: $.Point(
+                $.canvas.width * 0.435,
+                $.canvas.height / 2 - $.canvas.height * 0.14
             ),
-            temper: Point(
-                canvas.width * 0.505,
-                canvas.height / 2
+            temper: $.Point(
+                $.canvas.width * 0.505,
+                $.canvas.height / 2
             ),
-            size: Point(
-                canvas.width * 0.435,
-                canvas.height / 2 + canvas.height * 0.14
+            size: $.Point(
+                $.canvas.width * 0.435,
+                $.canvas.height / 2 + $.canvas.height * 0.14
             )
         }
     };
 
-module.exports = Sprite({
+module.exports = $.Sprite({
     name: 'stats',
     depth: 2
 }).extend({

@@ -1,5 +1,4 @@
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen,
+var $ = require('dragonjs'),
     player = require('../player.js'),
     buttons = {
         horse: [
@@ -18,7 +17,7 @@ var Dragon = require('dragonjs'),
         concat(buttons.horse).
         concat(buttons.jockey);
 
-module.exports = Screen({
+module.exports = $.Screen({
     name: 'training',
     spriteSet: [
         require('../sprites/bkg-training.js'),
@@ -29,6 +28,6 @@ module.exports = Screen({
         ready: function () {
             this.start();
         }
-    }
-}).extend({
+    },
+    depth: 0
 });

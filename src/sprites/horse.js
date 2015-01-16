@@ -1,11 +1,4 @@
-var Dragon = require('dragonjs'),
-    Game = Dragon.Game,
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    Rect = Dragon.Rectangle,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
+var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
     Stats = require('../horse-stats.js');
@@ -13,22 +6,22 @@ var Dragon = require('dragonjs'),
 module.exports = function (opts) {
     opts = opts || {};
 
-    return Sprite({
+    return $.Sprite({
         name: 'horse',
         collisionSets: [
             require('../collisions/racetrack.js'),
-            Dragon.collisions
+            $.collisions
         ],
-        mask: Rect(
-            Point(),
-            Dimension(50, 37)
+        mask: $.Rect(
+            $.Point(),
+            $.Dimension(50, 37)
         ),
         strips: {
-            'horse': AnimationStrip({
-                sheet: SpriteSheet({
+            'horse': $.AnimationStrip({
+                sheet: $.SpriteSheet({
                     src: 'horse.png'
                 }),
-                size: Dimension(50, 37),
+                size: $.Dimension(50, 37),
             })
         },
         startingStrip: 'horse',

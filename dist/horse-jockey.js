@@ -975,12 +975,13 @@ module.exports = {
     collisions: require('./dragon-collisions.js'),
 
     Game: require('./game.js'),
+    canvas: require('./canvas.js'),
     Screen: require('./screen.js'),
     Collidable: require('./collidable.js'),
     Sprite: require('./sprite.js')
 };
 
-},{"./animation-strip.js":20,"./audio.js":21,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./dimension.js":29,"./dragon-collisions.js":30,"./event-handler.js":31,"./font.js":32,"./frame-counter.js":33,"./game.js":34,"./id-counter.js":35,"./keyboard.js":37,"./mouse.js":39,"./point.js":40,"./polar.js":41,"./rectangle.js":42,"./screen.js":43,"./shape.js":44,"./sprite.js":45,"./spritesheet.js":46,"./vector.js":47}],27:[function(require,module,exports){
+},{"./animation-strip.js":20,"./audio.js":21,"./canvas.js":22,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./dimension.js":29,"./dragon-collisions.js":30,"./event-handler.js":31,"./font.js":32,"./frame-counter.js":33,"./game.js":34,"./id-counter.js":35,"./keyboard.js":37,"./mouse.js":39,"./point.js":40,"./polar.js":41,"./rectangle.js":42,"./screen.js":43,"./shape.js":44,"./sprite.js":45,"./spritesheet.js":46,"./vector.js":47}],27:[function(require,module,exports){
 module.exports = {
     show: {
         fps: function () {}
@@ -1082,10 +1083,6 @@ module.exports = function (opts) {
 };
 
 },{"baseclassjs":7}],32:[function(require,module,exports){
-/**
- * Cocoon only supports .tff fonts! oops
- */
-
 var $ = require('curb'),
     tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(assets/fonts/%s);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}",
     cache = {};
@@ -1099,7 +1096,6 @@ module.exports = {
      */
     load: function (opts) {
         var style;
-
         if (!cache[opts.name]) {
             style = document.createElement('style');
             style.innerHTML = $(tpl,
@@ -1220,8 +1216,6 @@ Mouse.on.up(function () {
 });
 
 module.exports = {
-    log: log,
-    canvas: canvas,
     debug: require('./debug-console.js'),
     screen: function (name) {
         return screenMap[name];
@@ -2162,36 +2156,32 @@ function Vector(x, y) {
 module.exports = Vector;
 
 },{"./polar.js":41}],48:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Dimension = Dragon.Dimension,
-    CollisionHandler = Dragon.CollisionHandler;
+var $ = require('dragonjs');
 
-module.exports = CollisionHandler({
+module.exports = $.CollisionHandler({
     name: 'racetrack',
-    gridSize: Dimension(5, 5)
+    gridSize: $.Dimension(5, 5)
 });
 
 },{"dragonjs":26}],49:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Game = Dragon.Game,
-    Font = Dragon.Font,
+var $ = require('dragonjs'),
     riverton = require('./screens/tracks/riverton.js');
 
-Font.load({
+$.Font.load({
     name: 'Wonder',
     src: '8-bit-wonder.ttf'
 });
-Game.addScreens([
+$.Game.addScreens([
     require('./screens/training.js'),
     riverton
 ]);
-Game.currentTrack = riverton;
-Game.loadTrack = function (track) {
+$.Game.currentTrack = riverton;
+$.Game.loadTrack = function (track) {
     this.currentTrack.stop();
     this.currentTrack = track;
     this.currentTrack.start();
 };
-Game.run(false);
+$.Game.run(false);
 
 },{"./screens/tracks/riverton.js":56,"./screens/training.js":57,"dragonjs":26}],50:[function(require,module,exports){
 function Stats(opts) {
@@ -2264,8 +2254,7 @@ module.exports = {
 };
 
 },{"./sprites/horse.js":68,"./sprites/jockey.js":69}],55:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen,
+var $ = require('dragonjs'),
     player = require('../player.js'),
     Util = require('../util.js');
 
@@ -2282,7 +2271,7 @@ module.exports = function (opts) {
         horses[i].pos.y = lanes[i] * 45 + 40;
     }
 
-    return Screen({
+    return $.Screen({
         name: 'racetrack',
         collisionSets: [
             require('../collisions/racetrack.js')
@@ -2312,8 +2301,7 @@ module.exports = Track({
 });
 
 },{"../../player.js":54,"../../sprites/horse.js":68,"../track.js":55}],57:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Screen = Dragon.Screen,
+var $ = require('dragonjs'),
     player = require('../player.js'),
     buttons = {
         horse: [
@@ -2332,7 +2320,7 @@ var Dragon = require('dragonjs'),
         concat(buttons.horse).
         concat(buttons.jockey);
 
-module.exports = Screen({
+module.exports = $.Screen({
     name: 'training',
     spriteSet: [
         require('../sprites/bkg-training.js'),
@@ -2344,98 +2332,79 @@ module.exports = Screen({
             this.start();
         }
     }
-}).extend({
 });
 
 },{"../player.js":54,"../sprites/bkg-training.js":58,"../sprites/buttons/open-shop.js":59,"../sprites/buttons/train-jsmarts.js":60,"../sprites/buttons/train-jump.js":61,"../sprites/buttons/train-size.js":62,"../sprites/buttons/train-smarts.js":63,"../sprites/buttons/train-speed.js":64,"../sprites/buttons/train-strength.js":65,"../sprites/buttons/train-temper.js":66,"../sprites/stats.js":70,"dragonjs":26}],58:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Dimension = Dragon.Dimension,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet;
+var $ = require('dragonjs');
 
-module.exports = Sprite({
+module.exports = $.Sprite({
     name: 'bkg-training',
     strips: {
-        'bkg-training': AnimationStrip({
-            sheet: SpriteSheet({
+        'bkg-training': $.AnimationStrip({
+            sheet: $.SpriteSheet({
                 src: 'bkg-training.png'
             }),
-            size: Dimension(834, 520)
+            size: $.Dimension(834, 520)
         })
     },
     startingStrip: 'bkg-training',
     depth: 20,
-    size: Dragon.Game.canvas
+    size: $.canvas
 });
 
 },{"dragonjs":26}],59:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    canvas = Dragon.Game.canvas,
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    Rect = Dragon.Rectangle,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
-    size = Dimension(
-        canvas.width * 0.269,
+var $ = require('dragonjs'),
+    size = $.Dimension(
+        $.canvas.width * 0.269,
         64
     );
 
-module.exports = Sprite({
+module.exports = $.Sprite({
     name: 'shop-button',
     collisionSets: [
-        Dragon.collisions
+        $.collisions
     ],
-    mask: Rect(
-        Point(
-            canvas.width - size.width,
-            canvas.height - size.height
+    mask: $.Rect(
+        $.Point(
+            $.canvas.width - size.width,
+            $.canvas.height - size.height
         ),
         size
     ),
     freemask: true,
     strips: {
-        'up': AnimationStrip({
-            sheet: SpriteSheet({
+        'up': $.AnimationStrip({
+            sheet: $.SpriteSheet({
                 src: 'buttons/shop.png'
             }),
-            size: Dimension(128, 64)
+            size: $.Dimension(128, 64)
         })
     },
     startingStrip: 'up',
-    pos: Point(
-        canvas.width - size.width,
-        canvas.height - size.height + 5
+    pos: $.Point(
+        $.canvas.width - size.width,
+        $.canvas.height - size.height + 5
     ),
     size: size,
     on: {
         'colliding/screentap': function () {
-            this.click();
+            $.Game.screen('training').pause();
+            $.Game.screen('shop').start();
         }
-    }
-}).extend({
-    title: 'SHOP',
-    click: function () {
-        console.log('shopping is fun.');
     }
 });
 
 },{"dragonjs":26}],60:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+JBRN',
     src: 'buttons/smarts.png',
-    pos: Point(
-        canvas.width / 2,
-        canvas.height / 2 - canvas.height / 3
+    pos: $.Point(
+        $.canvas.width / 2,
+        $.canvas.height / 2 - $.canvas.height / 3
     )
 }).extend({
     click: function () {
@@ -2445,19 +2414,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],61:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+JMP',
     src: 'buttons/jump.png',
-    pos: Point(
-        9 * canvas.width / 100,
-        canvas.height / 2 - canvas.height / 6
+    pos: $.Point(
+        9 * $.canvas.width / 100,
+        $.canvas.height / 2 - $.canvas.height / 6
     )
 }).extend({
     click: function () {
@@ -2467,19 +2433,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],62:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+SZE',
     src: 'buttons/size.png',
-    pos: Point(
-        canvas.width / 2,
-        canvas.height / 2 + canvas.height / 3
+    pos: $.Point(
+        $.canvas.width / 2,
+        $.canvas.height / 2 + $.canvas.height / 3
     )
 }).extend({
     click: function () {
@@ -2489,19 +2452,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],63:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+BRN',
     src: 'buttons/smarts.png',
-    pos: Point(
-        9 * canvas.width / 100,
-        canvas.height / 2 + canvas.height / 6
+    pos: $.Point(
+        9 * $.canvas.width / 100,
+        $.canvas.height / 2 + $.canvas.height / 6
     )
 }).extend({
     click: function () {
@@ -2511,19 +2471,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],64:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+SPD',
     src: 'buttons/speed.png',
-    pos: Point(
-        27 * canvas.width / 100,
-        canvas.height / 2 - canvas.height / 3
+    pos: $.Point(
+        27 * $.canvas.width / 100,
+        $.canvas.height / 2 - $.canvas.height / 3
     )
 }).extend({
     click: function () {
@@ -2533,19 +2490,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],65:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+STR',
     src: 'buttons/strength.png',
-    pos: Point(
-        27 * canvas.width / 100,
-        canvas.height / 2 + canvas.height / 3
+    pos: $.Point(
+        27 * $.canvas.width / 100,
+        $.canvas.height / 2 + $.canvas.height / 3
     )
 }).extend({
     click: function () {
@@ -2555,19 +2509,16 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],66:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    canvas = Dragon.Game.canvas,
+var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
 
 module.exports = Trainer({
     title: '+TPR',
     src: 'buttons/temper.png',
-    pos: Point(
-        31 * canvas.width / 50,
-        canvas.height / 2
+    pos: $.Point(
+        31 * $.canvas.width / 50,
+        $.canvas.height / 2
     )
 }).extend({
     click: function () {
@@ -2577,13 +2528,7 @@ module.exports = Trainer({
 });
 
 },{"../../player.js":54,"./train.js":67,"dragonjs":26}],67:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Circle = Dragon.Circle,
-    Sprite = Dragon.Sprite,
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
+var $ = require('dragonjs'),
     BaseClass = require('baseclassjs');
 
 /**
@@ -2594,27 +2539,27 @@ var Dragon = require('dragonjs'),
  * @param {String} opts.src
  */
 module.exports = function (opts) {
-    return Sprite({
+    return $.Sprite({
         name: opts.name || opts.title,
         collisionSets: [
-            Dragon.collisions
+            $.collisions
         ],
-        mask: Circle(
+        mask: $.Circle(
             opts.pos,
             40
         ),
         freemask: true,
         strips: {
-            'up': AnimationStrip({
-                sheet: SpriteSheet({
+            'up': $.AnimationStrip({
+                sheet: $.SpriteSheet({
                     src: opts.src
                 }),
-                size: Dimension(256, 64)
+                size: $.Dimension(256, 64)
             })
         },
         startingStrip: 'up',
-        size: Dimension(128, 32),
-        pos: Point(
+        size: $.Dimension(128, 32),
+        pos: $.Point(
             opts.pos.x - 64,
             opts.pos.y - 16
         ),
@@ -2630,14 +2575,7 @@ module.exports = function (opts) {
 };
 
 },{"baseclassjs":2,"dragonjs":26}],68:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Game = Dragon.Game,
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    Rect = Dragon.Rectangle,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
+var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
     Stats = require('../horse-stats.js');
@@ -2645,22 +2583,22 @@ var Dragon = require('dragonjs'),
 module.exports = function (opts) {
     opts = opts || {};
 
-    return Sprite({
+    return $.Sprite({
         name: 'horse',
         collisionSets: [
             require('../collisions/racetrack.js'),
-            Dragon.collisions
+            $.collisions
         ],
-        mask: Rect(
-            Point(),
-            Dimension(50, 37)
+        mask: $.Rect(
+            $.Point(),
+            $.Dimension(50, 37)
         ),
         strips: {
-            'horse': AnimationStrip({
-                sheet: SpriteSheet({
+            'horse': $.AnimationStrip({
+                sheet: $.SpriteSheet({
                     src: 'horse.png'
                 }),
-                size: Dimension(50, 37),
+                size: $.Dimension(50, 37),
             })
         },
         startingStrip: 'horse',
@@ -2689,30 +2627,25 @@ module.exports = function (opts) {
 };
 
 },{"../collisions/racetrack.js":48,"../horse-stats.js":50,"../illness.js":51,"../namer.js":53,"dragonjs":26}],69:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    Point = Dragon.Point,
-    Dimension = Dragon.Dimension,
-    Sprite = Dragon.Sprite,
-    AnimationStrip = Dragon.AnimationStrip,
-    SpriteSheet = Dragon.SpriteSheet,
+var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Stats = require('../jockey-stats.js');
 
 module.exports = function (opts) {
     opts = opts || {};
 
-    return Sprite({
+    return $.Sprite({
         name: 'jockey',
         strips: {
-            'jockey': AnimationStrip({
-                sheet: SpriteSheet({
+            'jockey': $.AnimationStrip({
+                sheet: $.SpriteSheet({
                     src: 'jockey.png'
                 }),
-                size: Dimension(64, 64),
+                size: $.Dimension(64, 64),
             })
         },
         startingStrip: 'jockey',
-        pos: Point(100, 100),
+        pos: $.Point(100, 100),
         depth: 2
     }).extend({
         showname: opts.showname || Namer.next.jockey,
@@ -2728,48 +2661,45 @@ module.exports = function (opts) {
 };
 
 },{"../jockey-stats.js":52,"../namer.js":53,"dragonjs":26}],70:[function(require,module,exports){
-var Dragon = require('dragonjs'),
-    canvas = Dragon.Game.canvas,
-    Point = Dragon.Point,
-    Sprite = Dragon.Sprite,
+var $ = require('dragonjs'),
     BaseClass = require('baseclassjs'),
     player = require('../player.js'),
     marks = {
         horse: {
-            speed: Point(
-                canvas.width * 0.29,
-                canvas.height / 2 - canvas.height * 0.15
+            speed: $.Point(
+                $.canvas.width * 0.29,
+                $.canvas.height / 2 - $.canvas.height * 0.15
             ),
-            jump: Point(
-                canvas.width * 0.18,
-                canvas.height / 2 - canvas.height * 0.06
+            jump: $.Point(
+                $.canvas.width * 0.18,
+                $.canvas.height / 2 - $.canvas.height * 0.06
             ),
-            smarts: Point(
-                canvas.width * 0.18,
-                canvas.height / 2 + canvas.height * 0.06
+            smarts: $.Point(
+                $.canvas.width * 0.18,
+                $.canvas.height / 2 + $.canvas.height * 0.06
             ),
-            strength: Point(
-                canvas.width * 0.29,
-                canvas.height / 2 + canvas.height * 0.15
+            strength: $.Point(
+                $.canvas.width * 0.29,
+                $.canvas.height / 2 + $.canvas.height * 0.15
             )
         },
         jockey: {
-            smarts: Point(
-                canvas.width * 0.435,
-                canvas.height / 2 - canvas.height * 0.14
+            smarts: $.Point(
+                $.canvas.width * 0.435,
+                $.canvas.height / 2 - $.canvas.height * 0.14
             ),
-            temper: Point(
-                canvas.width * 0.505,
-                canvas.height / 2
+            temper: $.Point(
+                $.canvas.width * 0.505,
+                $.canvas.height / 2
             ),
-            size: Point(
-                canvas.width * 0.435,
-                canvas.height / 2 + canvas.height * 0.14
+            size: $.Point(
+                $.canvas.width * 0.435,
+                $.canvas.height / 2 + $.canvas.height * 0.14
             )
         }
     };
 
-module.exports = Sprite({
+module.exports = $.Sprite({
     name: 'stats',
     depth: 2
 }).extend({
