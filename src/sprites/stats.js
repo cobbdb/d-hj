@@ -36,15 +36,10 @@ var $ = require('dragonjs'),
         }
     };
 
-module.exports = $.Sprite({
+module.exports = $.ClearSprite({
     name: 'stats',
     depth: 2
 }).extend({
-    load: function (cb) {
-        cb();
-    },
-    start: BaseClass.Stub,
-    update: BaseClass.Stub,
     draw: function (ctx) {
         var name, mark;
         ctx.font = '16px Wonder';

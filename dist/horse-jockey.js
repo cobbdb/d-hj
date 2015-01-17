@@ -2181,7 +2181,7 @@ $.Game.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };
-$.Game.run(false);
+$.Game.run(true);
 
 },{"./screens/tracks/riverton.js":56,"./screens/training.js":57,"dragonjs":26}],50:[function(require,module,exports){
 function Stats(opts) {
@@ -2331,7 +2331,8 @@ module.exports = $.Screen({
         ready: function () {
             this.start();
         }
-    }
+    },
+    depth: 0
 });
 
 },{"../player.js":54,"../sprites/bkg-training.js":58,"../sprites/buttons/open-shop.js":59,"../sprites/buttons/train-jsmarts.js":60,"../sprites/buttons/train-jump.js":61,"../sprites/buttons/train-size.js":62,"../sprites/buttons/train-smarts.js":63,"../sprites/buttons/train-speed.js":64,"../sprites/buttons/train-strength.js":65,"../sprites/buttons/train-temper.js":66,"../sprites/stats.js":70,"dragonjs":26}],58:[function(require,module,exports){
@@ -2364,7 +2365,7 @@ module.exports = $.Sprite({
     collisionSets: [
         $.collisions
     ],
-    mask: $.Rect(
+    mask: $.Rectangle(
         $.Point(
             $.canvas.width - size.width,
             $.canvas.height - size.height
@@ -2589,7 +2590,7 @@ module.exports = function (opts) {
             require('../collisions/racetrack.js'),
             $.collisions
         ],
-        mask: $.Rect(
+        mask: $.Rectangle(
             $.Point(),
             $.Dimension(50, 37)
         ),

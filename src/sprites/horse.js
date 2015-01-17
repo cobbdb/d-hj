@@ -12,7 +12,7 @@ module.exports = function (opts) {
             require('../collisions/racetrack.js'),
             $.collisions
         ],
-        mask: $.Rect(
+        mask: $.Rectangle(
             $.Point(),
             $.Dimension(50, 37)
         ),

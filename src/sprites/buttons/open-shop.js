@@ -9,7 +9,7 @@ module.exports = $.Sprite({
     collisionSets: [
         $.collisions
     ],
-    mask: $.Rect(
+    mask: $.Rectangle(
         $.Point(
             $.canvas.width - size.width,
             $.canvas.height - size.height

@@ -5,7 +5,7 @@ module.exports = $.Sprite({
     collisionSets: [
         $.collisions
     ],
-    mask: $.Circ(
+    mask: $.Circle(
         $.Point(),
         10
     ),
