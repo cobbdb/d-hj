@@ -7,6 +7,7 @@ $.Font.load({
 });
 $.Game.addScreens([
     require('./screens/training.js'),
+    require('./screens/shop.js'),
     riverton
 ]);
 $.Game.currentTrack = riverton;

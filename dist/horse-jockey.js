@@ -89,234 +89,17 @@ module.exports=require(4)
 },{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\rebind.js":4}],10:[function(require,module,exports){
 module.exports=require(5)
 },{"F:\\wamp\\www\\horse-jockey\\node_modules\\baseclassjs\\src\\stub.js":5}],11:[function(require,module,exports){
-var ld = require('lodash.values');
 module.exports = function () {
-    var args = ld(arguments);
-    var str = args.shift();
-    args.forEach(function (pivot) {
-        str = str.replace(/%s/, pivot);
-    });
+    var i,
+        str = arguments[0],
+        len = arguments.length;
+    for (i = 1; i < len; i += 1) {
+        str = str.replace(/%s/, arguments[i]);
+    }
     return str;
 };
 
-},{"lodash.values":12}],12:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var keys = require('lodash.keys');
-
-/**
- * Creates an array composed of the own enumerable property values of `object`.
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns an array of property values.
- * @example
- *
- * _.values({ 'one': 1, 'two': 2, 'three': 3 });
- * // => [1, 2, 3] (property order is not guaranteed across environments)
- */
-function values(object) {
-  var index = -1,
-      props = keys(object),
-      length = props.length,
-      result = Array(length);
-
-  while (++index < length) {
-    result[index] = object[props[index]];
-  }
-  return result;
-}
-
-module.exports = values;
-
-},{"lodash.keys":13}],13:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var isNative = require('lodash._isnative'),
-    isObject = require('lodash.isobject'),
-    shimKeys = require('lodash._shimkeys');
-
-/* Native method shortcuts for methods with the same name as other `lodash` methods */
-var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
-
-/**
- * Creates an array composed of the own enumerable property names of an object.
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns an array of property names.
- * @example
- *
- * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
- * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
- */
-var keys = !nativeKeys ? shimKeys : function(object) {
-  if (!isObject(object)) {
-    return [];
-  }
-  return nativeKeys(object);
-};
-
-module.exports = keys;
-
-},{"lodash._isnative":14,"lodash._shimkeys":15,"lodash.isobject":17}],14:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used for native method references */
-var objectProto = Object.prototype;
-
-/** Used to resolve the internal [[Class]] of values */
-var toString = objectProto.toString;
-
-/** Used to detect if a method is native */
-var reNative = RegExp('^' +
-  String(toString)
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/toString| for [^\]]+/g, '.*?') + '$'
-);
-
-/**
- * Checks if `value` is a native function.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
- */
-function isNative(value) {
-  return typeof value == 'function' && reNative.test(value);
-}
-
-module.exports = isNative;
-
-},{}],15:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var objectTypes = require('lodash._objecttypes');
-
-/** Used for native method references */
-var objectProto = Object.prototype;
-
-/** Native method shortcuts */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * A fallback implementation of `Object.keys` which produces an array of the
- * given object's own enumerable property names.
- *
- * @private
- * @type Function
- * @param {Object} object The object to inspect.
- * @returns {Array} Returns an array of property names.
- */
-var shimKeys = function(object) {
-  var index, iterable = object, result = [];
-  if (!iterable) return result;
-  if (!(objectTypes[typeof object])) return result;
-    for (index in iterable) {
-      if (hasOwnProperty.call(iterable, index)) {
-        result.push(index);
-      }
-    }
-  return result
-};
-
-module.exports = shimKeys;
-
-},{"lodash._objecttypes":16}],16:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-
-/** Used to determine if values are of the language type Object */
-var objectTypes = {
-  'boolean': false,
-  'function': true,
-  'object': true,
-  'number': false,
-  'string': false,
-  'undefined': false
-};
-
-module.exports = objectTypes;
-
-},{}],17:[function(require,module,exports){
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="npm" -o ./npm/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var objectTypes = require('lodash._objecttypes');
-
-/**
- * Checks if `value` is the language type of Object.
- * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @category Objects
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(1);
- * // => false
- */
-function isObject(value) {
-  // check if the value is the ECMAScript language type of Object
-  // http://es5.github.io/#x8
-  // and avoid a V8 bug
-  // http://code.google.com/p/v8/issues/detail?id=2291
-  return !!(value && objectTypes[typeof value]);
-}
-
-module.exports = isObject;
-
-},{"lodash._objecttypes":18}],18:[function(require,module,exports){
-module.exports=require(16)
-},{"F:\\wamp\\www\\horse-jockey\\node_modules\\dragonjs\\node_modules\\curb\\node_modules\\lodash.values\\node_modules\\lodash.keys\\node_modules\\lodash._shimkeys\\node_modules\\lodash._objecttypes\\index.js":16}],19:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (global){
 /**
  * # Lumberjack
@@ -492,7 +275,7 @@ module.exports = function (enabled) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],20:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var Dimension = require('./dimension.js'),
     Point = require('./point.js'),
     log = require('./log.js');
@@ -616,7 +399,7 @@ module.exports = function (opts) {
     };
 };
 
-},{"./dimension.js":29,"./log.js":38,"./point.js":40}],21:[function(require,module,exports){
+},{"./dimension.js":23,"./log.js":32,"./point.js":34}],14:[function(require,module,exports){
 /**
  * @param {String} opts.src
  * @param {Boolean} [opts.loop] Defaults to false.
@@ -663,7 +446,7 @@ module.exports = function (opts) {
     return audio;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var mobile = require('./detect-mobile.js'),
     canvas = document.createElement('canvas');
 
@@ -687,7 +470,7 @@ canvas.ctx = canvas.getContext('2d');
 
 module.exports = canvas;
 
-},{"./detect-mobile.js":28}],23:[function(require,module,exports){
+},{"./detect-mobile.js":22}],16:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Vector = require('./vector.js'),
     Point = require('./point.js'),
@@ -763,7 +546,24 @@ module.exports = function (pos, rad) {
     });
 };
 
-},{"./dimension.js":29,"./point.js":40,"./shape.js":44,"./vector.js":47}],24:[function(require,module,exports){
+},{"./dimension.js":23,"./point.js":34,"./shape.js":38,"./vector.js":41}],17:[function(require,module,exports){
+var BaseClass = require('baseclassjs'),
+    Sprite = require('./sprite.js');
+
+module.exports = function (opts) {
+    return Sprite(opts).extend({
+        load: function (cb) {
+            cb();
+        },
+        start: BaseClass.Stub,
+        pause: BaseClass.Stub,
+        stop: BaseClass.Stub,
+        update: BaseClass.Stub,
+        draw: BaseClass.Stub
+    });
+};
+
+},{"./sprite.js":39,"baseclassjs":7}],18:[function(require,module,exports){
 var Counter = require('./id-counter.js'),
     EventHandler = require('./event-handler.js'),
     BaseClass = require('baseclassjs'),
@@ -840,7 +640,7 @@ module.exports = function (opts) {
     );
 };
 
-},{"./event-handler.js":31,"./id-counter.js":35,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],25:[function(require,module,exports){
+},{"./event-handler.js":25,"./id-counter.js":29,"./point.js":34,"./rectangle.js":36,"baseclassjs":7}],19:[function(require,module,exports){
 var Rectangle = require('./rectangle.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -949,7 +749,7 @@ module.exports = function (opts) {
     };
 };
 
-},{"./canvas.js":22,"./dimension.js":29,"./point.js":40,"./rectangle.js":42}],26:[function(require,module,exports){
+},{"./canvas.js":15,"./dimension.js":23,"./point.js":34,"./rectangle.js":36}],20:[function(require,module,exports){
 module.exports = {
     Shape: require('./shape.js'),
     Circle: require('./circle.js'),
@@ -978,23 +778,24 @@ module.exports = {
     canvas: require('./canvas.js'),
     Screen: require('./screen.js'),
     Collidable: require('./collidable.js'),
-    Sprite: require('./sprite.js')
+    Sprite: require('./sprite.js'),
+    ClearSprite: require('./clear-sprite.js')
 };
 
-},{"./animation-strip.js":20,"./audio.js":21,"./canvas.js":22,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./dimension.js":29,"./dragon-collisions.js":30,"./event-handler.js":31,"./font.js":32,"./frame-counter.js":33,"./game.js":34,"./id-counter.js":35,"./keyboard.js":37,"./mouse.js":39,"./point.js":40,"./polar.js":41,"./rectangle.js":42,"./screen.js":43,"./shape.js":44,"./sprite.js":45,"./spritesheet.js":46,"./vector.js":47}],27:[function(require,module,exports){
+},{"./animation-strip.js":13,"./audio.js":14,"./canvas.js":15,"./circle.js":16,"./clear-sprite.js":17,"./collidable.js":18,"./collision-handler.js":19,"./dimension.js":23,"./dragon-collisions.js":24,"./event-handler.js":25,"./font.js":26,"./frame-counter.js":27,"./game.js":28,"./id-counter.js":29,"./keyboard.js":31,"./mouse.js":33,"./point.js":34,"./polar.js":35,"./rectangle.js":36,"./screen.js":37,"./shape.js":38,"./sprite.js":39,"./spritesheet.js":40,"./vector.js":41}],21:[function(require,module,exports){
 module.exports = {
     show: {
         fps: function () {}
     }
 };
 
-},{}],28:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * @see https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
  */
 module.exports = 'ontouchstart' in window;
 
-},{}],29:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 function Dimension(w, h) {
     return {
         width: w || 0,
@@ -1019,7 +820,7 @@ function Dimension(w, h) {
 
 module.exports = Dimension;
 
-},{}],30:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
     Dimension = require('./dimension.js');
 
@@ -1028,7 +829,7 @@ module.exports = CollisionHandler({
     gridSize: Dimension(4, 4)
 });
 
-},{"./collision-handler.js":25,"./dimension.js":29}],31:[function(require,module,exports){
+},{"./collision-handler.js":19,"./dimension.js":23}],25:[function(require,module,exports){
 var BaseClass = require('baseclassjs');
 
 /**
@@ -1082,8 +883,8 @@ module.exports = function (opts) {
     });
 };
 
-},{"baseclassjs":7}],32:[function(require,module,exports){
-var $ = require('curb'),
+},{"baseclassjs":7}],26:[function(require,module,exports){
+var str = require('curb'),
     tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(assets/fonts/%s);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}",
     cache = {};
 
@@ -1098,7 +899,7 @@ module.exports = {
         var style;
         if (!cache[opts.name]) {
             style = document.createElement('style');
-            style.innerHTML = $(tpl,
+            style.innerHTML = str(tpl,
                 opts.name,
                 opts.style || 'normal',
                 opts.weight || '400',
@@ -1110,7 +911,7 @@ module.exports = {
     }
 };
 
-},{"curb":11}],33:[function(require,module,exports){
+},{"curb":11}],27:[function(require,module,exports){
 var timeSinceLastSecond = frameCountThisSecond = frameRate = 0,
     timeLastFrame = Date.now();
 
@@ -1139,7 +940,7 @@ module.exports = {
     }
 };
 
-},{}],34:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var CollisionHandler = require('./collision-handler.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -1208,11 +1009,6 @@ var CollisionHandler = require('./collision-handler.js'),
 Mouse.on.down(function () {
     masks.screentap.move(Mouse.offset);
     dragonCollisions.update(masks.screentap);
-});
-Mouse.on.up(function () {
-    masks.screentap.clearCollisions();
-    masks.screendrag.clearCollisions();
-    masks.screenhold.clearCollisions();
 });
 
 module.exports = {
@@ -1341,7 +1137,7 @@ module.exports = {
     }
 };
 
-},{"./canvas.js":22,"./circle.js":23,"./collidable.js":24,"./collision-handler.js":25,"./debug-console.js":27,"./dimension.js":29,"./dragon-collisions.js":30,"./frame-counter.js":33,"./id-counter.js":35,"./log.js":38,"./mouse.js":39,"./point.js":40,"./rectangle.js":42}],35:[function(require,module,exports){
+},{"./canvas.js":15,"./circle.js":16,"./collidable.js":18,"./collision-handler.js":19,"./debug-console.js":21,"./dimension.js":23,"./dragon-collisions.js":24,"./frame-counter.js":27,"./id-counter.js":29,"./log.js":32,"./mouse.js":33,"./point.js":34,"./rectangle.js":36}],29:[function(require,module,exports){
 var counter = 0;
 
 module.exports = {
@@ -1354,7 +1150,7 @@ module.exports = {
     }
 };
 
-},{}],36:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = function (src) {
     var img = new Image();
     img.ready = false;
@@ -1389,7 +1185,7 @@ module.exports = function (src) {
     return img;
 };
 
-},{}],37:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var nameMap = {
         alt: false,
         ctrl: false,
@@ -1458,12 +1254,12 @@ module.exports = {
     }
 };
 
-},{}],38:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var Lumberjack = require('lumberjackjs');
 
 module.exports = Lumberjack();
 
-},{"lumberjackjs":19}],39:[function(require,module,exports){
+},{"lumberjackjs":12}],33:[function(require,module,exports){
 (function (global){
 var Point = require('./point.js'),
     Vector = require('./vector.js'),
@@ -1572,7 +1368,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./canvas.js":22,"./point.js":40,"./vector.js":47}],40:[function(require,module,exports){
+},{"./canvas.js":15,"./point.js":34,"./vector.js":41}],34:[function(require,module,exports){
 function Point(x, y) {
     return {
         x: x || 0,
@@ -1591,7 +1387,7 @@ function Point(x, y) {
 
 module.exports = Point;
 
-},{}],41:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var Vector = require('./vector.js');
 
 function isEqual(my, other, tfactor, mfactor) {
@@ -1638,7 +1434,7 @@ function Polar(theta, mag) {
 
 module.exports = Polar;
 
-},{"./vector.js":47}],42:[function(require,module,exports){
+},{"./vector.js":41}],36:[function(require,module,exports){
 var Shape = require('./shape.js'),
     Point = require('./point.js'),
     Dimension = require('./dimension.js'),
@@ -1711,7 +1507,7 @@ module.exports = function (pos, size) {
     });
 };
 
-},{"./dimension.js":29,"./point.js":40,"./shape.js":44,"./vector.js":47}],43:[function(require,module,exports){
+},{"./dimension.js":23,"./point.js":34,"./shape.js":38,"./vector.js":41}],37:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     EventHandler = require('./event-handler.js'),
     Counter = require('./id-counter.js');
@@ -1908,7 +1704,7 @@ module.exports = function (opts) {
     );
 };
 
-},{"./event-handler.js":31,"./id-counter.js":35,"baseclassjs":7}],44:[function(require,module,exports){
+},{"./event-handler.js":25,"./id-counter.js":29,"baseclassjs":7}],38:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Point = require('./point.js');
 
@@ -1936,7 +1732,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./point.js":40,"baseclassjs":7}],45:[function(require,module,exports){
+},{"./point.js":34,"baseclassjs":7}],39:[function(require,module,exports){
 var BaseClass = require('baseclassjs'),
     Collidable = require('./collidable.js'),
     Point = require('./point.js'),
@@ -2082,7 +1878,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"./collidable.js":24,"./dimension.js":29,"./point.js":40,"./rectangle.js":42,"baseclassjs":7}],46:[function(require,module,exports){
+},{"./collidable.js":18,"./dimension.js":23,"./point.js":34,"./rectangle.js":36,"baseclassjs":7}],40:[function(require,module,exports){
 var createImage = require('./image.js'),
     cache = {};
 
@@ -2107,7 +1903,7 @@ module.exports = function (opts) {
     return img;
 };
 
-},{"./image.js":36}],47:[function(require,module,exports){
+},{"./image.js":30}],41:[function(require,module,exports){
 var Polar = require('./polar.js');
 
 /**
@@ -2155,7 +1951,7 @@ function Vector(x, y) {
 
 module.exports = Vector;
 
-},{"./polar.js":41}],48:[function(require,module,exports){
+},{"./polar.js":35}],42:[function(require,module,exports){
 var $ = require('dragonjs');
 
 module.exports = $.CollisionHandler({
@@ -2163,7 +1959,7 @@ module.exports = $.CollisionHandler({
     gridSize: $.Dimension(5, 5)
 });
 
-},{"dragonjs":26}],49:[function(require,module,exports){
+},{"dragonjs":20}],43:[function(require,module,exports){
 var $ = require('dragonjs'),
     riverton = require('./screens/tracks/riverton.js');
 
@@ -2173,6 +1969,7 @@ $.Font.load({
 });
 $.Game.addScreens([
     require('./screens/training.js'),
+    require('./screens/shop.js'),
     riverton
 ]);
 $.Game.currentTrack = riverton;
@@ -2183,7 +1980,7 @@ $.Game.loadTrack = function (track) {
 };
 $.Game.run(true);
 
-},{"./screens/tracks/riverton.js":56,"./screens/training.js":57,"dragonjs":26}],50:[function(require,module,exports){
+},{"./screens/shop.js":49,"./screens/tracks/riverton.js":51,"./screens/training.js":52,"dragonjs":20}],44:[function(require,module,exports){
 function Stats(opts) {
     opts = opts || {};
     return {
@@ -2200,7 +1997,7 @@ function Stats(opts) {
 
 module.exports = Stats;
 
-},{}],51:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 module.exports = {
     none: function () {},
     flu: function (set) {
@@ -2216,7 +2013,7 @@ module.exports = {
     swampFever: function () {}
 };
 
-},{}],52:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 function Stats(opts) {
     opts = opts || {};
     return {
@@ -2231,7 +2028,7 @@ function Stats(opts) {
 
 module.exports = Stats;
 
-},{}],53:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = {
     next: {
         get horse () {
@@ -2243,7 +2040,7 @@ module.exports = {
     }
 };
 
-},{}],54:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 var Horse = require('./sprites/horse.js'),
     Jockey = require('./sprites/jockey.js');
 
@@ -2253,7 +2050,18 @@ module.exports = {
     jockey: Jockey()
 };
 
-},{"./sprites/horse.js":68,"./sprites/jockey.js":69}],55:[function(require,module,exports){
+},{"./sprites/horse.js":64,"./sprites/jockey.js":65}],49:[function(require,module,exports){
+var $ = require('dragonjs');
+
+module.exports = $.Screen({
+    name: 'shop',
+    spriteSet: [
+        require('../sprites/close-shop.js')
+    ],
+    depth: -1
+});
+
+},{"../sprites/close-shop.js":63,"dragonjs":20}],50:[function(require,module,exports){
 var $ = require('dragonjs'),
     player = require('../player.js'),
     Util = require('../util.js');
@@ -2289,7 +2097,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":48,"../player.js":54,"../util.js":71,"dragonjs":26}],56:[function(require,module,exports){
+},{"../collisions/racetrack.js":42,"../player.js":48,"../util.js":67,"dragonjs":20}],51:[function(require,module,exports){
 var Track = require('../track.js'),
     Horse = require('../../sprites/horse.js'),
     player = require('../../player.js');
@@ -2300,9 +2108,10 @@ module.exports = Track({
     ]
 });
 
-},{"../../player.js":54,"../../sprites/horse.js":68,"../track.js":55}],57:[function(require,module,exports){
+},{"../../player.js":48,"../../sprites/horse.js":64,"../track.js":50}],52:[function(require,module,exports){
 var $ = require('dragonjs'),
     player = require('../player.js'),
+    race = require('../sprites/buttons/race.js'),
     buttons = {
         horse: [
             require('../sprites/buttons/train-speed.js'),
@@ -2323,41 +2132,50 @@ var $ = require('dragonjs'),
 module.exports = $.Screen({
     name: 'training',
     spriteSet: [
-        require('../sprites/bkg-training.js'),
+        //require('../sprites/bkg-training.js'),
         require('../sprites/buttons/open-shop.js'),
-        require('../sprites/stats.js')
-    ].concat(allbuttons),
+        require('../sprites/stats.js'),
+        race
+    ],//.concat(allbuttons),
     one: {
         ready: function () {
             this.start();
         }
     },
     depth: 0
+}).extend({
+    draw: function (ctx) {
+        var grd = ctx.createRadialGradient(
+            $.canvas.width * (1 - race.width) / 2,
+            $.canvas.height * 0.05,
+            $.canvas.width * 0.1,
+            $.canvas.width * (1 - race.width) / 2,
+            $.canvas.height * 0.05,
+            $.canvas.width
+        );
+        grd.addColorStop(0, '#dfd3c8');
+        grd.addColorStop(1, '#bf7140');
+        ctx.fillStyle = grd;
+        ctx.fillRect(
+            0,
+            0,
+            $.canvas.width * (1 - race.width),
+            $.canvas.height
+        );
+        this.base.draw(ctx);
+    }
 });
 
-},{"../player.js":54,"../sprites/bkg-training.js":58,"../sprites/buttons/open-shop.js":59,"../sprites/buttons/train-jsmarts.js":60,"../sprites/buttons/train-jump.js":61,"../sprites/buttons/train-size.js":62,"../sprites/buttons/train-smarts.js":63,"../sprites/buttons/train-speed.js":64,"../sprites/buttons/train-strength.js":65,"../sprites/buttons/train-temper.js":66,"../sprites/stats.js":70,"dragonjs":26}],58:[function(require,module,exports){
-var $ = require('dragonjs');
-
-module.exports = $.Sprite({
-    name: 'bkg-training',
-    strips: {
-        'bkg-training': $.AnimationStrip({
-            sheet: $.SpriteSheet({
-                src: 'bkg-training.png'
-            }),
-            size: $.Dimension(834, 520)
-        })
-    },
-    startingStrip: 'bkg-training',
-    depth: 20,
-    size: $.canvas
-});
-
-},{"dragonjs":26}],59:[function(require,module,exports){
+},{"../player.js":48,"../sprites/buttons/open-shop.js":53,"../sprites/buttons/race.js":54,"../sprites/buttons/train-jsmarts.js":55,"../sprites/buttons/train-jump.js":56,"../sprites/buttons/train-size.js":57,"../sprites/buttons/train-smarts.js":58,"../sprites/buttons/train-speed.js":59,"../sprites/buttons/train-strength.js":60,"../sprites/buttons/train-temper.js":61,"../sprites/stats.js":66,"dragonjs":20}],53:[function(require,module,exports){
 var $ = require('dragonjs'),
+    race = require('./race.js'),
+    menu = require('../close-shop.js'),
+    margin = {
+        top: 0.25
+    },
     size = $.Dimension(
-        $.canvas.width * 0.269,
-        64
+        $.canvas.width * 0.3,
+        $.canvas.height * (menu.margin.top - margin.top)
     );
 
 module.exports = $.Sprite({
@@ -2366,13 +2184,9 @@ module.exports = $.Sprite({
         $.collisions
     ],
     mask: $.Rectangle(
-        $.Point(
-            $.canvas.width - size.width,
-            $.canvas.height - size.height
-        ),
+        $.Point(),
         size
     ),
-    freemask: true,
     strips: {
         'up': $.AnimationStrip({
             sheet: $.SpriteSheet({
@@ -2383,8 +2197,8 @@ module.exports = $.Sprite({
     },
     startingStrip: 'up',
     pos: $.Point(
-        $.canvas.width - size.width,
-        $.canvas.height - size.height + 5
+        ($.canvas.width - race.size.width) / 2 - size.width / 2,
+        $.canvas.height * margin.top
     ),
     size: size,
     on: {
@@ -2395,7 +2209,40 @@ module.exports = $.Sprite({
     }
 });
 
-},{"dragonjs":26}],60:[function(require,module,exports){
+},{"../close-shop.js":63,"./race.js":54,"dragonjs":20}],54:[function(require,module,exports){
+var $ = require('dragonjs'),
+    width = 0.18;
+
+module.exports = $.Sprite({
+    name: 'race',
+    collisionSets: [
+        $.collisions
+    ],
+    mask: $.Rectangle(
+        $.Point(),
+        $.Dimension($.canvas.width * width, $.canvas.height)
+    ),
+    strips: {
+        'race': $.AnimationStrip({
+            sheet: $.SpriteSheet({
+                src: 'start-race.png'
+            }),
+            size: $.Dimension(88, 31)
+        })
+    },
+    startingStrip: 'race',
+    pos: $.Point($.canvas.width * (1 - width), 0),
+    size: $.Dimension($.canvas.width * width, $.canvas.height),
+    on: {
+        'colliding/screentap': function () {
+            console.log(".. and they're off!");
+        }
+    }
+}).extend({
+    width: width
+});
+
+},{"dragonjs":20}],55:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2414,7 +2261,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],61:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],56:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2433,7 +2280,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],62:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],57:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2452,7 +2299,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],63:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],58:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2471,7 +2318,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],64:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],59:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2490,7 +2337,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],65:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],60:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2509,7 +2356,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],66:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],61:[function(require,module,exports){
 var $ = require('dragonjs'),
     Trainer = require('./train.js'),
     player = require('../../player.js');
@@ -2528,7 +2375,7 @@ module.exports = Trainer({
     }
 });
 
-},{"../../player.js":54,"./train.js":67,"dragonjs":26}],67:[function(require,module,exports){
+},{"../../player.js":48,"./train.js":62,"dragonjs":20}],62:[function(require,module,exports){
 var $ = require('dragonjs'),
     BaseClass = require('baseclassjs');
 
@@ -2575,7 +2422,70 @@ module.exports = function (opts) {
     });
 };
 
-},{"baseclassjs":2,"dragonjs":26}],68:[function(require,module,exports){
+},{"baseclassjs":2,"dragonjs":20}],63:[function(require,module,exports){
+var $ = require('dragonjs'),
+    race = require('./buttons/race.js'),
+    margin = {
+        side: 0.1,
+        bottom: 0.05,
+        top: 0.38
+    },
+    mask = $.Rectangle(
+        $.Point(
+            $.canvas.width * margin.side,
+            $.canvas.height * margin.top
+        ),
+        $.Dimension(
+            $.canvas.width * (
+                1 - (race.width + 2 * margin.side)
+            ),
+            $.canvas.height * (
+                1 - (margin.top + margin.bottom)
+            )
+        )
+    );
+
+module.exports = $.ClearSprite({
+    name: 'close-shop',
+    collisionSets: [
+        $.collisions
+    ],
+    mask: $.Rectangle(
+        $.Point(),
+        $.canvas
+    ),
+    pos: mask,
+    size: mask,
+    freemask: true,
+    on: {
+        'colliding/screentap': function (tap) {
+            // Close when tapped outside of the menu.
+            if (!tap.intersects(mask)) {
+                $.Game.screen('shop').stop();
+                $.Game.screen('training').start();
+            }
+        }
+    }
+}).extend({
+    margin: margin,
+    update: function () {
+        $.collisions.update(this);
+    },
+    draw: function (ctx) {
+        ctx.fillStyle = 'rgba(68, 68, 68, 0.6)';
+        ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+        ctx.fillStyle = '#fafafa';
+        ctx.fillRect(
+            this.pos.x,
+            this.pos.y,
+            this.size.width,
+            this.size.height
+        );
+        mask.draw(ctx);
+    }
+});
+
+},{"./buttons/race.js":54,"dragonjs":20}],64:[function(require,module,exports){
 var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
@@ -2627,7 +2537,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../collisions/racetrack.js":48,"../horse-stats.js":50,"../illness.js":51,"../namer.js":53,"dragonjs":26}],69:[function(require,module,exports){
+},{"../collisions/racetrack.js":42,"../horse-stats.js":44,"../illness.js":45,"../namer.js":47,"dragonjs":20}],65:[function(require,module,exports){
 var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Stats = require('../jockey-stats.js');
@@ -2661,7 +2571,7 @@ module.exports = function (opts) {
     });
 };
 
-},{"../jockey-stats.js":52,"../namer.js":53,"dragonjs":26}],70:[function(require,module,exports){
+},{"../jockey-stats.js":46,"../namer.js":47,"dragonjs":20}],66:[function(require,module,exports){
 var $ = require('dragonjs'),
     BaseClass = require('baseclassjs'),
     player = require('../player.js'),
@@ -2700,15 +2610,10 @@ var $ = require('dragonjs'),
         }
     };
 
-module.exports = $.Sprite({
+module.exports = $.ClearSprite({
     name: 'stats',
     depth: 2
 }).extend({
-    load: function (cb) {
-        cb();
-    },
-    start: BaseClass.Stub,
-    update: BaseClass.Stub,
     draw: function (ctx) {
         var name, mark;
         ctx.font = '16px Wonder';
@@ -2734,7 +2639,7 @@ module.exports = $.Sprite({
     }
 });
 
-},{"../player.js":54,"baseclassjs":2,"dragonjs":26}],71:[function(require,module,exports){
+},{"../player.js":48,"baseclassjs":2,"dragonjs":20}],67:[function(require,module,exports){
 module.exports = {
     shuffle: function (arr) {
         var i, j, x;
@@ -2765,4 +2670,4 @@ module.exports = {
     }
 };
 
-},{}]},{},[49,50,51,52,53,54,71]);
+},{}]},{},[43,44,45,46,47,48,67]);

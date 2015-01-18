@@ -1,7 +1,12 @@
 var $ = require('dragonjs'),
+    race = require('./race.js'),
+    menu = require('../close-shop.js'),
+    margin = {
+        top: 0.25
+    },
     size = $.Dimension(
-        $.canvas.width * 0.269,
-        64
+        $.canvas.width * 0.3,
+        $.canvas.height * (menu.margin.top - margin.top)
     );
 
 module.exports = $.Sprite({
@@ -10,13 +15,9 @@ module.exports = $.Sprite({
         $.collisions
     ],
     mask: $.Rectangle(
-        $.Point(
-            $.canvas.width - size.width,
-            $.canvas.height - size.height
-        ),
+        $.Point(),
         size
     ),
-    freemask: true,
     strips: {
         'up': $.AnimationStrip({
             sheet: $.SpriteSheet({
@@ -27,8 +28,8 @@ module.exports = $.Sprite({
     },
     startingStrip: 'up',
     pos: $.Point(
-        $.canvas.width - size.width,
-        $.canvas.height - size.height + 5
+        ($.canvas.width - race.size.width) / 2 - size.width / 2,
+        $.canvas.height * margin.top
     ),
     size: size,
     on: {
