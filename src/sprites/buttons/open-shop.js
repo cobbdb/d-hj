@@ -21,9 +21,9 @@ module.exports = $.Sprite({
     strips: {
         'up': $.AnimationStrip({
             sheet: $.SpriteSheet({
-                src: 'buttons/shop.png'
+                src: 'buttons/gear.png'
             }),
-            size: $.Dimension(128, 64)
+            size: $.Dimension(35, 11)
         })
     },
     startingStrip: 'up',

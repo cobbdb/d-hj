@@ -8,7 +8,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'browserify',
-        'uglify',
+        'uglify:raw',
+        'uglify:build',
         'compress'
     ]);
 };

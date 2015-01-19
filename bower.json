@@ -2,5 +2,6 @@
   "name": "horse-jockey",
   "main": "dist/horse-jockey.min.js",
   "dependencies": {
+    "cocoonjs-plugins": "~3.0.5"
   }
 }

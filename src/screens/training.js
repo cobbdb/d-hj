@@ -23,7 +23,7 @@ module.exports = $.Screen({
     spriteSet: [
         //require('../sprites/bkg-training.js'),
         require('../sprites/buttons/open-shop.js'),
-        require('../sprites/stats.js'),
+        //require('../sprites/stats.js'),
         race
     ],//.concat(allbuttons),
     one: {
@@ -43,7 +43,7 @@ module.exports = $.Screen({
             $.canvas.width
         );
         grd.addColorStop(0, '#dfd3c8');
-        grd.addColorStop(1, '#bf7140');
+        grd.addColorStop(1, '#8f8370');
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0,
             $.canvas.width * (1 - race.width),

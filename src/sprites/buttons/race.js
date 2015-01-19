@@ -13,9 +13,9 @@ module.exports = $.Sprite({
     strips: {
         'race': $.AnimationStrip({
             sheet: $.SpriteSheet({
-                src: 'start-race.png'
+                src: 'buttons/start-race.png'
             }),
-            size: $.Dimension(88, 31)
+            size: $.Dimension(11, 35)
         })
     },
     startingStrip: 'race',
