@@ -9,7 +9,9 @@ module.exports = function (grunt) {
                     ]
                 },
                 options: {
-                    compress: false
+                    compress: false,
+                    beautify: true,
+                    mangle: false
                 }
             },
             build: {

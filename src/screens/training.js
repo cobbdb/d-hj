@@ -24,7 +24,8 @@ module.exports = $.Screen({
         //require('../sprites/bkg-training.js'),
         require('../sprites/buttons/open-shop.js'),
         //require('../sprites/stats.js'),
-        race
+        race,
+        require('../sprites/slider.js')
     ],//.concat(allbuttons),
     one: {
         ready: function () {
