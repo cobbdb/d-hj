@@ -8,6 +8,7 @@
     "matchdep": "latest"
   },
   "dependencies": {
-    "dragonjs": "latest"
+    "dragonjs": "*",
+    "dragon-ui": "*"
   }
 }

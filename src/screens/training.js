@@ -1,4 +1,5 @@
 var $ = require('dragonjs'),
+    $ui = require('dragon-ui'),
     player = require('../player.js'),
     race = require('../sprites/buttons/race.js'),
     buttons = {
@@ -25,7 +26,18 @@ module.exports = $.Screen({
         require('../sprites/buttons/open-shop.js'),
         //require('../sprites/stats.js'),
         race,
-        require('../sprites/slider.js')
+        $ui.Slider({
+            src: {
+                lane: 'slider-lane.png',
+                knob: 'slider-knob.png'
+            },
+            pos: $.Point(70, 150),
+            size: $.Dimension(110, 16),
+            collisions: $.collisions,
+            slide: function (val) {
+                global.console.log('sliding', val);
+            }
+        })
     ],//.concat(allbuttons),
     one: {
         ready: function () {
