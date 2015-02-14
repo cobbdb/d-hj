@@ -23,7 +23,7 @@ module.exports = $.Sprite({
     size: $.Dimension($.canvas.width * width, $.canvas.height),
     on: {
         'colliding/screentap': function () {
-            console.log(".. and they're off!");
+            console.debug(".. and they're off!");
         }
     }
 }).extend({
