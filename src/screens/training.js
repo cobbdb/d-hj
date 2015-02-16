@@ -1,6 +1,7 @@
 var $ = require('dragonjs'),
     player = require('../player.js'),
     race = require('../sprites/buttons/race.js'),
+    Slider = require('../sprites/shop/slider.js'),
     buttons = {
         horse: [
             require('../sprites/buttons/train-speed.js'),
@@ -16,25 +17,70 @@ var $ = require('dragonjs'),
     },
     allbuttons = [].
         concat(buttons.horse).
-        concat(buttons.jockey);
+        concat(buttons.jockey),
+    slide = {
+        margin: {
+            x: 70
+        }
+    };
 
 module.exports = $.Screen({
     name: 'training',
     spriteSet: [
-        //require('../sprites/bkg-training.js'),
         require('../sprites/buttons/open-shop.js'),
-        //require('../sprites/stats.js'),
         race,
-        $.ui.Slider({
-            src: {
-                lane: 'slider-lane.png',
-                knob: 'slider-knob.png'
-            },
-            pos: $.Point(70, 150),
-            size: $.Dimension(110, 16),
-            collisions: $.collisions,
-            slide: function (val) {
-                console.debug('sliding', val);
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 - slide.margin.x,
+                $.canvas.height * 0.5
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat A', val);
+            }
+        }),
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 - slide.margin.x,
+                $.canvas.height * 0.7
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat B', val);
+            }
+        }),
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 - slide.margin.x,
+                $.canvas.height * 0.9
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat C', val);
+            }
+        }),
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 + slide.margin.x,
+                $.canvas.height * 0.5
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat D', val);
+            }
+        }),
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 + slide.margin.x,
+                $.canvas.height * 0.7
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat E', val);
+            }
+        }),
+        Slider({
+            pos: $.Point(
+                ($.canvas.width - race.size.width) / 2 + slide.margin.x,
+                $.canvas.height * 0.9
+            ),
+            onslide: function (val) {
+                console.debug('sliding', 'stat F', val);
             }
         })
     ],//.concat(allbuttons),
