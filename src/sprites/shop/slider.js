@@ -8,8 +8,6 @@ module.exports = function (opts) {
         },
         pos: opts.pos,
         size: $.Dimension(110, 16),
-        on: {
-            slide: opts.onslide
-        }
+        onslide: opts.onslide
     });
 };

@@ -5644,7 +5644,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         knob.pos.x = x - knobSize.width / 2;
                         value = x - this.mask.left;
                         value = (value / this.mask.width).toFixed(3);
-                        opts.on.slide(value);
+                        opts.onslide(value);
                     }
                 }
             }), knob = Sprite({
@@ -5670,12 +5670,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         this.pos.x = x - knobSize.width / 2;
                         value = x - lane.mask.left;
                         value = (value / lane.mask.width).toFixed(3);
-                        opts.on.slide(value);
+                        opts.onslide(value);
                     }
                 }
             });
-            opts.on = opts.on || {};
-            opts.on.slide = opts.on.slide || function() {};
+            opts.onslide = opts.onslide || function() {};
             return ClearSprite().extend({
                 load: function(cb) {
                     var queue = 2, done = function() {
@@ -6298,9 +6297,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 pos: opts.pos,
                 size: $.Dimension(110, 16),
-                on: {
-                    slide: opts.onslide
-                }
+                onslide: opts.onslide
             });
         };
     }, {
