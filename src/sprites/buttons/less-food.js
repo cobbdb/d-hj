@@ -5,15 +5,15 @@ var $ = require('dragonjs'),
 
 module.exports = $.ui.Button({
     pos: $.Point(
-        margin,
+        ($.canvas.width - race.size.width) / 2 - margin - len,
         $.canvas.height * 0.5
     ),
     size: $.Dimension(len, len),
     up: {
-        src: 'buttons/plus.png',
+        src: 'buttons/minus.png',
         size: $.Dimension(8, 8)
     },
     onpress: function () {
-        console.debug('add food');
+        console.debug('less food');
     }
 });

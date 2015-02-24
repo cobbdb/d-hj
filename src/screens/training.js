@@ -9,6 +9,7 @@ module.exports = $.Screen({
         require('../sprites/buttons/open-shop.js'),
         race,
         require('../sprites/buttons/add-food.js'),
+        require('../sprites/buttons/less-food.js'),
         require('../sprites/buttons/less-blah.js'),
     ],
     one: {
