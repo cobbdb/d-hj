@@ -1,25 +1,25 @@
-var $ = require('dragonjs'),
-    player = require('../player.js'),
-    race = require('../sprites/buttons/race.js'),
-    Slider = require('../sprites/shop/slider.js');
+var $ = require('dragonjs');
 
 module.exports = $.Screen({
-    name: 'training',
+    name: 'care',
     spriteSet: [
-        require('../sprites/buttons/open-shop.js'),
-        race,
-        require('../sprites/buttons/add-food.js'),
-        require('../sprites/buttons/less-food.js'),
-        require('../sprites/buttons/less-blah.js'),
+        require('../sprites/buttons/open-gear.js'),
+        require('../sprites/buttons/open-train.js'),
+        require('../sprites/buttons/open-care.js'),
+        require('../sprites/buttons/race.js')
     ],
     one: {
         ready: function () {
-            this.start();
+            console.debug(this.name, 'rsdeady');
+            this.stop();
         }
     },
     depth: 0
 }).extend({
     draw: function (ctx) {
+        //ctx.fillStyle = '#fde142';
+        ctx.fillStyle = 'cyan';
+        ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
         this.base.draw(ctx);
     }
 });

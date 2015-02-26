@@ -1,5 +1,5 @@
-var $ = require('dragonjs'),
-    riverton = require('./screens/tracks/riverton.js');
+var $ = require('dragonjs');
+    //riverton = require('./screens/tracks/riverton.js');
 
 global.Cocoon.Utils.setAntialias(false);
 $.canvas.ctx.webkitImageSmoothingEnabled = false;
@@ -11,14 +11,15 @@ $.Font.load({
     src: '8-bit-wonder.ttf'
 });
 $.Game.addScreens([
-    require('./screens/training.js'),
-    require('./screens/shop.js'),
-    riverton
+    require('./screens/gear.js'),
+    require('./screens/train.js'),
+    require('./screens/care.js'),
+    //riverton
 ]);
-$.Game.currentTrack = riverton;
+/*$.Game.currentTrack = riverton;
 $.Game.loadTrack = function (track) {
     this.currentTrack.stop();
     this.currentTrack = track;
     this.currentTrack.start();
-};
+};*/
 $.Game.run();

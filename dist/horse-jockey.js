@@ -5731,7 +5731,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     40: [ function(require, module, exports) {
         (function(global) {
-            var $ = require("dragonjs"), riverton = require("./screens/tracks/riverton.js");
+            var $ = require("dragonjs");
             global.Cocoon.Utils.setAntialias(false);
             $.canvas.ctx.webkitImageSmoothingEnabled = false;
             $.canvas.ctx.mozImageSmoothingEnabled = false;
@@ -5740,19 +5740,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 name: "Wonder",
                 src: "8-bit-wonder.ttf"
             });
-            $.Game.addScreens([ require("./screens/training.js"), require("./screens/shop.js"), riverton ]);
-            $.Game.currentTrack = riverton;
-            $.Game.loadTrack = function(track) {
-                this.currentTrack.stop();
-                this.currentTrack = track;
-                this.currentTrack.start();
-            };
+            $.Game.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js") ]);
             $.Game.run();
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "./screens/shop.js": 46,
-        "./screens/tracks/riverton.js": 48,
-        "./screens/training.js": 49,
+        "./screens/care.js": 46,
+        "./screens/gear.js": 47,
+        "./screens/train.js": 48,
         dragonjs: 15
     } ],
     41: [ function(require, module, exports) {
@@ -5821,161 +5815,157 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             jockey: Jockey()
         };
     }, {
-        "./sprites/horse.js": 56,
-        "./sprites/jockey.js": 57
+        "./sprites/horse.js": 53,
+        "./sprites/jockey.js": 54
     } ],
     46: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.Screen({
-            name: "shop",
-            spriteSet: [ require("../sprites/close-shop.js") ],
-            depth: -1
-        });
-    }, {
-        "../sprites/close-shop.js": 55,
-        dragonjs: 15
-    } ],
-    47: [ function(require, module, exports) {
-        var $ = require("dragonjs"), player = require("../player.js"), Util = require("../util.js");
-        module.exports = function(opts) {
-            var i, horses = opts.horses.concat(player.horse), lanes = Util.range(horses.length);
-            Util.shuffle(lanes);
-            for (i = 0; i < horses.length; i += 1) {
-                horses[i].pos.y = lanes[i] * 45 + 40;
-            }
-            return $.Screen({
-                name: "racetrack",
-                collisionSets: [ require("../collisions/racetrack.js") ],
-                spriteSet: [].concat(horses)
-            }).extend({
-                horses: horses,
-                race: function() {
-                    horses.forEach(function(horse) {
-                        horse.race();
-                    });
-                }
-            });
-        };
-    }, {
-        "../collisions/racetrack.js": 39,
-        "../player.js": 45,
-        "../util.js": 59,
-        dragonjs: 15
-    } ],
-    48: [ function(require, module, exports) {
-        var Track = require("../track.js"), Horse = require("../../sprites/horse.js"), player = require("../../player.js");
-        module.exports = Track({
-            horses: [ Horse() ]
-        });
-    }, {
-        "../../player.js": 45,
-        "../../sprites/horse.js": 56,
-        "../track.js": 47
-    } ],
-    49: [ function(require, module, exports) {
-        var $ = require("dragonjs"), player = require("../player.js"), race = require("../sprites/buttons/race.js"), Slider = require("../sprites/shop/slider.js");
-        module.exports = $.Screen({
-            name: "training",
-            spriteSet: [ require("../sprites/buttons/open-shop.js"), race, require("../sprites/buttons/add-food.js"), require("../sprites/buttons/less-food.js"), require("../sprites/buttons/less-blah.js") ],
+            name: "care",
+            spriteSet: [ require("../sprites/buttons/open-gear.js"), require("../sprites/buttons/open-train.js"), require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js") ],
             one: {
                 ready: function() {
-                    this.start();
+                    console.debug(this.name, "rsdeady");
+                    this.stop();
                 }
             },
             depth: 0
         }).extend({
             draw: function(ctx) {
-                var grd = ctx.createRadialGradient($.canvas.width * (1 - race.width) / 2, $.canvas.height * .05, $.canvas.width * .1, $.canvas.width * (1 - race.width) / 2, $.canvas.height * .05, $.canvas.width);
-                grd.addColorStop(0, "#dfd3c8");
-                grd.addColorStop(1, "#8f8370");
-                ctx.fillStyle = grd;
-                ctx.fillRect(0, 0, $.canvas.width * (1 - race.width), $.canvas.height);
+                ctx.fillStyle = "cyan";
+                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
                 this.base.draw(ctx);
             }
         });
     }, {
-        "../player.js": 45,
-        "../sprites/buttons/add-food.js": 50,
-        "../sprites/buttons/less-blah.js": 51,
-        "../sprites/buttons/less-food.js": 52,
-        "../sprites/buttons/open-shop.js": 53,
-        "../sprites/buttons/race.js": 54,
-        "../sprites/shop/slider.js": 58,
+        "../sprites/buttons/open-care.js": 49,
+        "../sprites/buttons/open-gear.js": 50,
+        "../sprites/buttons/open-train.js": 51,
+        "../sprites/buttons/race.js": 52,
+        dragonjs: 15
+    } ],
+    47: [ function(require, module, exports) {
+        var $ = require("dragonjs");
+        module.exports = $.Screen({
+            name: "gear",
+            spriteSet: [ require("../sprites/buttons/open-gear.js"), require("../sprites/buttons/open-train.js"), require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js") ],
+            one: {
+                ready: function() {
+                    console.debug(this.name, "cready");
+                    this.stop();
+                }
+            },
+            depth: 0
+        }).extend({
+            draw: function(ctx) {
+                ctx.fillStyle = "blue";
+                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                this.base.draw(ctx);
+            }
+        });
+    }, {
+        "../sprites/buttons/open-care.js": 49,
+        "../sprites/buttons/open-gear.js": 50,
+        "../sprites/buttons/open-train.js": 51,
+        "../sprites/buttons/race.js": 52,
+        dragonjs: 15
+    } ],
+    48: [ function(require, module, exports) {
+        var $ = require("dragonjs");
+        module.exports = $.Screen({
+            name: "train",
+            spriteSet: [ require("../sprites/buttons/open-gear.js"), require("../sprites/buttons/open-train.js"), require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js") ],
+            one: {
+                ready: function() {
+                    console.debug(this.name, "rsdfeady");
+                    this.stop();
+                }
+            },
+            depth: 0
+        }).extend({
+            draw: function(ctx) {
+                ctx.fillStyle = "#fde142";
+                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                this.base.draw(ctx);
+            }
+        });
+    }, {
+        "../sprites/buttons/open-care.js": 49,
+        "../sprites/buttons/open-gear.js": 50,
+        "../sprites/buttons/open-train.js": 51,
+        "../sprites/buttons/race.js": 52,
+        dragonjs: 15
+    } ],
+    49: [ function(require, module, exports) {
+        var $ = require("dragonjs"), height = $.canvas.height * .3;
+        module.exports = $.ui.Button({
+            pos: $.Point(0, $.canvas.height - height),
+            size: $.Dimension($.canvas.width * .15, height),
+            up: {
+                src: "buttons/care.png",
+                size: $.Dimension(11, 35)
+            },
+            down: {
+                src: "buttons/care.down.png",
+                size: $.Dimension(11, 35)
+            },
+            onpress: function() {
+                $.Game.screen("train").stop();
+                $.Game.screen("gear").stop();
+                $.Game.screen("care").start();
+                this.pause();
+            }
+        });
+    }, {
         dragonjs: 15
     } ],
     50: [ function(require, module, exports) {
-        var $ = require("dragonjs"), race = require("./race.js"), len = $.canvas.height * .1, margin = $.canvas.width * .02;
+        var $ = require("dragonjs");
         module.exports = $.ui.Button({
-            pos: $.Point(margin, $.canvas.height * .5),
-            size: $.Dimension(len, len),
+            pos: $.Point(0, 0),
+            size: $.Dimension($.canvas.width * .15, $.canvas.height * .3),
             up: {
-                src: "buttons/plus.png",
-                size: $.Dimension(8, 8)
+                src: "buttons/gear.png",
+                size: $.Dimension(11, 35)
+            },
+            down: {
+                src: "buttons/gear.down.png",
+                size: $.Dimension(11, 35)
             },
             onpress: function() {
-                console.debug("add food");
+                $.Game.screen("train").stop();
+                $.Game.screen("care").stop();
+                $.Game.screen("gear").start();
+                this.pause();
             }
         });
     }, {
-        "./race.js": 54,
         dragonjs: 15
     } ],
     51: [ function(require, module, exports) {
-        var $ = require("dragonjs"), race = require("./race.js"), len = $.canvas.height * .1, margin = $.canvas.width * .02;
+        var $ = require("dragonjs"), height = $.canvas.height * .3;
         module.exports = $.ui.Button({
-            pos: $.Point($.canvas.width - race.size.width - margin - len, $.canvas.height * .5),
-            size: $.Dimension(len, len),
+            pos: $.Point(0, height),
+            size: $.Dimension($.canvas.width * .15, height),
             up: {
-                src: "buttons/minus.png",
-                size: $.Dimension(8, 8)
+                src: "buttons/train.png",
+                size: $.Dimension(11, 43)
+            },
+            down: {
+                src: "buttons/train.down.png",
+                size: $.Dimension(11, 43)
             },
             onpress: function() {
-                console.debug("less blah");
+                $.Game.screen("gear").stop();
+                $.Game.screen("care").stop();
+                $.Game.screen("train").start();
+                this.pause();
             }
         });
     }, {
-        "./race.js": 54,
         dragonjs: 15
     } ],
     52: [ function(require, module, exports) {
-        var $ = require("dragonjs"), race = require("./race.js"), len = $.canvas.height * .1, margin = $.canvas.width * .02;
-        module.exports = $.ui.Button({
-            pos: $.Point(($.canvas.width - race.size.width) / 2 - margin - len, $.canvas.height * .5),
-            size: $.Dimension(len, len),
-            up: {
-                src: "buttons/minus.png",
-                size: $.Dimension(8, 8)
-            },
-            onpress: function() {
-                console.debug("less food");
-            }
-        });
-    }, {
-        "./race.js": 54,
-        dragonjs: 15
-    } ],
-    53: [ function(require, module, exports) {
-        var $ = require("dragonjs"), race = require("./race.js"), menu = require("../close-shop.js"), margin = {
-            top: .25
-        };
-        module.exports = $.ui.Button({
-            pos: $.Point(($.canvas.width - race.size.width) / 2 - $.canvas.width * .3 / 2, $.canvas.height * margin.top),
-            size: $.Dimension($.canvas.width * .3, $.canvas.height * (menu.margin.top - margin.top)),
-            up: {
-                src: "buttons/gear.png",
-                size: $.Dimension(35, 11)
-            },
-            onpress: function() {
-                $.Game.screen("training").pause();
-                $.Game.screen("shop").start();
-            }
-        });
-    }, {
-        "../close-shop.js": 55,
-        "./race.js": 54,
-        dragonjs: 15
-    } ],
-    54: [ function(require, module, exports) {
         var $ = require("dragonjs"), width = .18;
         module.exports = $.ui.Button({
             pos: $.Point($.canvas.width * (1 - width), 0),
@@ -5997,45 +5987,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 15
     } ],
-    55: [ function(require, module, exports) {
-        var $ = require("dragonjs"), race = require("./buttons/race.js"), margin = {
-            side: .1,
-            bottom: .05,
-            top: .38
-        }, mask = $.Rectangle($.Point($.canvas.width * margin.side, $.canvas.height * margin.top), $.Dimension($.canvas.width * (1 - (race.width + 2 * margin.side)), $.canvas.height * (1 - (margin.top + margin.bottom))));
-        module.exports = $.ClearSprite({
-            name: "close-shop",
-            collisionSets: [ $.collisions ],
-            mask: $.Rectangle($.Point(), $.canvas),
-            pos: mask,
-            size: mask,
-            freemask: true,
-            on: {
-                "colliding/screentap": function(tap) {
-                    if (!tap.intersects(mask)) {
-                        $.Game.screen("shop").stop();
-                        $.Game.screen("training").start();
-                    }
-                }
-            }
-        }).extend({
-            margin: margin,
-            update: function() {
-                $.collisions.update(this);
-            },
-            draw: function(ctx) {
-                ctx.fillStyle = "rgba(68, 68, 68, 0.6)";
-                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
-                ctx.fillStyle = "#fafafa";
-                ctx.fillRect(this.pos.x, this.pos.y, this.size.width, this.size.height);
-                mask.draw(ctx);
-            }
-        });
-    }, {
-        "./buttons/race.js": 54,
-        dragonjs: 15
-    } ],
-    56: [ function(require, module, exports) {
+    53: [ function(require, module, exports) {
         var $ = require("dragonjs"), Namer = require("../namer.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js");
         module.exports = function(opts) {
             opts = opts || {};
@@ -6082,7 +6034,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../namer.js": 44,
         dragonjs: 15
     } ],
-    57: [ function(require, module, exports) {
+    54: [ function(require, module, exports) {
         var $ = require("dragonjs"), Namer = require("../namer.js"), Stats = require("../jockey-stats.js");
         module.exports = function(opts) {
             opts = opts || {};
@@ -6116,23 +6068,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../namer.js": 44,
         dragonjs: 15
     } ],
-    58: [ function(require, module, exports) {
-        var $ = require("dragonjs");
-        module.exports = function(opts) {
-            return $.ui.Slider({
-                src: {
-                    lane: "slider-lane.png",
-                    knob: "slider-knob.png"
-                },
-                pos: opts.pos,
-                size: $.Dimension(110, 16),
-                onslide: opts.onslide
-            });
-        };
-    }, {
-        dragonjs: 15
-    } ],
-    59: [ function(require, module, exports) {
+    55: [ function(require, module, exports) {
         module.exports = {
             shuffle: function(arr) {
                 var i, j, x;
@@ -6158,4 +6094,4 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         };
     }, {} ]
-}, {}, [ 40, 41, 42, 43, 44, 45, 59 ]);
+}, {}, [ 40, 41, 42, 43, 44, 45, 55 ]);

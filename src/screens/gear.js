@@ -1,7 +1,7 @@
 var $ = require('dragonjs');
 
 module.exports = $.Screen({
-    name: 'train',
+    name: 'gear',
     spriteSet: [
         require('../sprites/buttons/open-gear.js'),
         require('../sprites/buttons/open-train.js'),
@@ -10,14 +10,15 @@ module.exports = $.Screen({
     ],
     one: {
         ready: function () {
-            console.debug(this.name, 'rsdfeady');
+            console.debug(this.name, 'cready');
             this.stop();
         }
     },
     depth: 0
 }).extend({
     draw: function (ctx) {
-        ctx.fillStyle = '#fde142';
+        //ctx.fillStyle = '#fde142';
+        ctx.fillStyle = 'blue';
         ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
         this.base.draw(ctx);
     }
