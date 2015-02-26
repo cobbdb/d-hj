@@ -1,11 +1,11 @@
-var $ = require('dragonjs'),
-    height = $.canvas.height * 0.3;
+var $ = require('dragonjs');
 
 module.exports = $.ui.Button({
-    pos: $.Point(0, height),
+    name: 'open-train',
+    pos: $.Point(0, $.canvas.height * 0.32),
     size: $.Dimension(
-        $.canvas.width * 0.15,
-        height
+        $.canvas.width * 0.1,
+        $.canvas.height * 0.36
     ),
     up: {
         src: 'buttons/train.png',
@@ -20,5 +20,7 @@ module.exports = $.ui.Button({
         $.Game.screen('care').stop();
         $.Game.screen('train').start();
         this.pause();
+        require('./open-gear.js').start();
+        require('./open-care.js').start();
     }
 });

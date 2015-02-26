@@ -8,12 +8,6 @@ module.exports = $.Screen({
         require('../sprites/buttons/open-care.js'),
         require('../sprites/buttons/race.js')
     ],
-    one: {
-        ready: function () {
-            console.debug(this.name, 'cready');
-            this.stop();
-        }
-    },
     depth: 0
 }).extend({
     draw: function (ctx) {

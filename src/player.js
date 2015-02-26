@@ -3,6 +3,7 @@ var Horse = require('./sprites/horse.js'),
 
 module.exports = {
     money: 100,
+    stats: require('./shop-stats.js'),
     horse: Horse(),
     jockey: Jockey()
 };

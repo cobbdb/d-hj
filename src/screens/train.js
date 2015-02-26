@@ -1,17 +1,21 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    train = require('../sprites/buttons/open-train.js'),
+    player = require('../player.js'),
+    ranks = require('../sprites/shop/ranks.js');
 
 module.exports = $.Screen({
     name: 'train',
     spriteSet: [
         require('../sprites/buttons/open-gear.js'),
-        require('../sprites/buttons/open-train.js'),
+        train,
         require('../sprites/buttons/open-care.js'),
         require('../sprites/buttons/race.js')
     ],
     one: {
         ready: function () {
-            console.debug(this.name, 'rsdfeady');
-            this.stop();
+            this.start();
+            train.pause();
+            train.useStrip('down');
         }
     },
     depth: 0
@@ -19,6 +23,7 @@ module.exports = $.Screen({
     draw: function (ctx) {
         ctx.fillStyle = '#fde142';
         ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+        ranks.draw(ctx);
         this.base.draw(ctx);
     }
 });
