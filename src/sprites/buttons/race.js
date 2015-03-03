@@ -16,5 +16,6 @@ module.exports = $.ui.Button({
         console.debug(".. and they're off!");
     }
 }).extend({
-    width: width
+    width: width,
+    realWidth: $.canvas.width * width
 });

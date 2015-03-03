@@ -7,19 +7,20 @@ var $ = require('dragonjs'),
         frames: 6
     }),
     stats = require('../../shop-stats.js'),
+    race = require('../buttons/race.js'),
+    open = require('../buttons/open-care.js'),
     width = $.canvas.width,
     height = $.canvas.height,
-    center = (width - width * 0.18 - width * 0.1) / 2,
-    margin = width * 0.05,
-    offset = width * 0.1,
-    realWidth = width * 0.18,
+    center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth,
+    realWidth = width * 0.3,
+    margin = width * 0.02,
     scaleWidth = realWidth / 16,
     pos = {
-        facility: $.Point(center + offset - margin - realWidth, height * 0.5),
-        groom: $.Point(center + offset - margin - realWidth, height * 0.7),
-        doctor: $.Point(center + offset - margin - realWidth, height * 0.9),
-        gym: $.Point(center + offset + margin, height * 0.5),
-        coach: $.Point(center + offset + margin, height * 0.7)
+        facility: $.Point(center - margin - realWidth, height * 0.5),
+        groom: $.Point(center - margin - realWidth, height * 0.7),
+        doctor: $.Point(center - margin - realWidth, height * 0.9),
+        gym: $.Point(center + margin, height * 0.5),
+        coach: $.Point(center + margin, height * 0.7)
     };
 
 pips.load();
@@ -35,5 +36,7 @@ module.exports = {
                 $.Dimension(scaleWidth, 3)
             );
         }
-    }
+    },
+    pos: pos,
+    realWidth: realWidth
 };

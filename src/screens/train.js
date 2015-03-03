@@ -1,7 +1,8 @@
 var $ = require('dragonjs'),
     train = require('../sprites/buttons/open-train.js'),
     player = require('../player.js'),
-    ranks = require('../sprites/shop/ranks.js');
+    ranks = require('../sprites/shop/ranks.js'),
+    addRank = require('../sprites/buttons/add-rank.js');
 
 module.exports = $.Screen({
     name: 'train',
@@ -9,7 +10,12 @@ module.exports = $.Screen({
         require('../sprites/buttons/open-gear.js'),
         train,
         require('../sprites/buttons/open-care.js'),
-        require('../sprites/buttons/race.js')
+        require('../sprites/buttons/race.js'),
+        addRank('gym'),
+        addRank('coach'),
+        addRank('facility'),
+        addRank('groom'),
+        addRank('doctor')
     ],
     one: {
         ready: function () {
