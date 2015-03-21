@@ -38,5 +38,6 @@ module.exports = {
         }
     },
     pos: pos,
-    realWidth: realWidth
+    realWidth: realWidth,
+    realHeight: 12
 };
