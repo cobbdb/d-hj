@@ -5901,7 +5901,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             depth: 0
         }).extend({
             draw: function(ctx) {
-                ctx.fillStyle = "cyan";
+                ctx.fillStyle = "#fde142";
                 ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
                 this.base.draw(ctx);
             }
@@ -5921,7 +5921,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             depth: 0
         }).extend({
             draw: function(ctx) {
-                ctx.fillStyle = "blue";
+                ctx.fillStyle = "#fde142";
                 ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
                 this.base.draw(ctx);
             }

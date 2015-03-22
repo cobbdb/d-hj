@@ -11,8 +11,7 @@ module.exports = $.Screen({
     depth: 0
 }).extend({
     draw: function (ctx) {
-        //ctx.fillStyle = '#fde142';
-        ctx.fillStyle = 'cyan';
+        ctx.fillStyle = '#fde142';
         ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
         this.base.draw(ctx);
     }
