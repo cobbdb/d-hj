@@ -5650,9 +5650,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 name: opts.name || "dragon-ui-label",
                 pos: opts.pos
             }).extend({
+                text: opts.text,
                 draw: function(ctx) {
                     opts.style(ctx);
-                    ctx.fillText(opts.text, this.pos.x, this.pos.y);
+                    ctx.fillText(this.text, this.pos.x, this.pos.y);
                 }
             });
         };
@@ -5880,6 +5881,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         module.exports = {
             money: 100,
             stats: require("./shop-stats.js"),
+            refreshStats: function() {
+                this.horse.refreshStats();
+                this.jockey.refreshStats();
+            },
             horse: Horse(),
             jockey: Jockey()
         };
@@ -5932,7 +5937,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         var $ = require("dragonjs"), train = require("../sprites/buttons/open-train.js"), player = require("../player.js"), ranks = require("../sprites/shop/ranks.js"), TrainLabel = require("../sprites/shop/train-label.js"), StatLabel = require("../sprites/shop/stat-label.js"), addRank = require("../sprites/buttons/add-rank.js");
         module.exports = $.Screen({
             name: "train",
-            spriteSet: [ require("../sprites/buttons/open-gear.js"), train, require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js"), addRank("gym"), addRank("coach"), addRank("facility"), addRank("groom"), addRank("doctor"), TrainLabel("Gym"), TrainLabel("Coach"), TrainLabel("Facility"), TrainLabel("Groom"), TrainLabel("Doctor"), StatLabel("horse", "body"), StatLabel("horse", "mind"), StatLabel("horse", "health"), StatLabel("jockey", "body"), StatLabel("jockey", "mind"), StatLabel("jockey", "temper") ],
+            spriteSet: [ require("../sprites/buttons/open-gear.js"), train, require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js"), addRank("gym", function() {
+                player.jockey.coreStats.body += 1;
+                player.jockey.refreshStats();
+            }), addRank("coach"), addRank("facility", function() {
+                player.horse.coreStats.body += 1;
+                player.horse.refreshStats();
+            }), addRank("groom"), addRank("doctor"), TrainLabel("Gym"), TrainLabel("Coach"), TrainLabel("Facility"), TrainLabel("Groom"), TrainLabel("Doctor"), StatLabel("horse", "body"), StatLabel("horse", "mind"), StatLabel("horse", "health"), StatLabel("jockey", "body"), StatLabel("jockey", "mind"), StatLabel("jockey", "temper") ],
             one: {
                 ready: function() {
                     this.start();
@@ -5972,8 +5983,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {} ],
     52: [ function(require, module, exports) {
-        var $ = require("dragonjs"), len = $.canvas.height * .1, stats = require("../../shop-stats.js"), ranks = require("../shop/ranks.js");
-        module.exports = function(name) {
+        var $ = require("dragonjs"), len = $.canvas.height * .1, player = require("../../player.js"), ranks = require("../shop/ranks.js");
+        module.exports = function(name, onpress) {
+            onpress = onpress || function() {};
             return $.ui.Button({
                 pos: $.Point(ranks.pos[name].x + ranks.realWidth - len, ranks.pos[name].y - len - 2),
                 size: $.Dimension(len, len),
@@ -5986,13 +5998,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     size: $.Dimension(8, 8)
                 },
                 onpress: function() {
-                    if (stats[name] < 5) {
-                        stats[name] += 1;
+                    if (player.stats[name] < 5) {
+                        player.stats[name] += 1;
+                        onpress();
                     }
                 }
             }).extend({
                 update: function() {
-                    if (stats[name] < 5) {
+                    if (player.stats[name] < 5) {
                         this.base.update();
                     } else {
                         this.useStrip("down");
@@ -6002,7 +6015,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../shop-stats.js": 51,
+        "../../player.js": 47,
         "../shop/ranks.js": 59,
         dragonjs: 15
     } ],
@@ -6117,7 +6130,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 15
     } ],
     57: [ function(require, module, exports) {
-        var $ = require("dragonjs"), Namer = require("../namer.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js");
+        var $ = require("dragonjs"), Namer = require("../namer.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js"), shopStats = require("../shop-stats.js");
         module.exports = function(opts) {
             opts = opts || {};
             return $.Sprite({
@@ -6161,6 +6174,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../horse-stats.js": 43,
         "../illness.js": 44,
         "../namer.js": 46,
+        "../shop-stats.js": 51,
         dragonjs: 15
     } ],
     58: [ function(require, module, exports) {
@@ -6276,6 +6290,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     ctx.textBaseline = "bottom";
                     ctx.textAlign = grid[type][name].side;
                     ctx.fillStyle = "black";
+                }
+            }).extend({
+                update: function() {
+                    this.text = grid[type][name].name + " " + player[type].adjStats[name];
                 }
             });
         };

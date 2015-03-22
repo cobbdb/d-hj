@@ -13,9 +13,15 @@ module.exports = $.Screen({
         train,
         require('../sprites/buttons/open-care.js'),
         require('../sprites/buttons/race.js'),
-        addRank('gym'),
+        addRank('gym', function () {
+            player.jockey.coreStats.body += 1;
+            player.jockey.refreshStats();
+        }),
         addRank('coach'),
-        addRank('facility'),
+        addRank('facility', function () {
+            player.horse.coreStats.body += 1;
+            player.horse.refreshStats();
+        }),
         addRank('groom'),
         addRank('doctor'),
         TrainLabel('Gym'),

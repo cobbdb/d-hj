@@ -53,5 +53,9 @@ module.exports = function (type, name) {
             ctx.textAlign = grid[type][name].side;
             ctx.fillStyle = 'black';
         }
+    }).extend({
+        update: function () {
+            this.text = grid[type][name].name + ' ' + player[type].adjStats[name];
+        }
     });
 };

@@ -1,7 +1,8 @@
 var $ = require('dragonjs'),
     Namer = require('../namer.js'),
     Illness = require('../illness.js'),
-    Stats = require('../horse-stats.js');
+    Stats = require('../horse-stats.js'),
+    shopStats = require('../shop-stats.js');
 
 module.exports = function (opts) {
     opts = opts || {};
@@ -32,6 +33,16 @@ module.exports = function (opts) {
         }
     }).extend({
         showname: opts.showname || Namer.next.horse,
+        /**
+         * Core & current stats...
+         * Core is perm, current is temp
+         * When adding core, update current <<<<
+         * Current used during races
+         * Show current in shop summary
+         * Show complete breakdown in shop stat detail view
+         * player.horse.stats.body
+         * player.horse.stats.core.body
+         */
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {
