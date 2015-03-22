@@ -5808,7 +5808,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             $.canvas.ctx.imageSmoothingEnabled = false;
             $.Font.load({
                 name: "Wonder",
-                src: "8-bit-wonder.ttf"
+                src: "8-bit-wonder.TTF"
             });
             $.Game.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js") ]);
             $.Game.run();
