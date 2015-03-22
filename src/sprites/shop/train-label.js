@@ -3,7 +3,7 @@ var $ = require('dragonjs'),
     ranks = require('./ranks.js');
 
 module.exports = function (name) {
-    keyname = name.toLowerCase();
+    var keyname = name.toLowerCase();
     return $.ui.Label({
         text: name,
         pos: $.Point(

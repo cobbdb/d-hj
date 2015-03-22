@@ -5823,10 +5823,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         function Stats(opts) {
             opts = opts || {};
             return {
-                speed: opts.speed || 1,
-                jump: opts.jump || 1,
-                strength: opts.strength || 1,
-                smarts: opts.smarts || 1,
+                body: opts.body || 1,
+                mind: opts.mind || 1,
                 health: opts.health || 1,
                 clone: function() {
                     return Stats(this);
@@ -5855,9 +5853,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         function Stats(opts) {
             opts = opts || {};
             return {
-                size: opts.size || 1,
+                body: opts.body || 1,
+                mind: opts.mind || 1,
                 temper: opts.temper || 1,
-                smarts: opts.smarts || 1,
                 clone: function() {
                     return Stats(this);
                 }
@@ -5931,10 +5929,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 15
     } ],
     50: [ function(require, module, exports) {
-        var $ = require("dragonjs"), train = require("../sprites/buttons/open-train.js"), player = require("../player.js"), ranks = require("../sprites/shop/ranks.js"), Label = require("../sprites/shop/train-label.js"), addRank = require("../sprites/buttons/add-rank.js");
+        var $ = require("dragonjs"), train = require("../sprites/buttons/open-train.js"), player = require("../player.js"), ranks = require("../sprites/shop/ranks.js"), TrainLabel = require("../sprites/shop/train-label.js"), StatLabel = require("../sprites/shop/stat-label.js"), addRank = require("../sprites/buttons/add-rank.js");
         module.exports = $.Screen({
             name: "train",
-            spriteSet: [ require("../sprites/buttons/open-gear.js"), train, require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js"), addRank("gym"), addRank("coach"), addRank("facility"), addRank("groom"), addRank("doctor"), Label("Gym"), Label("Coach"), Label("Facility"), Label("Groom"), Label("Doctor") ],
+            spriteSet: [ require("../sprites/buttons/open-gear.js"), train, require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js"), addRank("gym"), addRank("coach"), addRank("facility"), addRank("groom"), addRank("doctor"), TrainLabel("Gym"), TrainLabel("Coach"), TrainLabel("Facility"), TrainLabel("Groom"), TrainLabel("Doctor"), StatLabel("horse", "body"), StatLabel("horse", "mind"), StatLabel("horse", "health"), StatLabel("jockey", "body"), StatLabel("jockey", "mind"), StatLabel("jockey", "temper") ],
             one: {
                 ready: function() {
                     this.start();
@@ -5959,7 +5957,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../sprites/buttons/open-train.js": 55,
         "../sprites/buttons/race.js": 56,
         "../sprites/shop/ranks.js": 59,
-        "../sprites/shop/train-label.js": 60,
+        "../sprites/shop/stat-label.js": 60,
+        "../sprites/shop/train-label.js": 61,
         dragonjs: 15
     } ],
     51: [ function(require, module, exports) {
@@ -6232,9 +6231,64 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 15
     } ],
     60: [ function(require, module, exports) {
+        var $ = require("dragonjs"), player = require("../../player.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), cwidth = $.canvas.width, cheight = $.canvas.height, center = (cwidth - race.realWidth - open.realWidth) / 2 + open.realWidth, margin = cwidth * .01, grid = {
+            horse: {
+                body: {
+                    name: "Body",
+                    pos: $.Point(open.realWidth + margin, cheight * .1),
+                    side: "left"
+                },
+                mind: {
+                    name: "Mind",
+                    pos: $.Point(open.realWidth + margin, cheight * .2),
+                    side: "left"
+                },
+                health: {
+                    name: "Health",
+                    pos: $.Point(open.realWidth + margin, cheight * .3),
+                    side: "left"
+                }
+            },
+            jockey: {
+                body: {
+                    name: "Body",
+                    pos: $.Point(race.pos.x - margin, cheight * .1),
+                    side: "right"
+                },
+                mind: {
+                    name: "Mind",
+                    pos: $.Point(race.pos.x - margin, cheight * .2),
+                    side: "right"
+                },
+                temper: {
+                    name: "Temper",
+                    pos: $.Point(race.pos.x - margin, cheight * .3),
+                    side: "right"
+                }
+            }
+        };
+        module.exports = function(type, name) {
+            return $.ui.Label({
+                text: grid[type][name].name + " " + player[type].adjStats[name],
+                pos: grid[type][name].pos,
+                style: function(ctx) {
+                    ctx.font = "12px Wonder";
+                    ctx.textBaseline = "bottom";
+                    ctx.textAlign = grid[type][name].side;
+                    ctx.fillStyle = "black";
+                }
+            });
+        };
+    }, {
+        "../../player.js": 47,
+        "../buttons/open-care.js": 53,
+        "../buttons/race.js": 56,
+        dragonjs: 15
+    } ],
+    61: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, ranks = require("./ranks.js");
         module.exports = function(name) {
-            keyname = name.toLowerCase();
+            var keyname = name.toLowerCase();
             return $.ui.Label({
                 text: name,
                 pos: $.Point(ranks.pos[keyname].x + ranks.realWidth - len, ranks.pos[keyname].y - 5),
@@ -6250,7 +6304,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./ranks.js": 59,
         dragonjs: 15
     } ],
-    61: [ function(require, module, exports) {
+    62: [ function(require, module, exports) {
         module.exports = {
             shuffle: function(arr) {
                 var i, j, x;
@@ -6276,4 +6330,4 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         };
     }, {} ]
-}, {}, [ 42, 43, 44, 45, 46, 47, 51, 61 ]);
+}, {}, [ 42, 43, 44, 45, 46, 47, 51, 62 ]);
