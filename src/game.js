@@ -1,5 +1,5 @@
-var $ = require('dragonjs');
-    //riverton = require('./screens/tracks/riverton.js');
+var $ = require('dragonjs'),
+    riverton = require('./screens/tracks/riverton.js');
 
 global.Cocoon.Utils.setAntialias(false);
 $.canvas.ctx.webkitImageSmoothingEnabled = false;
@@ -14,7 +14,7 @@ $.Game.addScreens([
     require('./screens/gear.js'),
     require('./screens/train.js'),
     require('./screens/care.js'),
-    //riverton
+    riverton
 ]);
 /*$.Game.currentTrack = riverton;
 $.Game.loadTrack = function (track) {

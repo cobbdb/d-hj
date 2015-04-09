@@ -3,6 +3,7 @@ var Track = require('../track.js'),
     player = require('../../player.js');
 
 module.exports = Track({
+    name: 'riverton',
     horses: [
         Horse()
     ]

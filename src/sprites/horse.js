@@ -29,20 +29,14 @@ module.exports = function (opts) {
         on: {
             'collide/screenedge/right': function () {
                 this.speed.x = 0;
+                this.scale = 2;
+                this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
+                this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
+                $.Game.screen('riverton').endRace(this);
             }
         }
     }).extend({
         showname: opts.showname || Namer.next.horse,
-        /**
-         * Core & current stats...
-         * Core is perm, current is temp
-         * When adding core, update current <<<<
-         * Current used during races
-         * Show current in shop summary
-         * Show complete breakdown in shop stat detail view
-         * player.horse.stats.body
-         * player.horse.stats.core.body
-         */
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {
@@ -55,7 +49,7 @@ module.exports = function (opts) {
         sickness: Illness.none,
         race: function () {
             this.refreshStats();
-            this.speed.x = this.adjStats.speed;
+            this.speed.x = this.adjStats.body;
         }
     });
 };

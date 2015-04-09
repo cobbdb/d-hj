@@ -4,6 +4,7 @@ var $ = require('dragonjs'),
 
 /**
  * @param {Array} horses
+ * @param {String} name
  */
 module.exports = function (opts) {
     var i,
@@ -11,12 +12,9 @@ module.exports = function (opts) {
         lanes = Util.range(horses.length);
 
     Util.shuffle(lanes);
-    for (i = 0; i < horses.length; i += 1) {
-        horses[i].pos.y = lanes[i] * 45 + 40;
-    }
 
     return $.Screen({
-        name: 'racetrack',
+        name: opts.name,
         collisionSets: [
             require('../collisions/racetrack.js')
         ],
@@ -25,10 +23,36 @@ module.exports = function (opts) {
         ].concat(horses)
     }).extend({
         horses: horses,
+        start: function () {
+            horses.forEach(function (horse, i) {
+                horse.pos.x = 0;
+                horse.pos.y = lanes[i] * 45 + 40;
+                horse.scale = 1;
+            });
+            global.setTimeout(this.race, 4000);
+            this.base.start();
+        },
         race: function () {
             horses.forEach(function (horse) {
                 horse.race();
             });
+        },
+        endRace: function (winner) {
+            horses.forEach(function (horse) {
+                horse.speed.x = 0;
+            });
+            global.setTimeout(function () {
+                $.Game.screen('riverton').stop();
+                $.Game.screen('train').start();
+            }, 2000);
+        },
+        draw: function (ctx) {
+            ctx.fillStyle = '#67fb04';
+            ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+            this.base.draw(ctx);
+        },
+        update: function () {
+            this.base.update();
         }
     });
 };
