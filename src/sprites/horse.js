@@ -4,6 +4,10 @@ var $ = require('dragonjs'),
     Stats = require('../horse-stats.js'),
     shopStats = require('../shop-stats.js');
 
+/**
+ * @param {HorseStats} [opts.stats]
+ * @param {String} [opts.showname]
+ */
 module.exports = function (opts) {
     opts = opts || {};
 
@@ -32,7 +36,10 @@ module.exports = function (opts) {
                 this.scale = 2;
                 this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
                 this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
-                $.Game.screen('riverton').endRace(this);
+                $.Game.screen('riverton').endRace(
+                    this === require('../player.js').horse,
+                    this
+                );
             }
         }
     }).extend({

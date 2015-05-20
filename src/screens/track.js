@@ -1,6 +1,7 @@
 var $ = require('dragonjs'),
     player = require('../player.js'),
-    Util = require('../util.js');
+    Util = require('../util.js'),
+    result = require('../sprites/raceresult.js');
 
 /**
  * @param {Array} horses
@@ -19,7 +20,7 @@ module.exports = function (opts) {
             require('../collisions/racetrack.js')
         ],
         spriteSet: [
-            //require('../sprites/buttons/race.js')
+            //require('../sprites/buttons/race.js'),
         ].concat(horses)
     }).extend({
         horses: horses,
@@ -37,9 +38,12 @@ module.exports = function (opts) {
                 horse.race();
             });
         },
-        endRace: function (winner) {
+        endRace: function (playerWon, winner) {
             horses.forEach(function (horse) {
                 horse.speed.x = 0;
+            });
+            this.addSprites({
+                set: playerWon ? result.win : result.lose
             });
             global.setTimeout(function () {
                 $.Game.screen('riverton').stop();
