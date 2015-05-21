@@ -5375,6 +5375,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         id = Counter.nextId;
                         loadQueue[id] = set.length;
                         set.forEach(function(sprite) {
+                            sprite.removed = false;
                             sprite.load(function() {
                                 loadQueue[id] -= 1;
                                 if (loadQueue[id] === 0) {
@@ -5478,105 +5479,109 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         baseclassjs: 7
     } ],
     39: [ function(require, module, exports) {
-        var BaseClass = require("baseclassjs"), Collidable = require("./collidable.js"), Point = require("./point.js"), Dimension = require("./dimension.js"), Rectangle = require("./rectangle.js");
-        module.exports = function(opts) {
-            var loaded = false, stripMap = opts.strips || {}, pos = opts.pos || Point();
-            if (!opts.freemask) {
-                opts.mask = opts.mask || Rectangle();
-                opts.offset = Point(opts.mask.x, opts.mask.y);
-                opts.mask.move(pos.x + opts.offset.x, pos.x + opts.offset.y);
-            }
-            opts.one = opts.one || {};
-            opts.one.ready = opts.one.ready || function() {
-                this.start();
-            };
-            return Collidable(opts).extend({
-                strip: stripMap[opts.startingStrip],
-                updating: opts.updating || false,
-                drawing: opts.drawing || false,
-                useStrip: function(name) {
-                    if (this.strip !== stripMap[name]) {
-                        this.strip.stop();
-                        this.strip = stripMap[name];
+        (function(global) {
+            var BaseClass = require("baseclassjs"), Collidable = require("./collidable.js"), Point = require("./point.js"), Dimension = require("./dimension.js"), Rectangle = require("./rectangle.js");
+            module.exports = function(opts) {
+                var loaded = false, stripMap = opts.strips || {}, pos = opts.pos || Point();
+                if (!opts.freemask) {
+                    opts.mask = opts.mask || Rectangle();
+                    opts.offset = Point(opts.mask.x, opts.mask.y);
+                    opts.mask.move(pos.x + opts.offset.x, pos.x + opts.offset.y);
+                }
+                opts.one = opts.one || {};
+                opts.one.ready = opts.one.ready || function() {
+                    this.start();
+                };
+                return Collidable(opts).extend({
+                    strip: stripMap[opts.startingStrip],
+                    updating: opts.updating || false,
+                    drawing: opts.drawing || false,
+                    useStrip: function(name) {
+                        if (this.strip !== stripMap[name]) {
+                            this.strip.stop();
+                            this.strip = stripMap[name];
+                            this.strip.start();
+                        }
+                    },
+                    getStrip: function(name) {
+                        return stripMap[name];
+                    },
+                    pos: pos,
+                    scale: opts.scale || 1,
+                    size: opts.size || (stripMap[opts.startingStrip] || {}).size,
+                    trueSize: function() {
+                        return this.size.scale(this.scale);
+                    },
+                    rotation: opts.rotation || 0,
+                    depth: opts.depth || 0,
+                    speed: opts.speed || Point(),
+                    start: function() {
+                        this.updating = true;
+                        this.drawing = true;
                         this.strip.start();
-                    }
-                },
-                getStrip: function(name) {
-                    return stripMap[name];
-                },
-                pos: pos,
-                scale: opts.scale || 1,
-                size: opts.size || (stripMap[opts.startingStrip] || {}).size,
-                trueSize: function() {
-                    return this.size.scale(this.scale);
-                },
-                rotation: opts.rotation || 0,
-                depth: opts.depth || 0,
-                speed: opts.speed || Point(),
-                start: function() {
-                    this.updating = true;
-                    this.drawing = true;
-                    this.strip.start();
-                    this.trigger("start");
-                },
-                pause: function() {
-                    this.updating = false;
-                    this.drawing = true;
-                    this.strip.pause();
-                    this.trigger("pause");
-                },
-                stop: function() {
-                    this.updating = false;
-                    this.drawing = false;
-                    this.strip.stop();
-                    this.trigger("stop");
-                },
-                update: function() {
-                    if (this.updating) {
-                        this.shift();
-                        this.strip.update();
-                        this.base.update();
-                    }
-                },
-                draw: function(ctx) {
-                    var stripSize;
-                    if (this.drawing) {
-                        stripSize = this.strip.size;
-                        this.strip.draw(ctx, this.pos, Dimension(this.scale * this.size.width / stripSize.width, this.scale * this.size.height / stripSize.height), this.rotation);
-                    }
-                },
-                load: function(cb) {
-                    var name, loadQueue;
-                    cb = cb || function() {};
-                    if (!loaded) {
-                        loadQueue = Object.keys(stripMap).length;
-                        for (name in stripMap) {
-                            stripMap[name].load(function() {
-                                loadQueue -= 1;
-                                if (loadQueue === 0) {
-                                    cb();
-                                    loaded = true;
-                                }
-                            });
+                        this.trigger("start");
+                    },
+                    pause: function() {
+                        this.updating = false;
+                        this.drawing = true;
+                        this.strip.pause();
+                        this.trigger("pause");
+                    },
+                    stop: function() {
+                        this.updating = false;
+                        this.drawing = false;
+                        this.strip.stop();
+                        this.trigger("stop");
+                    },
+                    update: function() {
+                        if (this.updating) {
+                            this.shift();
+                            this.strip.update();
+                            this.base.update();
+                        }
+                    },
+                    draw: function(ctx) {
+                        var stripSize;
+                        if (this.drawing) {
+                            stripSize = this.strip.size;
+                            this.strip.draw(ctx, this.pos, Dimension(this.scale * this.size.width / stripSize.width, this.scale * this.size.height / stripSize.height), this.rotation);
+                        }
+                    },
+                    load: function(onload) {
+                        var name, loadQueue;
+                        onload = onload || function() {};
+                        if (!loaded) {
+                            loadQueue = global.Object.keys(stripMap).length;
+                            for (name in stripMap) {
+                                stripMap[name].load(function() {
+                                    loadQueue -= 1;
+                                    if (loadQueue === 0) {
+                                        onload();
+                                        loaded = true;
+                                    }
+                                });
+                            }
+                        } else {
+                            onload();
+                        }
+                    },
+                    move: function(x, y) {
+                        this.pos.x = x;
+                        this.pos.y = y;
+                        if (!opts.freemask) {
+                            this.base.move(this.pos);
+                        }
+                    },
+                    shift: function(vx, vy) {
+                        this.pos.x += vx || this.speed.x;
+                        this.pos.y += vy || this.speed.y;
+                        if (!opts.freemask) {
+                            this.base.move(this.pos);
                         }
                     }
-                },
-                move: function(x, y) {
-                    this.pos.x = x;
-                    this.pos.y = y;
-                    if (!opts.freemask) {
-                        this.base.move(this.pos);
-                    }
-                },
-                shift: function(vx, vy) {
-                    this.pos.x += vx || this.speed.x;
-                    this.pos.y += vy || this.speed.y;
-                    if (!opts.freemask) {
-                        this.base.move(this.pos);
-                    }
-                }
-            });
-        };
+                });
+            };
+        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
         "./collidable.js": 18,
         "./dimension.js": 23,
@@ -5652,21 +5657,17 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     42: [ function(require, module, exports) {
         var Sprite = require("../sprite.js"), AnimationStrip = require("../animation-strip.js"), SpriteSheet = require("../spritesheet.js");
         module.exports = function(opts) {
-            return Sprite({
-                name: opts.name || "dragon-ui-decal",
-                strips: {
-                    decal: AnimationStrip({
-                        sheet: SpriteSheet({
-                            src: opts.strip.src
-                        }),
-                        size: opts.strip.size
-                    })
-                },
-                startingStrip: "decal",
-                pos: opts.pos,
-                size: opts.size,
-                scale: opts.scale
-            });
+            opts.name = opts.name || "dragon-ui-decal";
+            opts.strips = {
+                decal: AnimationStrip({
+                    sheet: SpriteSheet({
+                        src: opts.strip.src
+                    }),
+                    size: opts.strip.size
+                })
+            };
+            opts.startingStrip = "decal";
+            return Sprite(opts);
         };
     }, {
         "../animation-strip.js": 13,
@@ -6359,7 +6360,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 20
     } ],
     67: [ function(require, module, exports) {
-        var $ = require("dragonjs");
+        var $ = require("dragonjs"), BaseClass = require("baseclassjs");
         module.exports = {
             win: $.ui.Decal({
                 strip: {
@@ -6381,6 +6382,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             })
         };
     }, {
+        baseclassjs: 2,
         dragonjs: 20
     } ],
     68: [ function(require, module, exports) {

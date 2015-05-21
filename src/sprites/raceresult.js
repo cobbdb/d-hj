@@ -1,4 +1,5 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    BaseClass = require('baseclassjs');
 
 module.exports = {
     win: $.ui.Decal({
