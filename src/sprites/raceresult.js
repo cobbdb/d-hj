@@ -11,7 +11,7 @@ module.exports = {
             $.canvas.width / 2 - 25 * 3,
             $.canvas.height / 2 - 4 * 3
         ),
-        name: 'raceresult-win'
+        name: 'raceresult'
     }),
     lose: $.ui.Decal({
         strip: {
@@ -23,6 +23,6 @@ module.exports = {
             $.canvas.width / 2 - 28 * 3,
             $.canvas.height / 2 - 4 * 3
         ),
-        name: 'raceresult-lose'
+        name: 'raceresult'
     })
 };
