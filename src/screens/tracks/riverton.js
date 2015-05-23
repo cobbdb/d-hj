@@ -1,15 +1,16 @@
 var Track = require('../track.js'),
-    Horse = require('../../sprites/horse.js'),
-    player = require('../../player.js'),
-    HorseStats = require('../../horse-stats.js');
+    makeHorse = require('../../horse-factory.js');
 
-module.exports = Track({
-    name: 'riverton',
-    horses: [
-        Horse({
-            stats: HorseStats({
-                body: 2
-            })
-        })
-    ]
+module.exports = Track().extend({
+    buildStable: function () {
+        return [
+            makeHorse(2),
+            makeHorse(2),
+            makeHorse(1),
+            makeHorse(1),
+            makeHorse(1),
+            makeHorse(1),
+            makeHorse(1)
+        ];
+    }
 });

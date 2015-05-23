@@ -1,33 +1,32 @@
-var $ = require('dragonjs'),
+var BaseClass = require('baseclassjs'),
+    $ = require('dragonjs'),
     player = require('../player.js'),
     Util = require('../util.js'),
     result = require('../sprites/raceresult.js'),
     countdown = require('../sprites/countdown.js');
 
 /**
- * @param {Array} horses
- * @param {String} name
  */
 module.exports = function (opts) {
-    var i,
-        horses = opts.horses.concat(player.horse),
-        lanes = Util.range(horses.length);
-
-    Util.shuffle(lanes);
+    var stable = [];
 
     return $.Screen({
-        name: opts.name,
+        name: 'track',
         collisionSets: [
             require('../collisions/racetrack.js')
         ],
         spriteSet: [
-            //require('../sprites/buttons/race.js'),
             countdown
-        ].concat(horses)
+        ]
     }).extend({
-        horses: horses,
+        buildStable: BaseClass.Abstract,
+        getStable: function () {
+            return stable;
+        },
         start: function () {
-            var dorace = this.race;
+            var dorace = this.race,
+                lanes;
+
             function count(time) {
                 countdown.start();
                 return function () {
@@ -48,23 +47,36 @@ module.exports = function (opts) {
                     }
                 };
             }
-            horses.forEach(function (horse, i) {
-                horse.pos.x = 0;
-                horse.pos.y = lanes[i] * 45 + 40;
-                horse.scale = 1;
+
+            // Build the stable and assign lanes.
+            stable = this.buildStable().concat(
+                player.horse
+            );
+            lanes = Util.range(stable.length);
+            Util.shuffle(lanes);
+            this.addSprites({
+                set: stable
             });
+
+            // Position the horses on their marks.
+            stable.forEach(function (horse, i) {
+                horse.pos.x = 0;
+                horse.pos.y = lanes[i] * 28 + 40;
+            });
+
+            // Begin the countdown.
             count(4)();
             this.base.start();
         },
         race: function () {
-            horses.forEach(function (horse) {
+            stable.forEach(function (horse) {
                 horse.race();
             });
         },
         endRace: function (playerWon, winner) {
             var that = this,
                 resultSprite = playerWon ? result.win : result.lose;
-            horses.forEach(function (horse) {
+            stable.forEach(function (horse) {
                 horse.speed.x = 0;
             });
             this.addSprites({
@@ -72,7 +84,11 @@ module.exports = function (opts) {
             });
             global.setTimeout(function () {
                 that.removeSprite(resultSprite);
-                $.Game.screen('riverton').stop();
+                stable.forEach(function (horse) {
+                    that.removeSprite(horse);
+                });
+                player.horse.resetScale();
+                $.Game.screen('track').stop();
                 $.Game.screen('train').start();
             }, 2000);
         },

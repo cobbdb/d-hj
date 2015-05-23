@@ -22,4 +22,4 @@ $.Game.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };*/
-$.Game.run();
+$.Game.run(true);

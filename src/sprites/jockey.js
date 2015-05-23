@@ -1,5 +1,5 @@
 var $ = require('dragonjs'),
-    Namer = require('../namer.js'),
+    Roster = require('../picker.js'),
     Stats = require('../jockey-stats.js');
 
 module.exports = function (opts) {
@@ -19,7 +19,7 @@ module.exports = function (opts) {
         pos: $.Point(100, 100),
         depth: 2
     }).extend({
-        showname: opts.showname || Namer.next.jockey,
+        showname: opts.showname || Roster.next.jockey.name,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {

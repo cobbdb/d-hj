@@ -16,7 +16,7 @@ module.exports = $.ui.Button({
         $.Game.screen('train').stop();
         $.Game.screen('gear').stop();
         $.Game.screen('care').stop();
-        $.Game.screen('riverton').start();
+        $.Game.screen('track').start();
     }
 }).extend({
     width: width,

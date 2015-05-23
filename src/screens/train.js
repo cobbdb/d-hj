@@ -4,7 +4,8 @@ var $ = require('dragonjs'),
     ranks = require('../sprites/shop/ranks.js'),
     TrainLabel = require('../sprites/shop/train-label.js'),
     StatLabel = require('../sprites/shop/stat-label.js'),
-    addRank = require('../sprites/buttons/add-rank.js');
+    addRank = require('../sprites/buttons/add-rank.js'),
+    shopStats = require('../shop-stats.js');
 
 module.exports = $.Screen({
     name: 'train',
@@ -19,7 +20,12 @@ module.exports = $.Screen({
         }),
         addRank('coach'),
         addRank('facility', function () {
-            player.horse.coreStats.body += 1;
+            var steps = [150, 130, 110, 90, 70],
+                bonus = global.Math.floor(
+                    global.Math.random() * 50
+                ),
+                gain = steps[shopStats.facility - 1] + bonus;
+            player.horse.coreStats.body += gain;
             player.horse.refreshStats();
         }),
         addRank('groom'),
