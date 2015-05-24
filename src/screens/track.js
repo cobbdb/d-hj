@@ -2,13 +2,13 @@ var BaseClass = require('baseclassjs'),
     $ = require('dragonjs'),
     player = require('../player.js'),
     Util = require('../util.js'),
-    result = require('../sprites/raceresult.js'),
-    countdown = require('../sprites/countdown.js');
+    LaneName = require('../sprites/track/lanename.js');
 
 /**
  */
 module.exports = function (opts) {
-    var stable = [];
+    var stable = [],
+        lanenames = [];
 
     return $.Screen({
         name: 'track',
@@ -16,37 +16,15 @@ module.exports = function (opts) {
             require('../collisions/racetrack.js')
         ],
         spriteSet: [
-            countdown
-        ]
+        ],
+        depth: 0
     }).extend({
         buildStable: BaseClass.Abstract,
         getStable: function () {
             return stable;
         },
         start: function () {
-            var dorace = this.race,
-                lanes;
-
-            function count(time) {
-                countdown.start();
-                return function () {
-                    if (time > 0) {
-                        // Keep counting down to zero.
-                        countdown.text = time;
-                        global.setTimeout(
-                            count(time - 1),
-                            1000
-                        );
-                    } else {
-                        // Start the race and show final count frame.
-                        countdown.text = "and they're off!";
-                        global.setTimeout(function () {
-                            countdown.stop();
-                        }, 1000);
-                        dorace();
-                    }
-                };
-            }
+            var lanes;
 
             // Build the stable and assign lanes.
             stable = this.buildStable().concat(
@@ -60,12 +38,19 @@ module.exports = function (opts) {
 
             // Position the horses on their marks.
             stable.forEach(function (horse, i) {
-                horse.pos.x = 0;
+                horse.pos.x = 20;
                 horse.pos.y = lanes[i] * 28 + 40;
+                lanenames[i] = LaneName({
+                    name: i + 1,
+                    longname: horse.showname,
+                    pos: $.Point(2, i * 28 + 40)
+                });
+            });
+            this.addSprites({
+                set: lanenames
             });
 
-            // Begin the countdown.
-            count(4)();
+            $.Game.screen('startrace').start();
             this.base.start();
         },
         race: function () {
@@ -74,21 +59,20 @@ module.exports = function (opts) {
             });
         },
         endRace: function (playerWon, winner) {
-            var that = this,
-                resultSprite = playerWon ? result.win : result.lose;
-            stable.forEach(function (horse) {
+            var that = this;
+            $.Game.screen('raceresult').start(playerWon);
+            stable.forEach(function (horse, i) {
                 horse.speed.x = 0;
-            });
-            this.addSprites({
-                set: resultSprite
+                lanenames[i].pause();
             });
             global.setTimeout(function () {
-                that.removeSprite(resultSprite);
-                stable.forEach(function (horse) {
+                stable.forEach(function (horse, i) {
                     that.removeSprite(horse);
+                    that.removeSprite(lanenames[i]);
                 });
                 player.horse.resetScale();
-                $.Game.screen('track').stop();
+                $.Game.screen('raceresult').stop();
+                that.stop();
                 $.Game.screen('train').start();
             }, 2000);
         },

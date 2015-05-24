@@ -4,7 +4,6 @@ var $ = require('dragonjs'),
 module.exports = $.ui.Label({
     name: 'countdown',
     text: '-99',
-    drawing: false,
     pos: $.Point(
         $.canvas.width / 2,
         $.canvas.height / 2
@@ -14,8 +13,5 @@ module.exports = $.ui.Label({
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         ctx.fillStyle = 'black';
-    },
-    one: {
-        ready: BaseClass.Stub
     }
 });

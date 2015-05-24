@@ -14,6 +14,8 @@ $.Game.addScreens([
     require('./screens/gear.js'),
     require('./screens/train.js'),
     require('./screens/care.js'),
+    require('./screens/startrace.js'),
+    require('./screens/raceresult.js'),
     riverton
 ]);
 /*$.Game.currentTrack = riverton;
@@ -22,4 +24,4 @@ $.Game.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };*/
-$.Game.run(true);
+$.Game.run(true, true);
