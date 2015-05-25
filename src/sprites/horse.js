@@ -10,7 +10,7 @@ var $ = require('dragonjs'),
  */
 module.exports = function (opts) {
     var theta = 3,
-        height, starty;
+        height, starty, trot;
     opts = opts || {};
 
     return $.Sprite({
@@ -65,12 +65,13 @@ module.exports = function (opts) {
         race: function () {
             this.racing = true;
             starty = this.pos.y;
+            trot = 0.08 * $.random();
             this.refreshStats();
             this.speed.x = this.adjStats.body / 600;
         },
         update: function () {
             if (this.racing) {
-                theta += 0.15 + 0.06 * $.random();
+                theta += 0.15 + trot;
                 if (theta > 3) {
                     height = 6 + 3 * $.random();
                 }

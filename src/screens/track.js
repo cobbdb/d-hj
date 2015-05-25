@@ -39,11 +39,11 @@ module.exports = function (opts) {
             // Position the horses on their marks.
             stable.forEach(function (horse, i) {
                 horse.pos.x = 20;
-                horse.pos.y = lanes[i] * 28 + 40;
+                horse.pos.y = lanes[i] * 30 + 40;
                 lanenames[i] = LaneName({
                     name: i + 1,
                     longname: horse.showname,
-                    pos: $.Point(2, i * 28 + 40)
+                    pos: $.Point(2, i * 30 + 40)
                 });
             });
             this.addSprites({
