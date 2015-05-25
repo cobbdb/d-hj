@@ -1,9 +1,11 @@
+var $ = require('dragonjs');
+
 module.exports = {
     shuffle: function (arr) {
         var i, j, x;
         for (i = 0; i < arr.length; i += 1) {
             j = parseInt(
-                Math.random() * (i + 1)
+                $.random() * (i + 1)
             );
             x = arr[i];
             arr[i] = arr[j];

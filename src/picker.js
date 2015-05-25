@@ -1,10 +1,11 @@
-var stable = require('./data/horses.json');
+var $ = require('dragonjs'),
+    stable = require('./data/horses.json');
 
 module.exports = {
     next: {
         get horse () {
             var index = global.Math.floor(
-                global.Math.random() * stable.length
+                $.random() * stable.length
             );
             return stable[index];
         },

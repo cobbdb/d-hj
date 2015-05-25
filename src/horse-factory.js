@@ -1,11 +1,12 @@
-var Horse = require('./sprites/horse.js'),
+var $ = require('dragonjs'),
+    Horse = require('./sprites/horse.js'),
     Picker = require('./picker.js'),
     Stats = require('./horse-stats.js');
 
 function scale(difficulty) {
     var steps = [100, 180, 240, 280, 300],
         bonus = global.Math.floor(
-            global.Math.random() * 50
+            $.random() * 50
         );
     return steps[difficulty] + bonus;
 }

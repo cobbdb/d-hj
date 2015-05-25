@@ -70,11 +70,12 @@ module.exports = function (opts) {
                     that.removeSprite(horse);
                     that.removeSprite(lanenames[i]);
                 });
-                player.horse.resetScale();
+                player.horse.endRace();
                 $.Game.screen('raceresult').stop();
                 that.stop();
                 $.Game.screen('train').start();
             }, 2000);
+            this.pause();
         },
         draw: function (ctx) {
             ctx.fillStyle = '#67fb04';

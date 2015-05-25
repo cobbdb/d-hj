@@ -9,6 +9,8 @@ var $ = require('dragonjs'),
  * @param {String} [opts.showname]
  */
 module.exports = function (opts) {
+    var theta = 3,
+        height, starty;
     opts = opts || {};
 
     return $.Sprite({
@@ -47,6 +49,7 @@ module.exports = function (opts) {
         showname: opts.showname || Roster.next.horse.name,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
+        racing: false,
         refreshStats: function (mod) {
             var set = this.coreStats.clone();
             mod = mod || function () {};
@@ -54,13 +57,29 @@ module.exports = function (opts) {
             this.sickness(set);
             this.adjStats = set;
         },
-        resetScale: function () {
+        endRace: function () {
+            this.racing = false;
             this.scale = 0.5;
         },
         sickness: Illness.none,
         race: function () {
+            this.racing = true;
+            starty = this.pos.y;
             this.refreshStats();
             this.speed.x = this.adjStats.body / 600;
+        },
+        update: function () {
+            if (this.racing) {
+                theta += 0.15 + 0.06 * $.random();
+                if (theta > 3) {
+                    height = 6 + 3 * $.random();
+                }
+                theta %= 3.14;
+                this.pos.y = starty - height * global.Math.abs(
+                    global.Math.sin(theta)
+                );
+            }
+            this.base.update();
         }
     });
 };

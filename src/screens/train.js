@@ -22,7 +22,7 @@ module.exports = $.Screen({
         addRank('facility', function () {
             var steps = [150, 130, 110, 90, 70],
                 bonus = global.Math.floor(
-                    global.Math.random() * 50
+                    $.random() * 50
                 ),
                 gain = steps[shopStats.facility - 1] + bonus;
             player.horse.coreStats.body += gain;
