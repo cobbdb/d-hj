@@ -6,7 +6,7 @@ var $ = require('dragonjs'),
 function scale(difficulty) {
     var steps = [100, 180, 240, 280, 300],
         bonus = global.Math.floor(
-            $.random() * 50
+            $.random() * 30
         );
     return steps[difficulty] + bonus;
 }

@@ -19,6 +19,7 @@ module.exports = function (opts) {
         ],
         depth: 0
     }).extend({
+        trackLength: 0,
         buildStable: BaseClass.Abstract,
         getStable: function () {
             return stable;
@@ -54,8 +55,9 @@ module.exports = function (opts) {
             this.base.start();
         },
         race: function () {
+            var length = this.trackLength;
             stable.forEach(function (horse) {
-                horse.race();
+                horse.race(length);
             });
         },
         endRace: function (playerWon, winner) {

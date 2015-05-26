@@ -20,7 +20,7 @@ module.exports = $.Screen({
         }),
         addRank('coach'),
         addRank('facility', function () {
-            var steps = [150, 130, 110, 90, 70],
+            var steps = [250, 200, 150, 100, 100],
                 bonus = global.Math.floor(
                     $.random() * 50
                 ),

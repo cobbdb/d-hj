@@ -5245,7 +5245,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     38: [ function(require, module, exports) {
         (function(global) {
-            var i, len = 30, set = [], curr = 0;
+            var i, len = 50, set = [], curr = 0;
             for (i = 0; i < len; i += 1) {
                 set.push(global.Math.random());
             }
@@ -5888,7 +5888,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             var $ = require("dragonjs"), Horse = require("./sprites/horse.js"), Picker = require("./picker.js"), Stats = require("./horse-stats.js");
             function scale(difficulty) {
-                var steps = [ 100, 180, 240, 280, 300 ], bonus = global.Math.floor($.random() * 50);
+                var steps = [ 100, 180, 240, 280, 300 ], bonus = global.Math.floor($.random() * 30);
                 return steps[difficulty] + bonus;
             }
             module.exports = function(difficulty) {
@@ -6096,6 +6096,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     spriteSet: [],
                     depth: 0
                 }).extend({
+                    trackLength: 0,
                     buildStable: BaseClass.Abstract,
                     getStable: function() {
                         return stable;
@@ -6124,8 +6125,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         this.base.start();
                     },
                     race: function() {
+                        var length = this.trackLength;
                         stable.forEach(function(horse) {
-                            horse.race();
+                            horse.race(length);
                         });
                     },
                     endRace: function(playerWon, winner) {
@@ -6166,8 +6168,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     63: [ function(require, module, exports) {
         var Track = require("../track.js"), makeHorse = require("../../horse-factory.js");
         module.exports = Track().extend({
+            trackLength: 3e3,
             buildStable: function() {
-                return [ makeHorse(2), makeHorse(2), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1) ];
+                return [ makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1) ];
             }
         });
     }, {
@@ -6183,7 +6186,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     player.jockey.coreStats.body += 1;
                     player.jockey.refreshStats();
                 }), addRank("coach"), addRank("facility", function() {
-                    var steps = [ 150, 130, 110, 90, 70 ], bonus = global.Math.floor($.random() * 50), gain = steps[shopStats.facility - 1] + bonus;
+                    var steps = [ 250, 200, 150, 100, 100 ], bonus = global.Math.floor($.random() * 50), gain = steps[shopStats.facility - 1] + bonus;
                     player.horse.coreStats.body += gain;
                     player.horse.refreshStats();
                 }), addRank("groom"), addRank("doctor"), TrainLabel("Gym"), TrainLabel("Coach"), TrainLabel("Facility"), TrainLabel("Groom"), TrainLabel("Doctor"), StatLabel("horse", "body"), StatLabel("horse", "mind"), StatLabel("horse", "health"), StatLabel("jockey", "body"), StatLabel("jockey", "mind"), StatLabel("jockey", "temper") ],
@@ -6381,7 +6384,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js"), shopStats = require("../shop-stats.js");
             module.exports = function(opts) {
-                var theta = 3, height, starty, trot;
+                var theta = 3, height, starty, boost, trot, stride;
                 opts = opts || {};
                 return $.Sprite({
                     name: "horse",
@@ -6423,18 +6426,26 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         this.scale = .5;
                     },
                     sickness: Illness.none,
-                    race: function() {
+                    race: function(trackLength) {
                         this.racing = true;
                         starty = this.pos.y;
                         trot = .08 * $.random();
+                        boost = $.random() * 10 + 2;
                         this.refreshStats();
-                        this.speed.x = this.adjStats.body / 600;
+                        this.speed.x = stride = this.adjStats.body / trackLength;
                     },
                     update: function() {
                         if (this.racing) {
                             theta += .15 + trot;
-                            if (theta > 3) {
+                            if (theta > 3.14) {
                                 height = 6 + 3 * $.random();
+                                boost -= 1;
+                                if (boost < -8) {
+                                    boost = $.random() * 10 + 2;
+                                    this.speed.x = stride * 2.5;
+                                } else if (boost < 0) {
+                                    this.speed.x = stride;
+                                }
                             }
                             theta %= 3.14;
                             this.pos.y = starty - height * global.Math.abs(global.Math.sin(theta));

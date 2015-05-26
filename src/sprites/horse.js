@@ -10,7 +10,7 @@ var $ = require('dragonjs'),
  */
 module.exports = function (opts) {
     var theta = 3,
-        height, starty, trot;
+        height, starty, boost, trot, stride;
     opts = opts || {};
 
     return $.Sprite({
@@ -62,18 +62,28 @@ module.exports = function (opts) {
             this.scale = 0.5;
         },
         sickness: Illness.none,
-        race: function () {
+        race: function (trackLength) {
             this.racing = true;
             starty = this.pos.y;
             trot = 0.08 * $.random();
+            boost = $.random() * 10 + 2;
             this.refreshStats();
-            this.speed.x = this.adjStats.body / 600;
+            this.speed.x = stride = this.adjStats.body / trackLength;
         },
         update: function () {
             if (this.racing) {
                 theta += 0.15 + trot;
-                if (theta > 3) {
+                if (theta > 3.14) {
                     height = 6 + 3 * $.random();
+                    boost -= 1;
+                    if (boost < -8) {
+                        // Reset boost.
+                        boost = $.random() * 10 + 2;
+                        this.speed.x = stride * 2.5;
+                    } else if (boost < 0) {
+                        // Boost is over - normal speed for a bit.
+                        this.speed.x = stride;
+                    }
                 }
                 theta %= 3.14;
                 this.pos.y = starty - height * global.Math.abs(
