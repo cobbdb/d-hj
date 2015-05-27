@@ -9,8 +9,9 @@ var $ = require('dragonjs'),
  * @param {String} [opts.showname]
  */
 module.exports = function (opts) {
-    var theta = 3,
-        height, starty, boost, trot, stride;
+    var height, starty, boost, trot, stride,
+        lean = -1,
+        theta = 3;
     opts = opts || {};
 
     return $.Sprite({
@@ -37,6 +38,7 @@ module.exports = function (opts) {
             'collide/screenedge/right': function () {
                 this.speed.x = 0;
                 this.scale = 2;
+                this.rotation = 0;
                 this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
                 this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
                 $.Game.screen('track').endRace(
@@ -60,6 +62,7 @@ module.exports = function (opts) {
         endRace: function () {
             this.racing = false;
             this.scale = 0.5;
+            this.rotation = 0;
         },
         sickness: Illness.none,
         race: function (trackLength) {
@@ -75,6 +78,10 @@ module.exports = function (opts) {
                 theta += 0.15 + trot;
                 if (theta > 3.14) {
                     height = 6 + 3 * $.random();
+                    lean *= -1;
+                    this.rotation = lean * 0.1 * (
+                        1 + $.random()
+                    );
                     boost -= 1;
                     if (boost < -8) {
                         // Reset boost.
