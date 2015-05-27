@@ -9,9 +9,17 @@ var $ = require('dragonjs'),
  * @param {String} [opts.showname]
  */
 module.exports = function (opts) {
-    var height, starty, boost, trot, stride,
+    var height, starty,
+        // Number of trots for speed boost.
+        boost,
+        // Speed of the up and down animation cycle.
+        trot,
+        // Baseline horizontal speed.
+        stride,
+        // Rotate left or right.
         lean = -1,
-        theta = 3;
+        // Current point in animation cycle.
+        theta = 3.14;
     opts = opts || {};
 
     return $.Sprite({

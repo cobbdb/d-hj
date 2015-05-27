@@ -4572,8 +4572,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.set.forEach(function(item) {
                         if (this.updating && item.updating && !item.removed) {
                             item.update();
-                        } else {
-                            true;
                         }
                     }, this);
                 },
@@ -5497,9 +5495,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 teardown: function() {
                     var i;
-                    if (this.updating) {
-                        this.base.teardown();
-                    }
+                    this.base.teardown();
                     for (i in collisionMap) {
                         collisionMap[i].teardown();
                     }
@@ -6469,7 +6465,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js"), shopStats = require("../shop-stats.js");
             module.exports = function(opts) {
-                var height, starty, boost, trot, stride, lean = -1, theta = 3;
+                var height, starty, boost, trot, stride, lean = -1, theta = 3.14;
                 opts = opts || {};
                 return $.Sprite({
                     name: "horse",
