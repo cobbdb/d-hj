@@ -4335,13 +4335,17 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     13: [ function(require, module, exports) {
         var Dimension = require("./dimension.js"), Point = require("./point.js"), log = require("./log.js");
         module.exports = function(opts) {
-            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size || Dimension(), start = opts.start || Point(), start = Point(size.width * start.x, size.height * start.y), direction = 1;
+            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size, start = opts.start || Point(), firstFrame = Point(), direction = 1;
             return {
                 size: size,
                 frame: 0,
                 speed: opts.speed || 0,
                 load: function(cb) {
-                    opts.sheet.load(cb);
+                    opts.sheet.load(function(img) {
+                        size = size || Dimension(img.width, img.height);
+                        firstFrame = Point(size.width * start.x, size.height * start.y);
+                        cb(img);
+                    });
                 },
                 start: function() {
                     timeLastFrame = Date.now();
@@ -4389,7 +4393,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     ctx.save();
                     ctx.translate(pos.x + finalSize.width / 2, pos.y + finalSize.height / 2);
                     ctx.rotate(rotation);
-                    ctx.drawImage(opts.sheet, start.x + offset, start.y, size.width, size.height, -finalSize.width / 2, -finalSize.height / 2, finalSize.width, finalSize.height);
+                    ctx.drawImage(opts.sheet, firstFrame.x + offset, firstFrame.y, size.width, size.height, -finalSize.width / 2, -finalSize.height / 2, finalSize.width, finalSize.height);
                     ctx.restore();
                 }
             };
