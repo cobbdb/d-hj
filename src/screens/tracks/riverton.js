@@ -14,10 +14,23 @@ module.exports = Track().extend({
      * @return {Array of Sprites}
      */
     buildVenue: function () {
-        return [
+        // Build the lanes.
+        var lanes = [
+            // makeLane({}),
             // makeLane({}),
             // makeLane({})
         ];
+        /**
+         * >>>>>>>> everything below here can be
+         * pushed inside of the Track class.
+         */
+        // Get the lane items.
+        var items = [];
+        lanes.forEach(function (lane) {
+            items.concat(lane.items);
+        });
+        // Return the list of all lanes and items.
+        return lanes.concat(items);
     },
     /**
      * @deprecated
