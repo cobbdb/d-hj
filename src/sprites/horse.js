@@ -49,7 +49,7 @@ module.exports = function (opts) {
                 this.rotation = 0;
                 this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
                 this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
-                $.Game.screen('track').endRace(
+                $.screen('track').endRace(
                     this === require('../player.js').horse,
                     this
                 );

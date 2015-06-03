@@ -16,9 +16,9 @@ module.exports = $.ui.Button({
         size: $.Dimension(11, 35)
     },
     onpress: function () {
-        $.Game.screen('train').stop();
-        $.Game.screen('care').stop();
-        $.Game.screen('gear').start();
+        $.screen('train').stop();
+        $.screen('care').stop();
+        $.screen('gear').start();
         this.pause();
         require('./open-train.js').start();
         require('./open-care.js').start();

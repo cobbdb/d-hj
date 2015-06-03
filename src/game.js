@@ -10,7 +10,7 @@ $.Font.load({
     name: 'Wonder',
     src: '8-bit-wonder.TTF'
 });
-$.Game.addScreens([
+$.addScreens([
     require('./screens/gear.js'),
     require('./screens/train.js'),
     require('./screens/care.js'),
@@ -18,10 +18,10 @@ $.Game.addScreens([
     require('./screens/raceresult.js'),
     riverton
 ]);
-/*$.Game.currentTrack = riverton;
-$.Game.loadTrack = function (track) {
+/*$.currentTrack = riverton;
+$.loadTrack = function (track) {
     this.currentTrack.stop();
     this.currentTrack = track;
     this.currentTrack.start();
 };*/
-$.Game.run(true, true);
+$.run(true, true);

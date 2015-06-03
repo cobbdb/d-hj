@@ -36,8 +36,8 @@ module.exports = $.ClearSprite({
         'colliding/screentap': function (tap) {
             // Close when tapped outside of the menu.
             if (!tap.intersects(mask)) {
-                $.Game.screen('shop').stop();
-                $.Game.screen('training').start();
+                $.screen('shop').stop();
+                $.screen('training').start();
             }
         }
     }

@@ -13,10 +13,10 @@ module.exports = $.ui.Button({
         size: $.Dimension(11, 35)
     },
     onpress: function () {
-        $.Game.screen('train').stop();
-        $.Game.screen('gear').stop();
-        $.Game.screen('care').stop();
-        $.Game.screen('track').start();
+        $.screen('train').stop();
+        $.screen('gear').stop();
+        $.screen('care').stop();
+        $.screen('track').start();
     }
 }).extend({
     width: width,

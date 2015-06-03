@@ -4,10 +4,8 @@ var $ = require('dragonjs'),
     Stats = require('./horse-stats.js');
 
 function scale(difficulty) {
-    var steps = [100, 180, 240, 280, 300],
-        bonus = global.Math.floor(
-            $.random() * 30
-        );
+    var steps = [1, 1.2, 1.4, 1.6, 1.8],
+        bonus = $.random() * 0.1;
     return steps[difficulty] + bonus;
 }
 
@@ -23,7 +21,7 @@ module.exports = function (difficulty) {
     return Horse({
         showname: horse.name,
         stats: Stats({
-            body: horse.body + scale(difficulty)
+            body: horse.body * scale(difficulty)
         })
     });
 };

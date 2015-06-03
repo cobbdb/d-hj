@@ -25,7 +25,7 @@ module.exports = $.Screen({
                     global.setTimeout(function () {
                         that.stop();
                     }, 1000);
-                    $.Game.screen('track').race();
+                    $.screen('track').race();
                 }
             };
         }
