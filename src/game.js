@@ -13,10 +13,7 @@ $.Font.load({
 $.addScreens([
     require('./screens/gear.js'),
     require('./screens/train.js'),
-    require('./screens/care.js'),
-    require('./screens/startrace.js'),
-    require('./screens/raceresult.js'),
-    riverton
+    require('./screens/care.js')
 ]);
 /*$.currentTrack = riverton;
 $.loadTrack = function (track) {

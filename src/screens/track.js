@@ -1,4 +1,6 @@
 var $ = require('dragonjs'),
+    StartRace = require('./startrace.js'),
+    RaceResult = require('./raceresult.js'),
     player = require('../player.js'),
     LaneOrdering = require('../lane-ordering.js');
 
@@ -23,15 +25,25 @@ module.exports = function (opts) {
         collisionSets: [
             require('../collisions/racetrack.js')
         ],
-        spriteSet: [
-            lanes.concat(items)
-        ],
-        depth: 0
+        spriteSet: lanes.concat(items),
+        depth: 0,
+        on: {
+            ready: function () {
+                this.start();
+            }
+        }
     }).extend({
         trackLength: 0,
         start: function () {
             $.screen('startrace').start();
             this.base.start();
+        },
+        load: function (cb) {
+            $.addScreens([
+                StartRace(),
+                RaceResult()
+            ]);
+            this.base.load(cb);
         },
         race: function () {
             lanes.forEach(function (lane) {
@@ -49,7 +61,8 @@ module.exports = function (opts) {
             $.screen('raceresult').start(playerWon);
             global.setTimeout(function () {
                 player.horse.endRace();
-                $.screen('raceresult').stop();
+                $.removeScreen('startrace');
+                $.removeScreen('raceresult');
                 $.removeScreen('track');
                 $.screen('train').start();
             }, 2000);

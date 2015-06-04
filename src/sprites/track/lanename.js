@@ -7,6 +7,7 @@ var $ = require('dragonjs');
 module.exports = function (opts) {
     return $.ui.Label({
         text: opts.name,
+        depth: 10,
         pos: opts.pos,
         style: function (ctx) {
             ctx.font = '12px Wonder';

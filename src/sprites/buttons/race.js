@@ -1,5 +1,5 @@
 var $ = require('dragonjs'),
-    Riverton = require('../../screens/riverton.js'),
+    Riverton = require('../../screens/tracks/riverton.js'),
     width = 0.18;
 
 module.exports = $.ui.Button({

@@ -4335,14 +4335,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     13: [ function(require, module, exports) {
         var Dimension = require("./dimension.js"), Point = require("./point.js"), log = require("./log.js");
         module.exports = function(opts) {
-            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size, start = opts.start || Point(), firstFrame = Point(), direction = 1;
+            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size || Dimension(), start = opts.start || Point(), firstFrame = Point(), direction = 1;
             return {
                 size: size,
                 frame: 0,
                 speed: opts.speed || 0,
                 load: function(cb) {
+                    cb = cb || function() {};
                     opts.sheet.load(function(img) {
-                        size = size || Dimension(img.width, img.height);
+                        size.width = size.width || img.width;
+                        size.height = size.height || img.height;
                         firstFrame = Point(size.width * start.x, size.height * start.y);
                         cb(img);
                     });
@@ -4508,7 +4510,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./dimension.js": 24,
         "./point.js": 40,
         "./shape.js": 45,
-        "./vector.js": 53
+        "./vector.js": 54
     } ],
     17: [ function(require, module, exports) {
         var BaseClass = require("baseclassjs"), Sprite = require("./sprite.js");
@@ -4561,8 +4563,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                     return this;
                 },
-                remove: function(item) {
-                    item.removed = true;
+                remove: function(name) {
+                    this.map[name].removed = true;
                     removed = true;
                 },
                 clear: function() {
@@ -4613,7 +4615,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
             return Item().extend({
                 id: Counter.nextId,
-                name: opts.name,
+                name: opts.name || "dragon-collidable",
                 mask: opts.mask || Rectangle(),
                 offset: opts.offset || Point(),
                 move: function(pos) {
@@ -4709,6 +4711,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {} ],
     21: [ function(require, module, exports) {
+        var Game = require("./game.js"), Util = require("./util.js");
         module.exports = {
             Shape: require("./shape.js"),
             Circle: require("./circle.js"),
@@ -4720,6 +4723,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             FrameCounter: require("./frame-counter.js"),
             IdCounter: require("./id-counter.js"),
             random: require("./random.js"),
+            range: Util.range,
+            shuffle: Util.shuffle,
             Mouse: require("./mouse.js"),
             Keyboard: require("./keyboard.js"),
             EventHandler: require("./event-handler.js"),
@@ -4729,7 +4734,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             Font: require("./font.js"),
             CollisionHandler: require("./collision-handler.js"),
             collisions: require("./dragon-collisions.js"),
-            Game: require("./game.js"),
+            screen: Game.screen,
+            addScreens: Game.addScreens,
+            removeScreen: Game.removeScreen,
+            run: Game.run.bind(Game),
+            kill: Game.kill,
             canvas: require("./canvas.js"),
             Screen: require("./screen.js"),
             Collidable: require("./collidable.js"),
@@ -4771,7 +4780,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./ui/decal.js": 50,
         "./ui/label.js": 51,
         "./ui/slider.js": 52,
-        "./vector.js": 53
+        "./util.js": 53,
+        "./vector.js": 54
     } ],
     22: [ function(require, module, exports) {
         module.exports = {
@@ -4946,8 +4956,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     });
                 }
             },
-            removeScreen: function(screen) {
-                screen.removed = true;
+            removeScreen: function(name) {
+                screenMap[name].removed = true;
                 screenRemoved = true;
             },
             run: function(debugMode) {
@@ -5305,7 +5315,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "./canvas.js": 15,
         "./point.js": 40,
-        "./vector.js": 53
+        "./vector.js": 54
     } ],
     40: [ function(require, module, exports) {
         function Point(x, y) {
@@ -5348,7 +5358,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         }
         module.exports = Polar;
     }, {
-        "./vector.js": 53
+        "./vector.js": 54
     } ],
     42: [ function(require, module, exports) {
         (function(global) {
@@ -5417,7 +5427,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./dimension.js": 24,
         "./point.js": 40,
         "./shape.js": 45,
-        "./vector.js": 53
+        "./vector.js": 54
     } ],
     44: [ function(require, module, exports) {
         var BaseClass = require("baseclassjs"), EventHandler = require("./event-handler.js"), Counter = require("./id-counter.js"), SpriteSet = require("./sprite-set.js");
@@ -5471,8 +5481,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 addSprites: function(opts) {
                     this.base.add(opts);
                 },
-                removeSprite: function(sprite) {
-                    this.base.remove(sprite);
+                removeSprite: function(name) {
+                    this.base.remove(name);
                 },
                 clearSprites: function() {
                     this.base.clear();
@@ -5585,6 +5595,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             var BaseClass = require("baseclassjs"), Collidable = require("./collidable.js"), Point = require("./point.js"), Dimension = require("./dimension.js"), Rectangle = require("./rectangle.js");
             module.exports = function(opts) {
                 var loaded = false, stripMap = opts.strips || {}, pos = opts.pos || Point();
+                opts.name = opts.name || "dragon-sprite";
+                opts.startingStrip = opts.startingStrip || global.Object.keys(stripMap)[0];
                 if (!opts.freemask) {
                     opts.mask = opts.mask || Rectangle();
                     opts.offset = Point(opts.mask.x, opts.mask.y);
@@ -5897,6 +5909,35 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../spritesheet.js": 48
     } ],
     53: [ function(require, module, exports) {
+        var random = require("./random.js");
+        module.exports = {
+            shuffle: function(arr) {
+                var i, j, x;
+                for (i = 0; i < arr.length; i += 1) {
+                    j = parseInt(random() * (i + 1));
+                    x = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = x;
+                }
+                return arr;
+            },
+            range: function(start, end) {
+                var i, len, arr = [];
+                if (!end) {
+                    end = start;
+                    start = 0;
+                }
+                len = end - start;
+                for (i = 0; i < len; i += 1) {
+                    arr.push(i + start);
+                }
+                return arr;
+            }
+        };
+    }, {
+        "./random.js": 42
+    } ],
+    54: [ function(require, module, exports) {
         var Polar = require("./polar.js");
         function Vector(x, y) {
             return {
@@ -5923,7 +5964,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "./polar.js": 41
     } ],
-    54: [ function(require, module, exports) {
+    55: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.CollisionHandler({
             name: "racetrack"
@@ -5931,7 +5972,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 21
     } ],
-    55: [ function(require, module, exports) {
+    56: [ function(require, module, exports) {
         module.exports = [ {
             name: "Clydesdale Clive",
             body: 325
@@ -5946,7 +5987,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             body: 254
         } ];
     }, {} ],
-    56: [ function(require, module, exports) {
+    57: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), riverton = require("./screens/tracks/riverton.js");
             global.Cocoon.Utils.setAntialias(false);
@@ -5957,42 +5998,38 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 name: "Wonder",
                 src: "8-bit-wonder.TTF"
             });
-            $.Game.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js"), require("./screens/startrace.js"), require("./screens/raceresult.js"), riverton ]);
-            $.Game.run(true, true);
+            $.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js") ]);
+            $.run(true, true);
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "./screens/care.js": 63,
-        "./screens/gear.js": 64,
-        "./screens/raceresult.js": 65,
-        "./screens/startrace.js": 66,
-        "./screens/tracks/riverton.js": 68,
-        "./screens/train.js": 69,
-        dragonjs: 21
-    } ],
-    57: [ function(require, module, exports) {
-        (function(global) {
-            var $ = require("dragonjs"), Horse = require("./sprites/horse.js"), Picker = require("./picker.js"), Stats = require("./horse-stats.js");
-            function scale(difficulty) {
-                var steps = [ 100, 180, 240, 280, 300 ], bonus = global.Math.floor($.random() * 30);
-                return steps[difficulty] + bonus;
-            }
-            module.exports = function(difficulty) {
-                var horse = Picker.next.horse;
-                return Horse({
-                    showname: horse.name,
-                    stats: Stats({
-                        body: horse.body + scale(difficulty)
-                    })
-                });
-            };
-        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
-    }, {
-        "./horse-stats.js": 58,
-        "./picker.js": 61,
-        "./sprites/horse.js": 76,
+        "./screens/care.js": 66,
+        "./screens/gear.js": 67,
+        "./screens/tracks/riverton.js": 71,
+        "./screens/train.js": 72,
         dragonjs: 21
     } ],
     58: [ function(require, module, exports) {
+        var $ = require("dragonjs"), Horse = require("./sprites/horse.js"), Picker = require("./picker.js"), Stats = require("./horse-stats.js");
+        function scale(difficulty) {
+            var steps = [ 1, 1.2, 1.4, 1.6, 1.8 ], bonus = $.random() * .1;
+            return steps[difficulty] + bonus;
+        }
+        module.exports = function(difficulty) {
+            var horse = Picker.next.horse;
+            return Horse({
+                showname: horse.name,
+                stats: Stats({
+                    body: horse.body * scale(difficulty)
+                })
+            });
+        };
+    }, {
+        "./horse-stats.js": 59,
+        "./picker.js": 64,
+        "./sprites/horse.js": 79,
+        dragonjs: 21
+    } ],
+    59: [ function(require, module, exports) {
         function Stats(opts) {
             opts = opts || {};
             return {
@@ -6006,7 +6043,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         }
         module.exports = Stats;
     }, {} ],
-    59: [ function(require, module, exports) {
+    60: [ function(require, module, exports) {
         module.exports = {
             none: function() {},
             flu: function(set) {
@@ -6022,7 +6059,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             swampFever: function() {}
         };
     }, {} ],
-    60: [ function(require, module, exports) {
+    61: [ function(require, module, exports) {
         function Stats(opts) {
             opts = opts || {};
             return {
@@ -6036,7 +6073,40 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         }
         module.exports = Stats;
     }, {} ],
-    61: [ function(require, module, exports) {
+    62: [ function(require, module, exports) {
+        var $ = require("dragonjs"), Lane = require("./sprites/track/lane.js"), HayBale = require("./sprites/track/items/hay-bale.js"), player = require("./player.js"), makeHorse = require("./horse-factory.js"), itemCount = {
+            none: 0,
+            low: 4,
+            medium: 8,
+            high: 12
+        };
+        module.exports = function(difficulty, opts) {
+            var i, len = itemCount[opts.density], bonus = $.random() * itemCount[opts.density] / 2, itemSet = [];
+            len += bonus;
+            for (i = 0; i < len; i += 1) {
+                itemSet.push(HayBale({}));
+            }
+            return Lane({
+                horse: difficulty ? makeHorse(difficulty - 1) : player.horse,
+                items: itemSet
+            });
+        };
+    }, {
+        "./horse-factory.js": 58,
+        "./player.js": 65,
+        "./sprites/track/items/hay-bale.js": 85,
+        "./sprites/track/lane.js": 86,
+        dragonjs: 21
+    } ],
+    63: [ function(require, module, exports) {
+        var $ = require("dragonjs");
+        module.exports = function(length) {
+            return $.shuffle($.range(length));
+        };
+    }, {
+        dragonjs: 21
+    } ],
+    64: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), stable = require("./data/horses.json");
             module.exports = {
@@ -6052,10 +6122,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "./data/horses.json": 55,
+        "./data/horses.json": 56,
         dragonjs: 21
     } ],
-    62: [ function(require, module, exports) {
+    65: [ function(require, module, exports) {
         var Horse = require("./sprites/horse.js"), Jockey = require("./sprites/jockey.js");
         module.exports = {
             money: 100,
@@ -6068,11 +6138,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             jockey: Jockey()
         };
     }, {
-        "./shop-stats.js": 70,
-        "./sprites/horse.js": 76,
-        "./sprites/jockey.js": 77
+        "./shop-stats.js": 73,
+        "./sprites/horse.js": 79,
+        "./sprites/jockey.js": 80
     } ],
-    63: [ function(require, module, exports) {
+    66: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.Screen({
             name: "care",
@@ -6086,13 +6156,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/buttons/open-care.js": 72,
-        "../sprites/buttons/open-gear.js": 73,
-        "../sprites/buttons/open-train.js": 74,
-        "../sprites/buttons/race.js": 75,
+        "../sprites/buttons/open-care.js": 75,
+        "../sprites/buttons/open-gear.js": 76,
+        "../sprites/buttons/open-train.js": 77,
+        "../sprites/buttons/race.js": 78,
         dragonjs: 21
     } ],
-    64: [ function(require, module, exports) {
+    67: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.Screen({
             name: "gear",
@@ -6106,131 +6176,119 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/buttons/open-care.js": 72,
-        "../sprites/buttons/open-gear.js": 73,
-        "../sprites/buttons/open-train.js": 74,
-        "../sprites/buttons/race.js": 75,
+        "../sprites/buttons/open-care.js": 75,
+        "../sprites/buttons/open-gear.js": 76,
+        "../sprites/buttons/open-train.js": 77,
+        "../sprites/buttons/race.js": 78,
         dragonjs: 21
     } ],
-    65: [ function(require, module, exports) {
+    68: [ function(require, module, exports) {
         var $ = require("dragonjs"), result = require("../sprites/track/raceresult.js");
-        module.exports = $.Screen({
-            name: "raceresult",
-            spriteSet: [ result.win, result.lose ],
-            depth: 10
-        }).extend({
-            start: function(win) {
-                if (win) {
-                    result.win.start();
-                } else {
-                    result.lose.start();
-                }
-                this.base.start();
-            },
-            stop: function() {
-                result.win.stop();
-                result.lose.stop();
-                this.base.stop();
-            }
-        });
-    }, {
-        "../sprites/track/raceresult.js": 83,
-        dragonjs: 21
-    } ],
-    66: [ function(require, module, exports) {
-        (function(global) {
-            var $ = require("dragonjs"), countdown = require("../sprites/track/countdown.js");
-            module.exports = $.Screen({
-                name: "startrace",
-                spriteSet: [ countdown ],
+        module.exports = function(opts) {
+            return $.Screen({
+                name: "raceresult",
+                spriteSet: [ result.win, result.lose ],
                 depth: 10
             }).extend({
-                start: function() {
-                    var that = this;
-                    function count(time) {
-                        return function() {
-                            if (time > 0) {
-                                countdown.text = time;
-                                global.setTimeout(count(time - 1), 1e3);
-                            } else {
-                                countdown.text = "and they're off!";
-                                global.setTimeout(function() {
-                                    that.stop();
-                                }, 1e3);
-                                $.Game.screen("track").race();
-                            }
-                        };
+                start: function(win) {
+                    if (win) {
+                        result.win.start();
+                    } else {
+                        result.lose.start();
                     }
-                    count(4)();
                     this.base.start();
+                },
+                stop: function() {
+                    result.win.stop();
+                    result.lose.stop();
+                    this.base.stop();
                 }
             });
-        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+        };
     }, {
-        "../sprites/track/countdown.js": 81,
+        "../sprites/track/raceresult.js": 88,
         dragonjs: 21
     } ],
-    67: [ function(require, module, exports) {
+    69: [ function(require, module, exports) {
         (function(global) {
-            var BaseClass = require("baseclassjs"), $ = require("dragonjs"), player = require("../player.js"), Util = require("../util.js"), LaneName = require("../sprites/track/lanename.js");
+            var $ = require("dragonjs"), countdown = require("../sprites/track/countdown.js");
             module.exports = function(opts) {
-                var stable = [], lanenames = [];
+                return $.Screen({
+                    name: "startrace",
+                    spriteSet: [ countdown ],
+                    depth: 10
+                }).extend({
+                    start: function() {
+                        var that = this;
+                        function count(time) {
+                            return function() {
+                                if (time > 0) {
+                                    countdown.text = time;
+                                    global.setTimeout(count(time - 1), 1e3);
+                                } else {
+                                    countdown.text = "and they're off!";
+                                    global.setTimeout(function() {
+                                        that.stop();
+                                    }, 1e3);
+                                    $.screen("track").race();
+                                }
+                            };
+                        }
+                        count(4)();
+                        this.base.start();
+                    }
+                });
+            };
+        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+    }, {
+        "../sprites/track/countdown.js": 84,
+        dragonjs: 21
+    } ],
+    70: [ function(require, module, exports) {
+        (function(global) {
+            var $ = require("dragonjs"), StartRace = require("./startrace.js"), RaceResult = require("./raceresult.js"), player = require("../player.js"), LaneOrdering = require("../lane-ordering.js");
+            module.exports = function(opts) {
+                var items = [], lanes = opts.lanes, laneOrdering = LaneOrdering(lanes.length);
+                lanes.forEach(function(lane, i) {
+                    lane.order(laneOrdering[i]);
+                    items = items.concat(lane.getSprites());
+                });
                 return $.Screen({
                     name: "track",
                     collisionSets: [ require("../collisions/racetrack.js") ],
-                    spriteSet: [],
-                    depth: 0
+                    spriteSet: lanes.concat(items),
+                    depth: 0,
+                    on: {
+                        ready: function() {
+                            this.start();
+                        }
+                    }
                 }).extend({
                     trackLength: 0,
-                    buildStable: BaseClass.Abstract,
-                    getStable: function() {
-                        return stable;
-                    },
                     start: function() {
-                        var lanes;
-                        stable = this.buildStable().concat(player.horse);
-                        lanes = Util.range(stable.length);
-                        Util.shuffle(lanes);
-                        this.addSprites({
-                            set: stable
-                        });
-                        stable.forEach(function(horse, i) {
-                            horse.pos.x = 20;
-                            horse.pos.y = lanes[i] * 30 + 40;
-                            lanenames[i] = LaneName({
-                                name: i + 1,
-                                longname: horse.showname,
-                                pos: $.Point(2, i * 30 + 40)
-                            });
-                        });
-                        this.addSprites({
-                            set: lanenames
-                        });
-                        $.Game.screen("startrace").start();
+                        $.screen("startrace").start();
                         this.base.start();
                     },
+                    load: function(cb) {
+                        $.addScreens([ StartRace(), RaceResult() ]);
+                        this.base.load(cb);
+                    },
                     race: function() {
-                        var length = this.trackLength;
-                        stable.forEach(function(horse) {
-                            horse.race(length);
-                        });
+                        lanes.forEach(function(lane) {
+                            lane.race(this.trackLength);
+                        }, this);
                     },
                     endRace: function(playerWon, winner) {
-                        var that = this;
-                        $.Game.screen("raceresult").start(playerWon);
-                        stable.forEach(function(horse, i) {
-                            horse.speed.x = 0;
-                            lanenames[i].pause();
+                        lanes.forEach(function(lane) {
+                            lane.pause();
                         });
+                        $.screen("raceresult").start(playerWon);
                         global.setTimeout(function() {
-                            stable.forEach(function(horse, i) {
-                                that.removeSprite(horse);
-                                that.removeSprite(lanenames[i]);
-                            });
                             player.horse.endRace();
-                            $.Game.screen("raceresult").stop();
-                            that.stop();
-                            $.Game.screen("train").start();
+                            $.removeScreen("startrace");
+                            $.removeScreen("raceresult");
+                            $.removeScreen("track");
+                            $.screen("train").start();
                         }, 2e3);
                         this.pause();
                     },
@@ -6243,26 +6301,33 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../collisions/racetrack.js": 54,
-        "../player.js": 62,
-        "../sprites/track/lanename.js": 82,
-        "../util.js": 84,
-        baseclassjs: 2,
+        "../collisions/racetrack.js": 55,
+        "../lane-ordering.js": 63,
+        "../player.js": 65,
+        "./raceresult.js": 68,
+        "./startrace.js": 69,
         dragonjs: 21
     } ],
-    68: [ function(require, module, exports) {
-        var Track = require("../track.js"), makeHorse = require("../../horse-factory.js");
-        module.exports = Track().extend({
-            trackLength: 3e3,
-            buildStable: function() {
-                return [ makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1), makeHorse(1) ];
-            }
-        });
+    71: [ function(require, module, exports) {
+        var Track = require("../track.js"), makeLane = require("../../lane-factory.js");
+        module.exports = function() {
+            var laneConf = {
+                density: "none",
+                terrain: "dirt",
+                weather: "comfy",
+                type: "rural"
+            };
+            return Track({
+                lanes: [ makeLane(false, laneConf), makeLane(2, laneConf), makeLane(1, laneConf), makeLane(1, laneConf) ]
+            }).extend({
+                trackLength: 3e3
+            });
+        };
     }, {
-        "../../horse-factory.js": 57,
-        "../track.js": 67
+        "../../lane-factory.js": 62,
+        "../track.js": 70
     } ],
-    69: [ function(require, module, exports) {
+    72: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), train = require("../sprites/buttons/open-train.js"), player = require("../player.js"), ranks = require("../sprites/shop/ranks.js"), TrainLabel = require("../sprites/shop/train-label.js"), StatLabel = require("../sprites/shop/stat-label.js"), addRank = require("../sprites/buttons/add-rank.js"), shopStats = require("../shop-stats.js");
             module.exports = $.Screen({
@@ -6293,19 +6358,19 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../player.js": 62,
-        "../shop-stats.js": 70,
-        "../sprites/buttons/add-rank.js": 71,
-        "../sprites/buttons/open-care.js": 72,
-        "../sprites/buttons/open-gear.js": 73,
-        "../sprites/buttons/open-train.js": 74,
-        "../sprites/buttons/race.js": 75,
-        "../sprites/shop/ranks.js": 78,
-        "../sprites/shop/stat-label.js": 79,
-        "../sprites/shop/train-label.js": 80,
+        "../player.js": 65,
+        "../shop-stats.js": 73,
+        "../sprites/buttons/add-rank.js": 74,
+        "../sprites/buttons/open-care.js": 75,
+        "../sprites/buttons/open-gear.js": 76,
+        "../sprites/buttons/open-train.js": 77,
+        "../sprites/buttons/race.js": 78,
+        "../sprites/shop/ranks.js": 81,
+        "../sprites/shop/stat-label.js": 82,
+        "../sprites/shop/train-label.js": 83,
         dragonjs: 21
     } ],
-    70: [ function(require, module, exports) {
+    73: [ function(require, module, exports) {
         var opts = {};
         module.exports = {
             groom: opts.groom || 0,
@@ -6315,7 +6380,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             coach: opts.coach || 0
         };
     }, {} ],
-    71: [ function(require, module, exports) {
+    74: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, player = require("../../player.js"), ranks = require("../shop/ranks.js");
         module.exports = function(name, onpress) {
             onpress = onpress || function() {};
@@ -6348,11 +6413,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../player.js": 62,
-        "../shop/ranks.js": 78,
+        "../../player.js": 65,
+        "../shop/ranks.js": 81,
         dragonjs: 21
     } ],
-    72: [ function(require, module, exports) {
+    75: [ function(require, module, exports) {
         var $ = require("dragonjs"), height = $.canvas.height * .32, width = .1;
         module.exports = $.ui.Button({
             name: "open-care",
@@ -6367,9 +6432,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 size: $.Dimension(11, 35)
             },
             onpress: function() {
-                $.Game.screen("train").stop();
-                $.Game.screen("gear").stop();
-                $.Game.screen("care").start();
+                $.screen("train").stop();
+                $.screen("gear").stop();
+                $.screen("care").start();
                 this.pause();
                 require("./open-gear.js").start();
                 require("./open-train.js").start();
@@ -6379,11 +6444,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             realWidth: $.canvas.width * width
         });
     }, {
-        "./open-gear.js": 73,
-        "./open-train.js": 74,
+        "./open-gear.js": 76,
+        "./open-train.js": 77,
         dragonjs: 21
     } ],
-    73: [ function(require, module, exports) {
+    76: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Button({
             name: "open-gear",
@@ -6398,20 +6463,20 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 size: $.Dimension(11, 35)
             },
             onpress: function() {
-                $.Game.screen("train").stop();
-                $.Game.screen("care").stop();
-                $.Game.screen("gear").start();
+                $.screen("train").stop();
+                $.screen("care").stop();
+                $.screen("gear").start();
                 this.pause();
                 require("./open-train.js").start();
                 require("./open-care.js").start();
             }
         });
     }, {
-        "./open-care.js": 72,
-        "./open-train.js": 74,
+        "./open-care.js": 75,
+        "./open-train.js": 77,
         dragonjs: 21
     } ],
-    74: [ function(require, module, exports) {
+    77: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Button({
             name: "open-train",
@@ -6426,21 +6491,21 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 size: $.Dimension(11, 43)
             },
             onpress: function() {
-                $.Game.screen("gear").stop();
-                $.Game.screen("care").stop();
-                $.Game.screen("train").start();
+                $.screen("gear").stop();
+                $.screen("care").stop();
+                $.screen("train").start();
                 this.pause();
                 require("./open-gear.js").start();
                 require("./open-care.js").start();
             }
         });
     }, {
-        "./open-care.js": 72,
-        "./open-gear.js": 73,
+        "./open-care.js": 75,
+        "./open-gear.js": 76,
         dragonjs: 21
     } ],
-    75: [ function(require, module, exports) {
-        var $ = require("dragonjs"), width = .18;
+    78: [ function(require, module, exports) {
+        var $ = require("dragonjs"), Riverton = require("../../screens/tracks/riverton.js"), width = .18;
         module.exports = $.ui.Button({
             pos: $.Point($.canvas.width * (1 - width), 0),
             size: $.Dimension($.canvas.width * width, $.canvas.height),
@@ -6453,19 +6518,20 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 size: $.Dimension(11, 35)
             },
             onpress: function() {
-                $.Game.screen("train").stop();
-                $.Game.screen("gear").stop();
-                $.Game.screen("care").stop();
-                $.Game.screen("track").start();
+                $.screen("train").stop();
+                $.screen("gear").stop();
+                $.screen("care").stop();
+                $.addScreens(Riverton());
             }
         }).extend({
             width: width,
             realWidth: $.canvas.width * width
         });
     }, {
+        "../../screens/tracks/riverton.js": 71,
         dragonjs: 21
     } ],
-    76: [ function(require, module, exports) {
+    79: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../horse-stats.js"), shopStats = require("../shop-stats.js");
             module.exports = function(opts) {
@@ -6473,6 +6539,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 opts = opts || {};
                 return $.Sprite({
                     name: "horse",
+                    depth: 100,
                     collisionSets: [ require("../collisions/racetrack.js"), $.collisions ],
                     mask: $.Rectangle($.Point(), $.Dimension(25, 18)),
                     strips: {
@@ -6483,7 +6550,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                             size: $.Dimension(50, 37)
                         })
                     },
-                    startingStrip: "horse",
                     scale: .5,
                     on: {
                         "collide/screenedge/right": function() {
@@ -6492,7 +6558,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                             this.rotation = 0;
                             this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
                             this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
-                            $.Game.screen("track").endRace(this === require("../player.js").horse, this);
+                            $.screen("track").endRace(this === require("../player.js").horse, this);
                         }
                     }
                 }).extend({
@@ -6545,15 +6611,15 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../collisions/racetrack.js": 54,
-        "../horse-stats.js": 58,
-        "../illness.js": 59,
-        "../picker.js": 61,
-        "../player.js": 62,
-        "../shop-stats.js": 70,
+        "../collisions/racetrack.js": 55,
+        "../horse-stats.js": 59,
+        "../illness.js": 60,
+        "../picker.js": 64,
+        "../player.js": 65,
+        "../shop-stats.js": 73,
         dragonjs: 21
     } ],
-    77: [ function(require, module, exports) {
+    80: [ function(require, module, exports) {
         var $ = require("dragonjs"), Roster = require("../picker.js"), Stats = require("../jockey-stats.js");
         module.exports = function(opts) {
             opts = opts || {};
@@ -6583,11 +6649,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../jockey-stats.js": 60,
-        "../picker.js": 61,
+        "../jockey-stats.js": 61,
+        "../picker.js": 64,
         dragonjs: 21
     } ],
-    78: [ function(require, module, exports) {
+    81: [ function(require, module, exports) {
         var $ = require("dragonjs"), pips = $.AnimationStrip({
             sheet: $.SpriteSheet({
                 src: "icons/train-pips.png"
@@ -6615,12 +6681,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             realHeight: 12
         };
     }, {
-        "../../shop-stats.js": 70,
-        "../buttons/open-care.js": 72,
-        "../buttons/race.js": 75,
+        "../../shop-stats.js": 73,
+        "../buttons/open-care.js": 75,
+        "../buttons/race.js": 78,
         dragonjs: 21
     } ],
-    79: [ function(require, module, exports) {
+    82: [ function(require, module, exports) {
         var $ = require("dragonjs"), player = require("../../player.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), cwidth = $.canvas.width, cheight = $.canvas.height, center = (cwidth - race.realWidth - open.realWidth) / 2 + open.realWidth, margin = cwidth * .01, grid = {
             horse: {
                 body: {
@@ -6674,12 +6740,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../player.js": 62,
-        "../buttons/open-care.js": 72,
-        "../buttons/race.js": 75,
+        "../../player.js": 65,
+        "../buttons/open-care.js": 75,
+        "../buttons/race.js": 78,
         dragonjs: 21
     } ],
-    80: [ function(require, module, exports) {
+    83: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, ranks = require("./ranks.js");
         module.exports = function(name) {
             var keyname = name.toLowerCase();
@@ -6695,10 +6761,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./ranks.js": 78,
+        "./ranks.js": 81,
         dragonjs: 21
     } ],
-    81: [ function(require, module, exports) {
+    84: [ function(require, module, exports) {
         var $ = require("dragonjs"), BaseClass = require("baseclassjs");
         module.exports = $.ui.Label({
             name: "countdown",
@@ -6715,11 +6781,93 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         baseclassjs: 2,
         dragonjs: 21
     } ],
-    82: [ function(require, module, exports) {
+    85: [ function(require, module, exports) {
+        var $ = require("dragonjs");
+        module.exports = function(opts) {
+            return $.Sprite({
+                name: "lane-item",
+                collisionSets: [ require("../../../collisions/racetrack.js") ],
+                mask: $.Rectangle($.Point(), $.Dimension(64, 64)),
+                strips: {
+                    "lane-item": $.AnimationStrip({
+                        sheet: $.SpriteSheet({
+                            src: "lane-item.png"
+                        }),
+                        start: $.Point(10, 10),
+                        size: $.Dimension(64, 64),
+                        frames: 5,
+                        speed: 10
+                    })
+                },
+                startingStrip: "lane-item",
+                pos: $.Point(100, 100),
+                depth: 2,
+                on: {
+                    "colliding/screentap": function() {}
+                }
+            }).extend({
+                update: function() {
+                    this.base.update();
+                }
+            });
+        };
+    }, {
+        "../../../collisions/racetrack.js": 55,
+        dragonjs: 21
+    } ],
+    86: [ function(require, module, exports) {
+        var $ = require("dragonjs"), LaneName = require("./lanename.js");
+        module.exports = function(opts) {
+            var items = opts.items || [], horse = opts.horse, name;
+            return $.Sprite({
+                name: "lane",
+                strips: {
+                    lane: $.AnimationStrip({
+                        sheet: $.SpriteSheet({
+                            src: "lane.png"
+                        })
+                    })
+                },
+                size: $.Dimension($.canvas.width, $.canvas.height / 20),
+                pos: $.Point(0, 0),
+                depth: 1
+            }).extend({
+                getSprites: function() {
+                    return items.concat(name, horse);
+                },
+                update: function() {
+                    items.forEach(function(item) {});
+                },
+                pause: function() {
+                    horse.speed.x = 0;
+                    name.pause();
+                    this.base.pause();
+                },
+                race: function(length) {
+                    horse.race(length);
+                },
+                order: function(i) {
+                    horse.pos.x = 20;
+                    horse.pos.y = i * 30 + 40;
+                    this.pos.y = i * 30 + 40;
+                    name = LaneName({
+                        name: i + 1,
+                        longname: horse.showname,
+                        pos: $.Point(2, i * 30 + 40)
+                    });
+                }
+            });
+        };
+    }, {
+        "./lanename.js": 87,
+        dragonjs: 21
+    } ],
+    87: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             return $.ui.Label({
                 text: opts.name,
+                depth: 10,
                 pos: opts.pos,
                 style: function(ctx) {
                     ctx.font = "12px Wonder";
@@ -6746,7 +6894,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 21
     } ],
-    83: [ function(require, module, exports) {
+    88: [ function(require, module, exports) {
         var $ = require("dragonjs"), BaseClass = require("baseclassjs");
         module.exports = {
             win: $.ui.Decal({
@@ -6775,34 +6923,5 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         baseclassjs: 2,
         dragonjs: 21
-    } ],
-    84: [ function(require, module, exports) {
-        var $ = require("dragonjs");
-        module.exports = {
-            shuffle: function(arr) {
-                var i, j, x;
-                for (i = 0; i < arr.length; i += 1) {
-                    j = parseInt($.random() * (i + 1));
-                    x = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = x;
-                }
-                return arr;
-            },
-            range: function(start, end) {
-                var i, len, arr = [];
-                if (!end) {
-                    end = start;
-                    start = 0;
-                }
-                len = end - start;
-                for (i = 0; i < len; i += 1) {
-                    arr.push(i + start);
-                }
-                return arr;
-            }
-        };
-    }, {
-        dragonjs: 21
     } ]
-}, {}, [ 56, 57, 58, 59, 60, 61, 62, 70, 84 ]);
+}, {}, [ 57, 58, 59, 60, 61, 62, 63, 64, 65, 73 ]);

@@ -24,6 +24,7 @@ module.exports = function (opts) {
 
     return $.Sprite({
         name: 'horse',
+        depth: 100,
         collisionSets: [
             require('../collisions/racetrack.js'),
             $.collisions
@@ -40,7 +41,6 @@ module.exports = function (opts) {
                 size: $.Dimension(50, 37),
             })
         },
-        startingStrip: 'horse',
         scale: 0.5,
         on: {
             'collide/screenedge/right': function () {

@@ -1,11 +1,10 @@
-var $ = require('dragonjs'),
-    
+var $ = require('dragonjs');
 
 module.exports = function (opts) {
     return $.Sprite({
         name: 'lane-item',
         collisionSets: [
-            require('../collisions/racetrack.js')
+            require('../../../collisions/racetrack.js')
         ],
         mask: $.Rectangle(
             $.Point(),

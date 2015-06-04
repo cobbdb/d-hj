@@ -18,6 +18,11 @@ module.exports = function (opts) {
                 })
             })
         },
+        size: $.Dimension(
+            $.canvas.width,
+            $.canvas.height / 20
+        ),
+        pos: $.Point(0, 0),
         depth: 1
     }).extend({
         getSprites: function () {
@@ -34,6 +39,7 @@ module.exports = function (opts) {
             this.base.pause();
         },
         race: function (length) {
+            horse.race(length);
         },
         /**
          * @param {Number} i Lane number
@@ -42,6 +48,7 @@ module.exports = function (opts) {
             // >>>> Find a way to move this into construction.
             horse.pos.x = 20;
             horse.pos.y = i * 30 + 40;
+            this.pos.y = i * 30 + 40;
             name = LaneName({
                 name: i + 1,
                 longname: horse.showname,

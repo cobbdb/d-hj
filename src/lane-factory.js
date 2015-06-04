@@ -1,5 +1,5 @@
 var $ = require('dragonjs'),
-    Lane = require('./sprites/lane.js'),
+    Lane = require('./sprites/track/lane.js'),
     HayBale = require('./sprites/track/items/hay-bale.js'),
     player = require('./player.js'),
     makeHorse = require('./horse-factory.js'),
