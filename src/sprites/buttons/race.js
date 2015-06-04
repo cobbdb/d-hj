@@ -1,4 +1,5 @@
 var $ = require('dragonjs'),
+    Riverton = require('../../screens/riverton.js'),
     width = 0.18;
 
 module.exports = $.ui.Button({
@@ -16,7 +17,9 @@ module.exports = $.ui.Button({
         $.screen('train').stop();
         $.screen('gear').stop();
         $.screen('care').stop();
-        $.screen('track').start();
+        $.addScreens(
+            Riverton()
+        );
     }
 }).extend({
     width: width,

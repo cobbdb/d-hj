@@ -1,6 +1,6 @@
 var $ = require('dragonjs'),
     Lane = require('./sprites/lane.js'),
-    LaneItem = require('./sprites/lane-item.js'),
+    HayBale = require('./sprites/track/items/hay-bale.js'),
     player = require('./player.js'),
     makeHorse = require('./horse-factory.js'),
     itemCount = {
@@ -26,7 +26,7 @@ module.exports = function (difficulty, opts) {
 
     len += bonus;
     for (i = 0; i < len; i += 1) {
-        itemSet.push(LaneItem({
+        itemSet.push(HayBale({
         }));
     }
 
