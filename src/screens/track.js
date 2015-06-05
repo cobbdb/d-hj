@@ -35,15 +35,11 @@ module.exports = function (opts) {
     }).extend({
         trackLength: 0,
         start: function () {
-            $.screen('startrace').start();
-            this.base.start();
-        },
-        load: function (cb) {
             $.addScreens([
                 StartRace(),
                 RaceResult()
             ]);
-            this.base.load(cb);
+            this.base.start();
         },
         race: function () {
             lanes.forEach(function (lane) {

@@ -7,7 +7,12 @@ module.exports = function (opts) {
         spriteSet: [
             countdown
         ],
-        depth: 10
+        depth: 10,
+        on: {
+            ready: function () {
+                this.start();
+            }
+        }
     }).extend({
         start: function () {
             var that = this;

@@ -4986,6 +4986,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 });
             },
             update: function() {
+                var addQueue;
                 masks.update();
                 screens.forEach(function(screen) {
                     if (screen.updating) {
@@ -4994,7 +4995,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 });
                 dragonCollisions.handleCollisions();
                 if (screensToAdd.length) {
-                    screensToAdd.forEach(function(screen) {
+                    addQueue = screensToAdd;
+                    screensToAdd = [];
+                    addQueue.forEach(function(screen) {
                         screens.push(screen);
                         if (screen.name) {
                             screenMap[screen.name] = screen;
@@ -5004,7 +5007,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     screens.sort(function(a, b) {
                         return a.depth - b.depth;
                     });
-                    screensToAdd = [];
                 }
             },
             draw: function() {
@@ -5554,7 +5556,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             var spritesToAdd = [], loadQueue = {};
             return Collection().extend({
                 add: function(opts) {
-                    var id, onload, set, thatbase = this.base;
+                    var id, onload, set, addQueue, thatbase = this.base;
                     opts = opts || {};
                     onload = opts.onload || function() {};
                     set = [].concat(opts.set);
@@ -5568,8 +5570,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                                 if (loadQueue[id] === 0) {
                                     spritesToAdd = spritesToAdd.concat(set);
                                     if (opts.force) {
-                                        thatbase.add(spritesToAdd);
+                                        addQueue = spritesToAdd;
                                         spritesToAdd = [];
+                                        thatbase.add(addQueue);
                                     }
                                     onload();
                                 }
@@ -5580,9 +5583,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 },
                 update: function() {
+                    var addQueue;
                     this.base.update();
-                    this.base.add(spritesToAdd);
+                    addQueue = spritesToAdd;
                     spritesToAdd = [];
+                    this.base.add(addQueue);
                 }
             });
         };
@@ -6216,7 +6221,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 return $.Screen({
                     name: "startrace",
                     spriteSet: [ countdown ],
-                    depth: 10
+                    depth: 10,
+                    on: {
+                        ready: function() {
+                            this.start();
+                        }
+                    }
                 }).extend({
                     start: function() {
                         var that = this;
@@ -6266,12 +6276,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 }).extend({
                     trackLength: 0,
                     start: function() {
-                        $.screen("startrace").start();
-                        this.base.start();
-                    },
-                    load: function(cb) {
                         $.addScreens([ StartRace(), RaceResult() ]);
-                        this.base.load(cb);
+                        this.base.start();
                     },
                     race: function() {
                         lanes.forEach(function(lane) {
