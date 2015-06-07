@@ -5,16 +5,17 @@ var $ = require('dragonjs'),
     LaneOrdering = require('../lane-ordering.js');
 
 /**
- * @param {Array of Lanes} opts.lanes
+ * @param {Array of Functions} opts.laneFactories
  */
 module.exports = function (opts) {
     var items = [],
-        lanes = opts.lanes,
-        laneOrdering = LaneOrdering(lanes.length);
+        lanes = [],
+        laneOrdering = LaneOrdering(opts.laneFactories.length);
 
     // Setup the lanes.
-    lanes.forEach(function (lane, i) {
-        lane.order(laneOrdering[i]);
+    opts.laneFactories.forEach(function (factory, i) {
+        var lane = factory(laneOrdering[i]);
+        lanes.push(lane);
         items = items.concat(
             lane.getSprites()
         );

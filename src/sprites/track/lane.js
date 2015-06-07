@@ -3,12 +3,28 @@ var $ = require('dragonjs'),
 
 /**
  * @param {Horse} opts.horse
+ * @param {Number} opts.order
  * @param {Array of LaneItem} [opts.items]
  */
 module.exports = function (opts) {
     var items = opts.items || [],
         horse = opts.horse,
-        name;
+        order = opts.order,
+        ypos = order * 30 + 40,
+        name = LaneName({
+            name: order + 1,
+            longname: horse.showname,
+            pos: $.Point(2, ypos)
+        });
+
+    horse.move(20, ypos);
+    items.forEach(function (item) {
+        item.move(
+            item.lanePos * $.canvas.width,
+            ypos
+        );
+    });
+
     return $.Sprite({
         name: 'lane',
         strips: {
@@ -22,7 +38,7 @@ module.exports = function (opts) {
             $.canvas.width,
             $.canvas.height / 20
         ),
-        pos: $.Point(0, 0),
+        pos: $.Point(0, ypos),
         depth: 1
     }).extend({
         getSprites: function () {
@@ -40,20 +56,6 @@ module.exports = function (opts) {
         },
         race: function (length) {
             horse.race(length);
-        },
-        /**
-         * @param {Number} i Lane number
-         */
-        order: function (i) {
-            // >>>> Find a way to move this into construction.
-            horse.pos.x = 20;
-            horse.pos.y = i * 30 + 40;
-            this.pos.y = i * 30 + 40;
-            name = LaneName({
-                name: i + 1,
-                longname: horse.showname,
-                pos: $.Point(2, i * 30 + 40)
-            });
         }
     });
 };

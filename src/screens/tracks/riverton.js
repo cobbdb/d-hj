@@ -6,14 +6,14 @@ var Track = require('../track.js'),
  */
 module.exports = function () {
     var laneConf = {
-        density: 'none',
+        density: 'low',
         terrain: 'dirt',
         weather: 'comfy',
         type: 'rural'
     };
 
     return Track({
-        lanes: [
+        laneFactories: [
             makeLane(false, laneConf),
             makeLane(2, laneConf),
             makeLane(1, laneConf),

@@ -4725,6 +4725,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             random: require("./random.js"),
             range: Util.range,
             shuffle: Util.shuffle,
+            mergeLeft: Util.mergeLeft,
+            mergeDefault: Util.mergeDefault,
             Mouse: require("./mouse.js"),
             Keyboard: require("./keyboard.js"),
             EventHandler: require("./event-handler.js"),
@@ -5937,6 +5939,20 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     arr.push(i + start);
                 }
                 return arr;
+            },
+            mergeLeft: function(root, other) {
+                var key;
+                for (key in other) {
+                    root[key] = other[key];
+                }
+            },
+            mergeDefault: function(root, other) {
+                var key;
+                for (key in other) {
+                    if (!(key in root)) {
+                        root[key] = other[key];
+                    }
+                }
             }
         };
     }, {
@@ -6088,19 +6104,25 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         module.exports = function(difficulty, opts) {
             var i, len = itemCount[opts.density], bonus = $.random() * itemCount[opts.density] / 2, itemSet = [];
             len += bonus;
+            len = 1;
             for (i = 0; i < len; i += 1) {
-                itemSet.push(HayBale({}));
+                itemSet.push(HayBale({
+                    position: .3
+                }));
             }
-            return Lane({
-                horse: difficulty ? makeHorse(difficulty - 1) : player.horse,
-                items: itemSet
-            });
+            return function(order) {
+                return Lane({
+                    horse: difficulty ? makeHorse(difficulty - 1) : player.horse,
+                    order: order,
+                    items: itemSet
+                });
+            };
         };
     }, {
         "./horse-factory.js": 58,
         "./player.js": 65,
         "./sprites/track/items/hay-bale.js": 85,
-        "./sprites/track/lane.js": 86,
+        "./sprites/track/lane.js": 87,
         dragonjs: 21
     } ],
     63: [ function(require, module, exports) {
@@ -6211,7 +6233,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../sprites/track/raceresult.js": 88,
+        "../sprites/track/raceresult.js": 89,
         dragonjs: 21
     } ],
     69: [ function(require, module, exports) {
@@ -6258,9 +6280,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             var $ = require("dragonjs"), StartRace = require("./startrace.js"), RaceResult = require("./raceresult.js"), player = require("../player.js"), LaneOrdering = require("../lane-ordering.js");
             module.exports = function(opts) {
-                var items = [], lanes = opts.lanes, laneOrdering = LaneOrdering(lanes.length);
-                lanes.forEach(function(lane, i) {
-                    lane.order(laneOrdering[i]);
+                var items = [], lanes = [], laneOrdering = LaneOrdering(opts.laneFactories.length);
+                opts.laneFactories.forEach(function(factory, i) {
+                    var lane = factory(laneOrdering[i]);
+                    lanes.push(lane);
                     items = items.concat(lane.getSprites());
                 });
                 return $.Screen({
@@ -6318,13 +6341,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         var Track = require("../track.js"), makeLane = require("../../lane-factory.js");
         module.exports = function() {
             var laneConf = {
-                density: "none",
+                density: "low",
                 terrain: "dirt",
                 weather: "comfy",
                 type: "rural"
             };
             return Track({
-                lanes: [ makeLane(false, laneConf), makeLane(2, laneConf), makeLane(1, laneConf), makeLane(1, laneConf) ]
+                laneFactories: [ makeLane(false, laneConf), makeLane(2, laneConf), makeLane(1, laneConf), makeLane(1, laneConf) ]
             }).extend({
                 trackLength: 3e3
             });
@@ -6788,43 +6811,58 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 21
     } ],
     85: [ function(require, module, exports) {
+        var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
+        module.exports = function(opts) {
+            return LaneItem({
+                img: "haybale.png",
+                on: {
+                    "collide/horse": function(other) {
+                        console.debug(other.showname, "jump!");
+                    }
+                },
+                size: $.Dimension(12, 12),
+                mask: $.Rectangle($.Point(), $.Dimension(12, 12))
+            }).extend({
+                lanePos: opts.position
+            });
+        };
+    }, {
+        "./lane-item.js": 86,
+        dragonjs: 21
+    } ],
+    86: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
-            return $.Sprite({
+            $.mergeDefault(opts, {
                 name: "lane-item",
                 collisionSets: [ require("../../../collisions/racetrack.js") ],
-                mask: $.Rectangle($.Point(), $.Dimension(64, 64)),
                 strips: {
-                    "lane-item": $.AnimationStrip({
+                    "default": $.AnimationStrip({
                         sheet: $.SpriteSheet({
-                            src: "lane-item.png"
-                        }),
-                        start: $.Point(10, 10),
-                        size: $.Dimension(64, 64),
-                        frames: 5,
-                        speed: 10
+                            src: opts.img
+                        })
                     })
                 },
-                startingStrip: "lane-item",
-                pos: $.Point(100, 100),
-                depth: 2,
-                on: {
-                    "colliding/screentap": function() {}
-                }
-            }).extend({
-                update: function() {
-                    this.base.update();
-                }
+                depth: 2
             });
+            return $.Sprite(opts);
         };
     }, {
         "../../../collisions/racetrack.js": 55,
         dragonjs: 21
     } ],
-    86: [ function(require, module, exports) {
+    87: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneName = require("./lanename.js");
         module.exports = function(opts) {
-            var items = opts.items || [], horse = opts.horse, name;
+            var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 30 + 40, name = LaneName({
+                name: order + 1,
+                longname: horse.showname,
+                pos: $.Point(2, ypos)
+            });
+            horse.move(20, ypos);
+            items.forEach(function(item) {
+                item.move(item.lanePos * $.canvas.width, ypos);
+            });
             return $.Sprite({
                 name: "lane",
                 strips: {
@@ -6835,7 +6873,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     })
                 },
                 size: $.Dimension($.canvas.width, $.canvas.height / 20),
-                pos: $.Point(0, 0),
+                pos: $.Point(0, ypos),
                 depth: 1
             }).extend({
                 getSprites: function() {
@@ -6851,24 +6889,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 race: function(length) {
                     horse.race(length);
-                },
-                order: function(i) {
-                    horse.pos.x = 20;
-                    horse.pos.y = i * 30 + 40;
-                    this.pos.y = i * 30 + 40;
-                    name = LaneName({
-                        name: i + 1,
-                        longname: horse.showname,
-                        pos: $.Point(2, i * 30 + 40)
-                    });
                 }
             });
         };
     }, {
-        "./lanename.js": 87,
+        "./lanename.js": 88,
         dragonjs: 21
     } ],
-    87: [ function(require, module, exports) {
+    88: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             return $.ui.Label({
@@ -6900,7 +6928,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 21
     } ],
-    88: [ function(require, module, exports) {
+    89: [ function(require, module, exports) {
         var $ = require("dragonjs"), BaseClass = require("baseclassjs");
         module.exports = {
             win: $.ui.Decal({

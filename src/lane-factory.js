@@ -16,7 +16,7 @@ var $ = require('dragonjs'),
  * @param {String} opts.terrain ['dirt', 'grass', 'rock']
  * @param {String} opts.weather ['comfy', 'rain', 'storm', 'snow', 'heat']
  * @param {String} opts.type ['pro', 'rural', 'scifi']
- * @return {Lane}
+ * @return {Function} Lane constructor.
  */
 module.exports = function (difficulty, opts) {
     var i,
@@ -25,13 +25,22 @@ module.exports = function (difficulty, opts) {
         itemSet = [];
 
     len += bonus;
+    len = 1;
     for (i = 0; i < len; i += 1) {
         itemSet.push(HayBale({
+            position: 0.3
         }));
     }
 
-    return Lane({
-        horse: (difficulty) ? makeHorse(difficulty - 1) : player.horse,
-        items: itemSet
-    });
+    /**
+     * @param {Number} order Lane order in its track.
+     * @return {Lane}
+     */
+    return function (order) {
+        return Lane({
+            horse: (difficulty) ? makeHorse(difficulty - 1) : player.horse,
+            order: order,
+            items: itemSet
+        });
+    };
 };

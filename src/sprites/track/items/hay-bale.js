@@ -1,36 +1,25 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    LaneItem = require('./lane-item.js');
 
+/**
+ * @param {Number} position Percentage of track where this item lives.
+ * For example, 
+ * @return {Sprite}
+ */
 module.exports = function (opts) {
-    return $.Sprite({
-        name: 'lane-item',
-        collisionSets: [
-            require('../../../collisions/racetrack.js')
-        ],
+    return LaneItem({
+        img: 'haybale.png',
+        on: {
+            'collide/horse': function (other) {
+                console.debug(other.showname, 'jump!');
+            }
+        },
+        size: $.Dimension(12, 12),
         mask: $.Rectangle(
             $.Point(),
-            $.Dimension(64, 64)
-        ),
-        strips: {
-            'lane-item': $.AnimationStrip({
-                sheet: $.SpriteSheet({
-                    src: 'lane-item.png'
-                }),
-                start: $.Point(10, 10),
-                size: $.Dimension(64, 64),
-                frames: 5,
-                speed: 10
-            })
-        },
-        startingStrip: 'lane-item',
-        pos: $.Point(100, 100),
-        depth: 2,
-        on: {
-            'colliding/screentap': function () {
-            }
-        }
+            $.Dimension(12, 12)
+        )
     }).extend({
-        update: function () {
-            this.base.update();
-        }
+        lanePos: opts.position
     });
 };
