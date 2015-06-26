@@ -43,7 +43,7 @@ module.exports = function (opts) {
         },
         scale: 0.5,
         on: {
-            'collide/screenedge/right': function () {
+            'collide#screenedge/right': function () {
                 this.speed.x = 0;
                 this.scale = 2;
                 this.rotation = 0;
