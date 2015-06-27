@@ -9,7 +9,7 @@ module.exports = function (grunt) {
     grunt.registerTask('default', [
         'browserify',
         'uglify:raw',
-        'uglify:build',
-        'compress'
+        //'uglify:build',
+        //'compress'
     ]);
 };

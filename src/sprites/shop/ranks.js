@@ -1,8 +1,6 @@
 var $ = require('dragonjs'),
     pips = $.AnimationStrip({
-        sheet: $.SpriteSheet({
-            src: 'icons/train-pips.png'
-        }),
+        src: 'icons/train-pips.png',
         size: $.Dimension(16, 4),
         frames: 6
     }),

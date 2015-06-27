@@ -10,7 +10,7 @@ module.exports = function (opts) {
     var items = opts.items || [],
         horse = opts.horse,
         order = opts.order,
-        ypos = order * 30 + 40,
+        ypos = order * 40 + 40,
         name = LaneName({
             name: order + 1,
             longname: horse.showname,
@@ -21,7 +21,7 @@ module.exports = function (opts) {
     items.forEach(function (item) {
         item.move($.Point(
             item.lanePos * $.canvas.width,
-            ypos
+            ypos + item.size.height
         ));
     });
 
@@ -29,9 +29,7 @@ module.exports = function (opts) {
         name: 'lane',
         strips: {
             'lane': $.AnimationStrip({
-                sheet: $.SpriteSheet({
-                    src: 'lane.png'
-                })
+                src: 'lane.png'
             })
         },
         size: $.Dimension(

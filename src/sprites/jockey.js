@@ -9,9 +9,7 @@ module.exports = function (opts) {
         name: 'jockey',
         strips: {
             'jockey': $.AnimationStrip({
-                sheet: $.SpriteSheet({
-                    src: 'jockey.png'
-                }),
+                src: 'jockey.png',
                 size: $.Dimension(64, 64),
             })
         },

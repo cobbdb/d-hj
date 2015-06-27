@@ -1,7 +1,7 @@
 var $ = require('dragonjs');
 
 /**
- * @param {String} img
+ * @param {String} [img]
  * @param {Map of Function} [on]
  * @param {Map of Function} [one]
  */
@@ -13,9 +13,7 @@ module.exports = function (opts) {
         ],
         strips: {
             'default': $.AnimationStrip({
-                sheet: $.SpriteSheet({
-                    src: opts.img
-                })
+                src: opts.img
             })
         },
         depth: 2

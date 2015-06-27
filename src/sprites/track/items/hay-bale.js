@@ -8,13 +8,32 @@ var $ = require('dragonjs'),
  */
 module.exports = function (opts) {
     return LaneItem({
-        img: 'haybale.png',
+        strips: {
+            'normal': $.AnimationStrip({
+                src: 'haybale.png',
+                size: $.Dimension(40, 33),
+                frames: 3
+            })
+        },
         on: {
-            'collide.horse': function (other) {
-                console.debug(other.showname, 'jump!');
+            'colliding.horse': function (horse) {
+                horse.flush(this);
+                this.mask.resize($.Dimension(
+                    this.mask.width,
+                    this.mask.height * 0.98
+                ));
+                this.mask.move($.Point(
+                    this.mask.x,
+                    this.pos.y + this.size.height - this.mask.height
+                ));
+                if (this.mask.height < 4) {
+                    this.strip.frame = 2;
+                } else if (this.mask.height < 7) {
+                    this.strip.frame = 1;
+                }
             }
         },
-        size: $.Dimension(12, 12),
+        size: $.Dimension(10, 10),
         mask: $.Rectangle()
     }).extend({
         lanePos: opts.position

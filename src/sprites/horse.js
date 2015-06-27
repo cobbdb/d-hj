@@ -35,9 +35,7 @@ module.exports = function (opts) {
         ),
         strips: {
             'horse': $.AnimationStrip({
-                sheet: $.SpriteSheet({
-                    src: 'horse.png'
-                })
+                src: 'horse.png'
             })
         },
         scale: 0.5,
@@ -84,7 +82,7 @@ module.exports = function (opts) {
             if (this.racing) {
                 theta += 0.15 + trot;
                 if (theta > 3.14) {
-                    height = 6 + 3 * $.random();
+                    height = 8 + 10 * $.random();
                     lean *= -1;
                     this.rotation = lean * 0.1 * (
                         1 + $.random()

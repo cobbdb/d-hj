@@ -4345,16 +4345,18 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {} ],
     13: [ function(require, module, exports) {
-        var Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), log = require("./util/log.js");
+        var Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), log = require("./util/log.js"), SpriteSheet = require("./spritesheet.js");
         module.exports = function(opts) {
-            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size || Dimension(), start = opts.start || Point(), firstFrame = Point(), direction = 1;
+            var timeLastFrame, timeSinceLastFrame = 0, updating = false, frames = opts.frames || 1, size = opts.size || Dimension(), start = opts.start || Point(), firstFrame = Point(), direction = 1, sheet = SpriteSheet({
+                src: opts.src
+            });
             return {
                 size: size,
                 frame: 0,
                 speed: opts.speed || 0,
                 load: function(cb) {
                     cb = cb || function() {};
-                    opts.sheet.load(function(img) {
+                    sheet.load(function(img) {
                         size.width = size.width || img.width;
                         size.height = size.height || img.height;
                         firstFrame = Point(size.width * start.x, size.height * start.y);
@@ -4407,7 +4409,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     ctx.save();
                     ctx.translate(pos.x + finalSize.width / 2, pos.y + finalSize.height / 2);
                     ctx.rotate(rotation);
-                    ctx.drawImage(opts.sheet, firstFrame.x + offset, firstFrame.y, size.width, size.height, -finalSize.width / 2, -finalSize.height / 2, finalSize.width, finalSize.height);
+                    ctx.drawImage(sheet, firstFrame.x + offset, firstFrame.y, size.width, size.height, -finalSize.width / 2, -finalSize.height / 2, finalSize.width, finalSize.height);
                     ctx.restore();
                 }
             };
@@ -4415,6 +4417,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "./geom/dimension.js": 23,
         "./geom/point.js": 24,
+        "./spritesheet.js": 45,
         "./util/log.js": 53
     } ],
     14: [ function(require, module, exports) {
@@ -4625,7 +4628,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     move: function(pos) {
                         this.mask.move(pos.add(this.offset));
                     },
-                    flushWith: function(other) {
+                    flush: function(other) {
                         var top = this.mask.bottom - other.mask.top, right = other.mask.right - this.mask.left, bottom = other.mask.bottom - this.mask.top, left = this.mask.right - other.mask.left, min = global.Math.min(top, right, bottom, left), target = this.pos.clone();
                         switch (min) {
                           case top:
@@ -5908,15 +5911,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: Rectangle(Point(), opts.size),
                 strips: {
                     up: AnimationStrip({
-                        sheet: SpriteSheet({
-                            src: opts.up.src
-                        }),
+                        src: opts.up.src,
                         size: opts.up.size
                     }),
                     down: AnimationStrip({
-                        sheet: SpriteSheet({
-                            src: opts.down.src || opts.up.src
-                        }),
+                        src: opts.down.src || opts.up.src,
                         size: opts.down.size || opts.up.size
                     })
                 },
@@ -5952,9 +5951,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             opts.name = opts.name || "dragon-ui-decal";
             opts.strips = {
                 decal: AnimationStrip({
-                    sheet: SpriteSheet({
-                        src: opts.strip.src
-                    }),
+                    src: opts.strip.src,
                     size: opts.strip.size
                 })
             };
@@ -5990,9 +5987,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: Rectangle(Point(), Dimension(size.width, size.height - buffer * 2)),
                 strips: {
                     slider: AnimationStrip({
-                        sheet: SpriteSheet({
-                            src: opts.src.lane
-                        }),
+                        src: opts.src.lane,
                         size: Dimension(32, 8)
                     })
                 },
@@ -6016,9 +6011,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: Rectangle(Point(), knobSize),
                 strips: {
                     slider: AnimationStrip({
-                        sheet: SpriteSheet({
-                            src: opts.src.knob
-                        }),
+                        src: opts.src.knob,
                         size: Dimension(8, 16)
                     })
                 },
@@ -6782,9 +6775,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     mask: $.Rectangle($.Point(), $.Dimension(25, 18)),
                     strips: {
                         horse: $.AnimationStrip({
-                            sheet: $.SpriteSheet({
-                                src: "horse.png"
-                            })
+                            src: "horse.png"
                         })
                     },
                     scale: .5,
@@ -6828,7 +6819,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         if (this.racing) {
                             theta += .15 + trot;
                             if (theta > 3.14) {
-                                height = 6 + 3 * $.random();
+                                height = 8 + 10 * $.random();
                                 lean *= -1;
                                 this.rotation = lean * .1 * (1 + $.random());
                                 boost -= 1;
@@ -6864,9 +6855,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 name: "jockey",
                 strips: {
                     jockey: $.AnimationStrip({
-                        sheet: $.SpriteSheet({
-                            src: "jockey.png"
-                        }),
+                        src: "jockey.png",
                         size: $.Dimension(64, 64)
                     })
                 },
@@ -6892,9 +6881,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     83: [ function(require, module, exports) {
         var $ = require("dragonjs"), pips = $.AnimationStrip({
-            sheet: $.SpriteSheet({
-                src: "icons/train-pips.png"
-            }),
+            src: "icons/train-pips.png",
             size: $.Dimension(16, 4),
             frames: 6
         }), stats = require("../../shop-stats.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), width = $.canvas.width, height = $.canvas.height, center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth, realWidth = width * .3, margin = width * .02, scaleWidth = realWidth / 16, pos = {
@@ -7022,13 +7009,26 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
         module.exports = function(opts) {
             return LaneItem({
-                img: "haybale.png",
+                strips: {
+                    normal: $.AnimationStrip({
+                        src: "haybale.png",
+                        size: $.Dimension(40, 33),
+                        frames: 3
+                    })
+                },
                 on: {
-                    "collide.horse": function(other) {
-                        console.debug(other.showname, "jump!");
+                    "colliding.horse": function(horse) {
+                        horse.flush(this);
+                        this.mask.resize($.Dimension(this.mask.width, this.mask.height * .98));
+                        this.mask.move($.Point(this.mask.x, this.pos.y + this.size.height - this.mask.height));
+                        if (this.mask.height < 4) {
+                            this.strip.frame = 2;
+                        } else if (this.mask.height < 7) {
+                            this.strip.frame = 1;
+                        }
                     }
                 },
-                size: $.Dimension(12, 12),
+                size: $.Dimension(10, 10),
                 mask: $.Rectangle()
             }).extend({
                 lanePos: opts.position
@@ -7046,9 +7046,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 collisionSets: [ require("../../../collisions/racetrack.js") ],
                 strips: {
                     "default": $.AnimationStrip({
-                        sheet: $.SpriteSheet({
-                            src: opts.img
-                        })
+                        src: opts.img
                     })
                 },
                 depth: 2
@@ -7062,22 +7060,20 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     89: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneName = require("./lanename.js");
         module.exports = function(opts) {
-            var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 30 + 40, name = LaneName({
+            var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 40 + 40, name = LaneName({
                 name: order + 1,
                 longname: horse.showname,
                 pos: $.Point(2, ypos)
             });
             horse.move($.Point(20, ypos));
             items.forEach(function(item) {
-                item.move($.Point(item.lanePos * $.canvas.width, ypos));
+                item.move($.Point(item.lanePos * $.canvas.width, ypos + item.size.height));
             });
             return $.Sprite({
                 name: "lane",
                 strips: {
                     lane: $.AnimationStrip({
-                        sheet: $.SpriteSheet({
-                            src: "lane.png"
-                        })
+                        src: "lane.png"
                     })
                 },
                 size: $.Dimension($.canvas.width, $.canvas.height / 20),
