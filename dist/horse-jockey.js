@@ -7060,7 +7060,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     89: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneName = require("./lanename.js");
         module.exports = function(opts) {
-            var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 40 + 40, name = LaneName({
+            var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 50 + 40, name = LaneName({
                 name: order + 1,
                 longname: horse.showname,
                 pos: $.Point(2, ypos)

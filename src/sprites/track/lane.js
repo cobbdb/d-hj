@@ -10,7 +10,7 @@ module.exports = function (opts) {
     var items = opts.items || [],
         horse = opts.horse,
         order = opts.order,
-        ypos = order * 40 + 40,
+        ypos = order * 50 + 40,
         name = LaneName({
             name: order + 1,
             longname: horse.showname,
