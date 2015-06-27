@@ -21,4 +21,4 @@ $.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };*/
-$.run(true, true);
+$.run(true);

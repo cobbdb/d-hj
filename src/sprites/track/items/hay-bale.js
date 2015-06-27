@@ -10,15 +10,12 @@ module.exports = function (opts) {
     return LaneItem({
         img: 'haybale.png',
         on: {
-            'collide/horse': function (other) {
+            'collide.horse': function (other) {
                 console.debug(other.showname, 'jump!');
             }
         },
         size: $.Dimension(12, 12),
-        mask: $.Rectangle(
-            $.Point(),
-            $.Dimension(12, 12)
-        )
+        mask: $.Rectangle()
     }).extend({
         lanePos: opts.position
     });

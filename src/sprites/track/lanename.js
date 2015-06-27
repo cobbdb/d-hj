@@ -9,6 +9,7 @@ module.exports = function (opts) {
         text: opts.name,
         depth: 10,
         pos: opts.pos,
+        size: $.Dimension(15, 15),
         style: function (ctx) {
             ctx.font = '12px Wonder';
             ctx.textBaseline = 'top';
@@ -18,21 +19,14 @@ module.exports = function (opts) {
         collisionSets: [
             $.collisions
         ],
-        mask: $.Rectangle(
-            $.Point(),
-            $.Dimension(15, 15)
-        ),
+        mask: $.Rectangle(),
         on: {
-            'collide/screenhold': function () {
+            'collide#screenhold': function () {
                 this.text = opts.longname;
             },
-            'separate/screenhold': function () {
+            'separate#screenhold': function () {
                 this.text = opts.name;
             }
-        }
-    }).extend({
-        update: function () {
-            this.base.base.base.base.update();
         }
     });
 };

@@ -23,7 +23,7 @@ module.exports = function (opts) {
     opts = opts || {};
 
     return $.Sprite({
-        name: 'horse',
+        kind: 'horse',
         depth: 100,
         collisionSets: [
             require('../collisions/racetrack.js'),
@@ -37,8 +37,7 @@ module.exports = function (opts) {
             'horse': $.AnimationStrip({
                 sheet: $.SpriteSheet({
                     src: 'horse.png'
-                }),
-                size: $.Dimension(50, 37),
+                })
             })
         },
         scale: 0.5,

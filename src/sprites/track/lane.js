@@ -17,12 +17,12 @@ module.exports = function (opts) {
             pos: $.Point(2, ypos)
         });
 
-    horse.move(20, ypos);
+    horse.move($.Point(20, ypos));
     items.forEach(function (item) {
-        item.move(
+        item.move($.Point(
             item.lanePos * $.canvas.width,
             ypos
-        );
+        ));
     });
 
     return $.Sprite({

@@ -7,7 +7,7 @@ var $ = require('dragonjs');
  */
 module.exports = function (opts) {
     $.mergeDefaults(opts, {
-        name: 'lane-item',
+        kind: 'lane-item',
         collisionSets: [
             require('../../../collisions/racetrack.js')
         ],
