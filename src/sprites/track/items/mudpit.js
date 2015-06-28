@@ -10,7 +10,7 @@ module.exports = function (opts) {
     return LaneItem({
         strips: {
             'normal': $.AnimationStrip({
-                src: 'mudpit.png'
+                img: 'mudpit'
             })
         },
         on: {

@@ -6,10 +6,6 @@ $.canvas.ctx.webkitImageSmoothingEnabled = false;
 $.canvas.ctx.mozImageSmoothingEnabled = false;
 $.canvas.ctx.imageSmoothingEnabled = false;
 
-$.Font.load({
-    name: 'Wonder',
-    src: '8-bit-wonder.TTF'
-});
 $.addScreens([
     require('./screens/gear.js'),
     require('./screens/train.js'),
@@ -21,4 +17,14 @@ $.loadTrack = function (track) {
     this.currentTrack = track;
     this.currentTrack.start();
 };*/
-$.run(true);
+$.load({
+    debug: true,
+    font: {
+        name: 'Wonder',
+        src: '8-bit-wonder.TTF'
+    },
+    image: {
+        mudpit: 'mudpit.png',
+        haybale: 'haybale.png'
+    }
+});
