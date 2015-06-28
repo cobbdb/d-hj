@@ -1,17 +1,15 @@
 ﻿var $ = require('dragonjs'),
-    LaneItem = require('./lane-item.js');
+    LaneItem = require('./lane-item.js'),
+    img = $.pipeline.add.image('mudpit.png');
 
 /**
  * @param {Number} position Percentage of track where this item lives.
- * For example, 
  * @return {Sprite}
  */
 module.exports = function (opts) {
     return LaneItem({
         strips: {
-            'normal': $.AnimationStrip({
-                img: 'mudpit'
-            })
+            'normal': $.AnimationStrip(img)
         },
         on: {
             'collide.horse': function (horse) {
