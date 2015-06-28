@@ -49,7 +49,7 @@ module.exports = $.ClearSprite({
         for (name in marks.horse) {
             mark = marks.horse[name];
             ctx.fillText(
-                player.horse.coreStats[name],
+                player.horse.stats.core[name],
                 mark.x,
                 mark.y
             );
@@ -57,7 +57,7 @@ module.exports = $.ClearSprite({
         for (name in marks.jockey) {
             mark = marks.jockey[name];
             ctx.fillText(
-                player.jockey.coreStats[name],
+                player.jockey.stats.core[name],
                 mark.x,
                 mark.y
             );

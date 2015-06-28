@@ -1,7 +1,7 @@
 var $ = require('dragonjs'),
     Roster = require('../picker.js'),
     Illness = require('../illness.js'),
-    Stats = require('../horse-stats.js'),
+    Stats = require('../stats/horse.js'),
     shopStats = require('../shop-stats.js');
 
 /**
@@ -31,7 +31,7 @@ module.exports = function (opts) {
             $.collisions
         ],
         mask: $.Rectangle(),
-        size: $.Dimension(25, 18),
+        //size: $.Dimension(25, 18),
         strips: {
             'horse': $.AnimationStrip({
                 src: 'horse.png'
@@ -41,10 +41,10 @@ module.exports = function (opts) {
         on: {
             'collide#screenedge/right': function () {
                 this.speed.x = 0;
-                this.scale = 2;
+                this.scale(2);
                 this.rotation = 0;
-                this.pos.x = $.canvas.width / 2 - this.trueSize().width / 2;
-                this.pos.y = $.canvas.height / 2 - this.trueSize().height / 2;
+                this.pos.x = $.canvas.width / 2 - this.size().width / 2;
+                this.pos.y = $.canvas.height / 2 - this.size().height / 2;
                 $.screen('track').endRace(
                     this === require('../player.js').horse,
                     this
@@ -52,29 +52,19 @@ module.exports = function (opts) {
             }
         }
     }).extend({
-        coreStats: opts.stats || Stats(),
-        adjStats: Stats(),
+        stats: Stats(),
         racing: false,
-        refreshStats: function (mod) {
-            var set = this.coreStats.clone();
-            mod = mod || function () {};
-            mod(set);
-            this.sickness(set);
-            this.adjStats = set;
-        },
         endRace: function () {
             this.racing = false;
-            this.scale = 0.5;
+            this.scale(0.5);
             this.rotation = 0;
         },
-        sickness: Illness.none,
         race: function (trackLength) {
             this.racing = true;
             starty = this.pos.y;
             trot = 0.08 * $.random();
             boost = $.random() * 10 + 2;
-            this.refreshStats();
-            this.speed.x = stride = this.adjStats.body / trackLength;
+            this.speed.x = stride = this.stats.adj.body / trackLength;
         },
         update: function () {
             if (this.racing) {

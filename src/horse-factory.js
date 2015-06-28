@@ -1,7 +1,7 @@
 var $ = require('dragonjs'),
     Horse = require('./sprites/horse.js'),
     Picker = require('./picker.js'),
-    Stats = require('./horse-stats.js');
+    Stats = require('./stats/horse.js');
 
 function scale(difficulty) {
     var steps = [1, 1.2, 1.4, 1.6, 1.8],

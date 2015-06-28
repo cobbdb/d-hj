@@ -45,7 +45,7 @@ var $ = require('dragonjs'),
 
 module.exports = function (type, name) {
     return $.ui.Label({
-        text: grid[type][name].name + ' ' + player[type].adjStats[name],
+        text: grid[type][name].name + ' ' + player[type].stats.adj[name],
         pos: grid[type][name].pos,
         style: function (ctx) {
             ctx.font = '12px Wonder';
@@ -55,7 +55,7 @@ module.exports = function (type, name) {
         }
     }).extend({
         update: function () {
-            this.text = grid[type][name].name + ' ' + player[type].adjStats[name];
+            this.text = grid[type][name].name + ' ' + player[type].stats.adj[name];
         }
     });
 };

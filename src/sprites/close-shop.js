@@ -44,6 +44,7 @@ module.exports = $.ClearSprite({
 }).extend({
     margin: margin,
     update: function () {
+        console.debug('what is this?');
         $.collisions.update(this);
     },
     draw: function (ctx) {
@@ -53,8 +54,8 @@ module.exports = $.ClearSprite({
         ctx.fillRect(
             this.pos.x,
             this.pos.y,
-            this.size.width,
-            this.size.height
+            this.size().width,
+            this.size().height
         );
         mask.draw(ctx);
     }

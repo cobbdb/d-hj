@@ -22,7 +22,7 @@ module.exports = function (opts) {
     items.forEach(function (item) {
         item.move($.Point(
             item.lanePos * $.canvas.width,
-            ypos + height - item.size.height
+            ypos + height - item.size().height
         ));
     });
 

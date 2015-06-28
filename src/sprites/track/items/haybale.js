@@ -24,7 +24,7 @@ module.exports = function (opts) {
                 ));
                 this.mask.move($.Point(
                     this.mask.x,
-                    this.pos.y + this.size.height - this.mask.height
+                    this.pos.y + this.size().height - this.mask.height
                 ));
                 if (this.mask.height < 4) {
                     this.strip.frame = 2;

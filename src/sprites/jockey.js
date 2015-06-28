@@ -1,6 +1,6 @@
 var $ = require('dragonjs'),
     Roster = require('../picker.js'),
-    Stats = require('../jockey-stats.js');
+    Stats = require('../stats/jockey.js');
 
 module.exports = function (opts) {
     opts = opts || {};
@@ -17,13 +17,6 @@ module.exports = function (opts) {
         pos: $.Point(100, 100),
         depth: 2
     }).extend({
-        coreStats: opts.stats || Stats(),
-        adjStats: Stats(),
-        refreshStats: function (mod) {
-            var set = this.coreStats.clone();
-            mod = mod || function () {};
-            mod(set);
-            this.adjStats = set;
-        }
+        stats: Stats()
     });
 };

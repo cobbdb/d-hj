@@ -15,8 +15,7 @@ module.exports = $.Screen({
         require('../sprites/buttons/open-care.js'),
         require('../sprites/buttons/race.js'),
         addRank('gym', function () {
-            player.jockey.coreStats.body += 1;
-            player.jockey.refreshStats();
+            player.jockey.stats.core.body += 1;
         }),
         addRank('coach'),
         addRank('facility', function () {
@@ -25,8 +24,7 @@ module.exports = $.Screen({
                     $.random() * 50
                 ),
                 gain = steps[shopStats.facility - 1] + bonus;
-            player.horse.coreStats.body += gain;
-            player.horse.refreshStats();
+            player.horse.stats.core.body += gain;
         }),
         addRank('groom'),
         addRank('doctor'),

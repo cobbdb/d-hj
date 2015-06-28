@@ -4,8 +4,7 @@ var $ = require('dragonjs'),
 module.exports = {
     win: $.ui.Decal({
         strip: {
-            src: 'win.png',
-            size: $.Dimension(50, 9)
+            src: 'win.png'
         },
         scale: 3,
         pos: $.Point(
@@ -18,8 +17,7 @@ module.exports = {
     }),
     lose: $.ui.Decal({
         strip: {
-            src: 'lost.png',
-            size: $.Dimension(57, 9)
+            src: 'lost.png'
         },
         scale: 3,
         pos: $.Point(
