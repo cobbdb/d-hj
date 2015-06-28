@@ -6,7 +6,7 @@ var $ = require('dragonjs'),
 
 /**
  * @param {HorseStats} [opts.stats]
- * @param {String} [opts.showname]
+ * @param {String} [opts.name]
  */
 module.exports = function (opts) {
     var height, starty,
@@ -23,16 +23,15 @@ module.exports = function (opts) {
     opts = opts || {};
 
     return $.Sprite({
+        name: opts.name || Roster.next.horse.name,
         kind: 'horse',
         depth: 100,
         collisionSets: [
             require('../collisions/racetrack.js'),
             $.collisions
         ],
-        mask: $.Rectangle(
-            $.Point(),
-            $.Dimension(25, 18)
-        ),
+        mask: $.Rectangle(),
+        size: $.Dimension(25, 18),
         strips: {
             'horse': $.AnimationStrip({
                 src: 'horse.png'
@@ -53,7 +52,6 @@ module.exports = function (opts) {
             }
         }
     }).extend({
-        showname: opts.showname || Roster.next.horse.name,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         racing: false,

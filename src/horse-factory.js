@@ -19,7 +19,7 @@ module.exports = function (difficulty) {
     var horse = Picker.next.horse;
 
     return Horse({
-        showname: horse.name,
+        name: horse.name,
         stats: Stats({
             body: horse.body * scale(difficulty)
         })

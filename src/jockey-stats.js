@@ -1,4 +1,7 @@
-function Stats(opts) {
+/**
+ * @class JockeyStats
+ */
+module.exports = function (opts) {
     opts = opts || {};
     return {
         body: opts.body || 1,
@@ -8,6 +11,4 @@ function Stats(opts) {
             return Stats(this);
         }
     };
-}
-
-module.exports = Stats;
+};

@@ -6,18 +6,17 @@ module.exports = function (opts) {
     opts = opts || {};
 
     return $.Sprite({
-        name: 'jockey',
+        name: opts.name || Roster.next.jockey.name,
+        kind: 'jockey',
         strips: {
             'jockey': $.AnimationStrip({
-                src: 'jockey.png',
-                size: $.Dimension(64, 64),
+                src: 'jockey.png'
             })
         },
-        startingStrip: 'jockey',
+        size: $.Dimension(64, 64),
         pos: $.Point(100, 100),
         depth: 2
     }).extend({
-        showname: opts.showname || Roster.next.jockey.name,
         coreStats: opts.stats || Stats(),
         adjStats: Stats(),
         refreshStats: function (mod) {

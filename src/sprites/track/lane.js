@@ -11,9 +11,10 @@ module.exports = function (opts) {
         horse = opts.horse,
         order = opts.order,
         ypos = order * 50 + 40,
+        height = $.canvas.height / 20,
         name = LaneName({
             name: order + 1,
-            longname: horse.showname,
+            longname: horse.name,
             pos: $.Point(2, ypos)
         });
 
@@ -21,7 +22,7 @@ module.exports = function (opts) {
     items.forEach(function (item) {
         item.move($.Point(
             item.lanePos * $.canvas.width,
-            ypos + item.size.height
+            ypos + height - item.size.height
         ));
     });
 
@@ -34,7 +35,7 @@ module.exports = function (opts) {
         },
         size: $.Dimension(
             $.canvas.width,
-            $.canvas.height / 20
+            height
         ),
         pos: $.Point(0, ypos),
         depth: 1
@@ -48,7 +49,7 @@ module.exports = function (opts) {
             });
         },
         pause: function () {
-            horse.speed.x = 0;
+            horse.pause();
             name.pause();
             this.base.pause();
         },
