@@ -1,13 +1,11 @@
-var $ = require('dragonjs'),
-    riverton = require('./screens/tracks/riverton.js');
+var $ = require('dragonjs');
 
 $.pipeline.add.font('Wonder', {
     src: '8-bit-wonder.TTF'
 });
 
-$.addScreens([
+$.start([
     require('./screens/gear.js'),
     require('./screens/train.js'),
     require('./screens/care.js')
-]);
-$.start(true);
+], true);
