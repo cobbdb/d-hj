@@ -1,5 +1,4 @@
-var $ = require('dragonjs'),
-    BaseClass = require('baseclassjs');
+var $ = require('dragonjs');
 
 module.exports = $.ui.Label({
     name: 'countdown',

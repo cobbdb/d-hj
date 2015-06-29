@@ -8,9 +8,6 @@
  */
 module.exports = function (opts) {
     return LaneItem({
-        strips: {
-            'normal': $.AnimationStrip(img)
-        },
         on: {
             'collide.horse': function (horse) {
                 console.debug('slow it down', horse.name);
@@ -18,7 +15,7 @@ module.exports = function (opts) {
         },
         size: $.Dimension(10, 3),
         mask: $.Rectangle()
-    }).extend({
+    }, img).extend({
         lanePos: opts.position
     });
 };

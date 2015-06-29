@@ -6,10 +6,14 @@ module.exports = function (grunt) {
     ]).forEach(grunt.loadNpmTasks);
     grunt.loadTasks('tasks');
 
-    grunt.registerTask('default', [
+    grunt.registerTask('default', 'Dev build suite.', [
+        'browserify',
+        'uglify:raw'
+    ]);
+    grunt.registerTask('build', 'Full build suite.', [
         'browserify',
         'uglify:raw',
-        //'uglify:build',
-        //'compress'
+        'uglify:build',
+        'compress'
     ]);
 };

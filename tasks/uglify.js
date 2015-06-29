@@ -5,7 +5,7 @@ module.exports = function (grunt) {
                 files: {
                     'dist/horse-jockey.js': [
                         'bower_components/cocoonjs-plugins/build/cocoon.js',
-                        'dist/horse-jockey.js'
+                        'bin/horse-jockey.js'
                     ]
                 },
                 options: {

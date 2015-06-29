@@ -3,7 +3,7 @@ module.exports = function (grunt) {
         browserify: {
             build: {
                 files: {
-                    'dist/horse-jockey.js': [
+                    'bin/horse-jockey.js': [
                         'src/*.js'
                     ]
                 }

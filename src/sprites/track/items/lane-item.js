@@ -1,20 +1,17 @@
 var $ = require('dragonjs');
 
 /**
- * @param {String} [img]
- * @param {Map of Function} [on]
- * @param {Map of Function} [one]
+ * @param {Object} opts Map of Sprite options.
+ * @param {Image} [img]
  */
-module.exports = function (opts) {
+module.exports = function (opts, img) {
     $.mergeDefaults(opts, {
         kind: 'lane-item',
         collisionSets: [
             require('../../../collisions/racetrack.js')
         ],
         strips: {
-            'default': $.AnimationStrip({
-                src: opts.img
-            })
+            'default': $.AnimationStrip(img),
         },
         depth: 2
     });
