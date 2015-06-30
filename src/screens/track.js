@@ -23,7 +23,7 @@ module.exports = function (opts) {
 
     return $.Screen({
         name: 'track',
-        collisionSets: [
+        collisions: [
             require('../collisions/racetrack.js')
         ],
         spriteSet: lanes.concat(items),

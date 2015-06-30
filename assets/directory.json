@@ -1,0 +1,32 @@
+{
+  "img": [
+    "buttons/care.down.png",
+    "buttons/care.png",
+    "buttons/down.png",
+    "buttons/gear.down.png",
+    "buttons/gear.png",
+    "buttons/minus.png",
+    "buttons/plus.null.png",
+    "buttons/plus.png",
+    "buttons/start-race.down.png",
+    "buttons/start-race.png",
+    "buttons/train.down.png",
+    "buttons/train.png",
+    "buttons/up.png",
+    "explosion.png",
+    "haybale.png",
+    "horse.png",
+    "icons/train-pips.png",
+    "lane.png",
+    "lost.png",
+    "mudpit.png",
+    "slider-knob.png",
+    "slider-lane.png",
+    "slider.png",
+    "win.png"
+  ],
+  "sound": [],
+  "font": [
+    "8-bit-wonder.TTF"
+  ]
+}
