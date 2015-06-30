@@ -1,11 +1,16 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    Gear = require('./screens/gear.js'),
+    Train = require('./screens/train.js'),
+    Care = require('./screens/care.js');
 
 $.pipeline.add.font('Wonder', {
     src: '8-bit-wonder.TTF'
 });
 
-$.start([
-    require('./screens/gear.js'),
-    require('./screens/train.js'),
-    require('./screens/care.js')
-], true);
+$.start(function () {
+    return [
+        Gear(),
+        Train(),
+        Care()
+    ];
+}, true);
