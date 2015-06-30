@@ -1,26 +1,30 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    upimg = $.pipeline.add.image('buttons/train.png'),
+    downimg = $.pipeline.add.image('buttons/train.down.png'),
+    self;
 
-module.exports = $.ui.Button({
-    name: 'open-train',
-    pos: $.Point(0, $.canvas.height * 0.32),
-    size: $.Dimension(
-        $.canvas.width * 0.1,
-        $.canvas.height * 0.36
-    ),
-    up: {
-        src: 'buttons/train.png',
-        size: $.Dimension(11, 43)
-    },
-    down: {
-        src: 'buttons/train.down.png',
-        size: $.Dimension(11, 43)
-    },
-    onpress: function () {
-        $.screen('gear').stop();
-        $.screen('care').stop();
-        $.screen('train').start();
-        this.pause();
-        require('./open-gear.js').start();
-        require('./open-care.js').start();
-    }
-});
+module.exports = function () {
+    self = self || $.ui.Button({
+        name: 'open-train',
+        pos: $.Point(0, $.canvas.height * 0.32),
+        size: $.Dimension(
+            $.canvas.width * 0.1,
+            $.canvas.height * 0.36
+        ),
+        up: {
+            image: upimg
+        },
+        down: {
+            image: downimg
+        },
+        onpress: function () {
+            $.screen('gear').stop();
+            $.screen('care').stop();
+            $.screen('train').start();
+            this.pause();
+            require('./open-gear.js')().start();
+            require('./open-care.js')().start();
+        }
+    });
+    return self;
+};

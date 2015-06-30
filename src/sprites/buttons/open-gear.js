@@ -1,9 +1,10 @@
 var $ = require('dragonjs'),
     upimg = $.pipeline.add.image('buttons/gear.png'),
-    downimg = $.pipeline.add.image('buttons/gear.down.png');
+    downimg = $.pipeline.add.image('buttons/gear.down.png'),
+    self;
 
 module.exports = function () {
-    return $.ui.Button({
+    self = self || $.ui.Button({
         name: 'open-gear',
         pos: $.Point(0, 0),
         size: $.Dimension(
@@ -21,8 +22,9 @@ module.exports = function () {
             $.screen('care').stop();
             $.screen('gear').start();
             this.pause();
-            require('./open-train.js').start();
-            require('./open-care.js').start();
+            require('./open-train.js')().start();
+            require('./open-care.js')().start();
         }
     });
+    return self;
 };

@@ -1,12 +1,16 @@
-var $ = require('dragonjs');
+var $ = require('dragonjs'),
+    OpenGear = require('../sprites/buttons/open-gear.js'),
+    OpenTrain = require('../sprites/buttons/open-train.js'),
+    OpenCare = require('../sprites/buttons/open-care.js'),
+    Race = require('../sprites/buttons/race.js');
 
 module.exports = $.Screen({
     name: 'care',
     spriteSet: [
-        require('../sprites/buttons/open-gear.js'),
-        require('../sprites/buttons/open-train.js'),
-        require('../sprites/buttons/open-care.js'),
-        require('../sprites/buttons/race.js')
+        OpenGear(),
+        OpenTrain(),
+        OpenCare(),
+        Race()
     ],
     depth: 0
 }).extend({
