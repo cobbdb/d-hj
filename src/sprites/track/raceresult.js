@@ -1,22 +1,22 @@
 var $ = require('dragonjs');
 
 module.exports = {
-    win: $.ui.Decal({
+    win: $.Sprite({
         name: 'raceresult-win',
+        strips: 'win.png',
         updating: false,
         drawing: false,
-        strips: 'win.png',
         scale: 3,
         pos: $.Point(
             $.canvas.width / 2 - 25 * 3,
             $.canvas.height / 2 - 4 * 3
         )
     }),
-    lose: $.ui.Decal({
+    lose: $.Sprite({
         name: 'raceresult-lose',
+        strips: 'lost.png',
         updating: false,
         drawing: false,
-        strips: 'lost.png',
         scale: 3,
         pos: $.Point(
             $.canvas.width / 2 - 28 * 3,
