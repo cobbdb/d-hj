@@ -4319,10 +4319,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     10: [ function(require, module, exports) {
         (function(global) {
             var Str = require("curb");
+            function prefetch(family) {
+                var span = global.document.createElement("span");
+                span.style.fontFamily = family;
+                global.document.body.appendChild(span);
+            }
             module.exports = function(family, opts, onload) {
                 var style = global.document.createElement("style");
                 style.innerHTML = Str("@font-face{%s}", [ "font-family:" + family, "font-style:" + (opts.style || "normal"), "font-weight:" + (opts.weight || 400), "src:url(assets/font/" + opts.src + ")" ].join(";"));
-                onload();
                 global.document.body.appendChild(style);
                 return true;
             };
@@ -4389,9 +4393,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     return cache.sound[url];
                 },
                 font: function(family, conf) {
-                    count += 1;
                     if (!(family in cache.font)) {
-                        cache.font[family] = Font(family, conf, onload);
+                        cache.font[family] = Font(family, conf);
                     }
                     return true;
                 }
