@@ -4135,7 +4135,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         module.exports = {
             img: [ "buttons/care.down.png", "buttons/care.png", "buttons/down.png", "buttons/gear.down.png", "buttons/gear.png", "buttons/minus.png", "buttons/plus.null.png", "buttons/plus.png", "buttons/start-race.down.png", "buttons/start-race.png", "buttons/train.down.png", "buttons/train.png", "buttons/up.png", "explosion.png", "haybale.png", "horse.png", "icons/train-pips.png", "jockey.png", "lane.png", "lost.png", "mudpit.png", "slider-knob.png", "slider-lane.png", "slider.png", "win.png" ],
             sound: [],
-            font: [ "8-bit-wonder.TTF" ]
+            font: [ "8-bit-wonder.ttf" ]
         };
     }, {} ],
     2: [ function(require, module, exports) {
@@ -4318,12 +4318,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {} ],
     10: [ function(require, module, exports) {
         (function(global) {
-            var Str = require("curb"), tpl = "@font-face{font-family:'%s';font-style:%s;font-weight:%s;src:url(%s);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2212,U+2215,U+E0FF,U+EFFD,U+F000}";
+            var Str = require("curb");
             module.exports = function(family, opts, onload) {
                 var style = global.document.createElement("style");
-                new Image().src = "assets/font/" + opts.src;
-                style.innerHTML = Str(tpl, family, opts.style || "normal", opts.weight || "400", "assets/font/" + opts.src);
-                style.onload = onload;
+                style.innerHTML = Str("@font-face{%s}", [ "font-family:" + family, "font-style:" + (opts.style || "normal"), "font-weight:" + (opts.weight || 400), "src:url(assets/font/" + opts.src + ")" ].join(";"));
+                onload();
                 global.document.body.appendChild(style);
                 return true;
             };
@@ -4340,7 +4339,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {} ],
     12: [ function(require, module, exports) {
-        var Util = require("../util/object.js"), Img = require("./image.js"), Audio = require("./audio.js"), Font = require("./font.js"), Game = require("../game.js"), heartbeat = require("../heartbeat.js"), path = require("path"), dir = require("../../../../assets/directory.json"), loaded = false, count = 0, oncomplete = function() {}, onload = function() {
+        var Util = require("../util/object.js"), Img = require("./image.js"), Audio = require("./audio.js"), Font = require("./font.js"), Game = require("../game.js"), heartbeat = require("../heartbeat.js"), dir = require("../../../../assets/directory.json"), loaded = false, count = 0, oncomplete = function() {}, onload = function() {
             count -= 1;
             if (count === 0) {
                 oncomplete();
@@ -4405,8 +4404,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../util/object.js": 46,
         "./audio.js": 9,
         "./font.js": 10,
-        "./image.js": 11,
-        path: 49
+        "./image.js": 11
     } ],
     13: [ function(require, module, exports) {
         var CollisionItem = require("./collision-item.js"), Point = require("./geom/point.js"), Vector = require("./geom/vector.js"), Dimension = require("./geom/dimension.js"), Rectangle = require("./geom/rectangle.js"), Util = require("./util/object.js");
@@ -5854,230 +5852,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./random.js": 47
     } ],
     49: [ function(require, module, exports) {
-        (function(process) {
-            function normalizeArray(parts, allowAboveRoot) {
-                var up = 0;
-                for (var i = parts.length - 1; i >= 0; i--) {
-                    var last = parts[i];
-                    if (last === ".") {
-                        parts.splice(i, 1);
-                    } else if (last === "..") {
-                        parts.splice(i, 1);
-                        up++;
-                    } else if (up) {
-                        parts.splice(i, 1);
-                        up--;
-                    }
-                }
-                if (allowAboveRoot) {
-                    for (;up--; up) {
-                        parts.unshift("..");
-                    }
-                }
-                return parts;
-            }
-            var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-            var splitPath = function(filename) {
-                return splitPathRe.exec(filename).slice(1);
-            };
-            exports.resolve = function() {
-                var resolvedPath = "", resolvedAbsolute = false;
-                for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-                    var path = i >= 0 ? arguments[i] : process.cwd();
-                    if (typeof path !== "string") {
-                        throw new TypeError("Arguments to path.resolve must be strings");
-                    } else if (!path) {
-                        continue;
-                    }
-                    resolvedPath = path + "/" + resolvedPath;
-                    resolvedAbsolute = path.charAt(0) === "/";
-                }
-                resolvedPath = normalizeArray(filter(resolvedPath.split("/"), function(p) {
-                    return !!p;
-                }), !resolvedAbsolute).join("/");
-                return (resolvedAbsolute ? "/" : "") + resolvedPath || ".";
-            };
-            exports.normalize = function(path) {
-                var isAbsolute = exports.isAbsolute(path), trailingSlash = substr(path, -1) === "/";
-                path = normalizeArray(filter(path.split("/"), function(p) {
-                    return !!p;
-                }), !isAbsolute).join("/");
-                if (!path && !isAbsolute) {
-                    path = ".";
-                }
-                if (path && trailingSlash) {
-                    path += "/";
-                }
-                return (isAbsolute ? "/" : "") + path;
-            };
-            exports.isAbsolute = function(path) {
-                return path.charAt(0) === "/";
-            };
-            exports.join = function() {
-                var paths = Array.prototype.slice.call(arguments, 0);
-                return exports.normalize(filter(paths, function(p, index) {
-                    if (typeof p !== "string") {
-                        throw new TypeError("Arguments to path.join must be strings");
-                    }
-                    return p;
-                }).join("/"));
-            };
-            exports.relative = function(from, to) {
-                from = exports.resolve(from).substr(1);
-                to = exports.resolve(to).substr(1);
-                function trim(arr) {
-                    var start = 0;
-                    for (;start < arr.length; start++) {
-                        if (arr[start] !== "") break;
-                    }
-                    var end = arr.length - 1;
-                    for (;end >= 0; end--) {
-                        if (arr[end] !== "") break;
-                    }
-                    if (start > end) return [];
-                    return arr.slice(start, end - start + 1);
-                }
-                var fromParts = trim(from.split("/"));
-                var toParts = trim(to.split("/"));
-                var length = Math.min(fromParts.length, toParts.length);
-                var samePartsLength = length;
-                for (var i = 0; i < length; i++) {
-                    if (fromParts[i] !== toParts[i]) {
-                        samePartsLength = i;
-                        break;
-                    }
-                }
-                var outputParts = [];
-                for (var i = samePartsLength; i < fromParts.length; i++) {
-                    outputParts.push("..");
-                }
-                outputParts = outputParts.concat(toParts.slice(samePartsLength));
-                return outputParts.join("/");
-            };
-            exports.sep = "/";
-            exports.delimiter = ":";
-            exports.dirname = function(path) {
-                var result = splitPath(path), root = result[0], dir = result[1];
-                if (!root && !dir) {
-                    return ".";
-                }
-                if (dir) {
-                    dir = dir.substr(0, dir.length - 1);
-                }
-                return root + dir;
-            };
-            exports.basename = function(path, ext) {
-                var f = splitPath(path)[2];
-                if (ext && f.substr(-1 * ext.length) === ext) {
-                    f = f.substr(0, f.length - ext.length);
-                }
-                return f;
-            };
-            exports.extname = function(path) {
-                return splitPath(path)[3];
-            };
-            function filter(xs, f) {
-                if (xs.filter) return xs.filter(f);
-                var res = [];
-                for (var i = 0; i < xs.length; i++) {
-                    if (f(xs[i], i, xs)) res.push(xs[i]);
-                }
-                return res;
-            }
-            var substr = "ab".substr(-1) === "b" ? function(str, start, len) {
-                return str.substr(start, len);
-            } : function(str, start, len) {
-                if (start < 0) start = str.length + start;
-                return str.substr(start, len);
-            };
-        }).call(this, require("_process"));
-    }, {
-        _process: 50
-    } ],
-    50: [ function(require, module, exports) {
-        var process = module.exports = {};
-        var queue = [];
-        var draining = false;
-        var currentQueue;
-        var queueIndex = -1;
-        function cleanUpNextTick() {
-            draining = false;
-            if (currentQueue.length) {
-                queue = currentQueue.concat(queue);
-            } else {
-                queueIndex = -1;
-            }
-            if (queue.length) {
-                drainQueue();
-            }
-        }
-        function drainQueue() {
-            if (draining) {
-                return;
-            }
-            var timeout = setTimeout(cleanUpNextTick);
-            draining = true;
-            var len = queue.length;
-            while (len) {
-                currentQueue = queue;
-                queue = [];
-                while (++queueIndex < len) {
-                    currentQueue[queueIndex].run();
-                }
-                queueIndex = -1;
-                len = queue.length;
-            }
-            currentQueue = null;
-            draining = false;
-            clearTimeout(timeout);
-        }
-        process.nextTick = function(fun) {
-            var args = new Array(arguments.length - 1);
-            if (arguments.length > 1) {
-                for (var i = 1; i < arguments.length; i++) {
-                    args[i - 1] = arguments[i];
-                }
-            }
-            queue.push(new Item(fun, args));
-            if (queue.length === 1 && !draining) {
-                setTimeout(drainQueue, 0);
-            }
-        };
-        function Item(fun, array) {
-            this.fun = fun;
-            this.array = array;
-        }
-        Item.prototype.run = function() {
-            this.fun.apply(null, this.array);
-        };
-        process.title = "browser";
-        process.browser = true;
-        process.env = {};
-        process.argv = [];
-        process.version = "";
-        process.versions = {};
-        function noop() {}
-        process.on = noop;
-        process.addListener = noop;
-        process.once = noop;
-        process.off = noop;
-        process.removeListener = noop;
-        process.removeAllListeners = noop;
-        process.emit = noop;
-        process.binding = function(name) {
-            throw new Error("process.binding is not supported");
-        };
-        process.cwd = function() {
-            return "/";
-        };
-        process.chdir = function(dir) {
-            throw new Error("process.chdir is not supported");
-        };
-        process.umask = function() {
-            return 0;
-        };
-    }, {} ],
-    51: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.CollisionHandler({
             name: "racetrack"
@@ -6085,7 +5859,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    52: [ function(require, module, exports) {
+    50: [ function(require, module, exports) {
         module.exports = [ {
             name: "Clydesdale Clive",
             body: 325
@@ -6100,7 +5874,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             body: 254
         } ];
     }, {} ],
-    53: [ function(require, module, exports) {
+    51: [ function(require, module, exports) {
         var $ = require("dragonjs");
         $.addFont("Wonder", {
             src: "8-bit-wonder.TTF"
@@ -6110,12 +5884,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             $.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js") ]);
         });
     }, {
-        "./screens/care.js": 60,
-        "./screens/gear.js": 61,
-        "./screens/train.js": 66,
+        "./screens/care.js": 58,
+        "./screens/gear.js": 59,
+        "./screens/train.js": 64,
         dragonjs: 17
     } ],
-    54: [ function(require, module, exports) {
+    52: [ function(require, module, exports) {
         var $ = require("dragonjs"), Horse = require("./sprites/horse.js"), Picker = require("./picker.js"), Stats = require("./stats/horse.js");
         function scale(difficulty) {
             var steps = [ 1, 1.2, 1.4, 1.6, 1.8 ], bonus = $.random() * .1;
@@ -6131,12 +5905,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./picker.js": 58,
-        "./sprites/horse.js": 73,
-        "./stats/horse.js": 87,
+        "./picker.js": 56,
+        "./sprites/horse.js": 71,
+        "./stats/horse.js": 85,
         dragonjs: 17
     } ],
-    55: [ function(require, module, exports) {
+    53: [ function(require, module, exports) {
         module.exports = {
             none: function() {},
             flu: function(set) {
@@ -6152,7 +5926,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             swampFever: function() {}
         };
     }, {} ],
-    56: [ function(require, module, exports) {
+    54: [ function(require, module, exports) {
         var $ = require("dragonjs"), Lane = require("./sprites/track/lane.js"), HayBale = require("./sprites/track/items/haybale.js"), MudPit = require("./sprites/track/items/mudpit.js"), player = require("./player.js"), makeHorse = require("./horse-factory.js"), itemCount = {
             none: 0,
             low: 4,
@@ -6180,14 +5954,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         };
     }, {
-        "./horse-factory.js": 54,
-        "./player.js": 59,
-        "./sprites/track/items/haybale.js": 79,
-        "./sprites/track/items/mudpit.js": 81,
-        "./sprites/track/lane.js": 82,
+        "./horse-factory.js": 52,
+        "./player.js": 57,
+        "./sprites/track/items/haybale.js": 77,
+        "./sprites/track/items/mudpit.js": 79,
+        "./sprites/track/lane.js": 80,
         dragonjs: 17
     } ],
-    57: [ function(require, module, exports) {
+    55: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(length) {
             return $.shuffle($.range(length));
@@ -6195,7 +5969,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    58: [ function(require, module, exports) {
+    56: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), stable = require("./data/horses.json");
             module.exports = {
@@ -6211,10 +5985,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "./data/horses.json": 52,
+        "./data/horses.json": 50,
         dragonjs: 17
     } ],
-    59: [ function(require, module, exports) {
+    57: [ function(require, module, exports) {
         var Horse = require("./sprites/horse.js"), Jockey = require("./sprites/jockey.js");
         module.exports = {
             money: 100,
@@ -6223,11 +5997,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             jockey: Jockey()
         };
     }, {
-        "./shop-stats.js": 67,
-        "./sprites/horse.js": 73,
-        "./sprites/jockey.js": 74
+        "./shop-stats.js": 65,
+        "./sprites/horse.js": 71,
+        "./sprites/jockey.js": 72
     } ],
-    60: [ function(require, module, exports) {
+    58: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.Screen({
             name: "care",
@@ -6241,13 +6015,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/buttons/open-care.js": 69,
-        "../sprites/buttons/open-gear.js": 70,
-        "../sprites/buttons/open-train.js": 71,
-        "../sprites/buttons/race.js": 72,
+        "../sprites/buttons/open-care.js": 67,
+        "../sprites/buttons/open-gear.js": 68,
+        "../sprites/buttons/open-train.js": 69,
+        "../sprites/buttons/race.js": 70,
         dragonjs: 17
     } ],
-    61: [ function(require, module, exports) {
+    59: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.Screen({
             name: "gear",
@@ -6261,13 +6035,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/buttons/open-care.js": 69,
-        "../sprites/buttons/open-gear.js": 70,
-        "../sprites/buttons/open-train.js": 71,
-        "../sprites/buttons/race.js": 72,
+        "../sprites/buttons/open-care.js": 67,
+        "../sprites/buttons/open-gear.js": 68,
+        "../sprites/buttons/open-train.js": 69,
+        "../sprites/buttons/race.js": 70,
         dragonjs: 17
     } ],
-    62: [ function(require, module, exports) {
+    60: [ function(require, module, exports) {
         var $ = require("dragonjs"), result = require("../sprites/track/raceresult.js");
         module.exports = $.Screen({
             name: "raceresult",
@@ -6289,10 +6063,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/track/raceresult.js": 84,
+        "../sprites/track/raceresult.js": 82,
         dragonjs: 17
     } ],
-    63: [ function(require, module, exports) {
+    61: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), countdown = require("../sprites/track/countdown.js");
             module.exports = $.Screen({
@@ -6327,10 +6101,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../sprites/track/countdown.js": 78,
+        "../sprites/track/countdown.js": 76,
         dragonjs: 17
     } ],
-    64: [ function(require, module, exports) {
+    62: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), player = require("../player.js"), LaneOrdering = require("../lane-ordering.js");
             module.exports = function(opts) {
@@ -6384,14 +6158,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../collisions/racetrack.js": 51,
-        "../lane-ordering.js": 57,
-        "../player.js": 59,
-        "./raceresult.js": 62,
-        "./startrace.js": 63,
+        "../collisions/racetrack.js": 49,
+        "../lane-ordering.js": 55,
+        "../player.js": 57,
+        "./raceresult.js": 60,
+        "./startrace.js": 61,
         dragonjs: 17
     } ],
-    65: [ function(require, module, exports) {
+    63: [ function(require, module, exports) {
         var Track = require("../track.js"), makeLane = require("../../lane-factory.js");
         module.exports = function() {
             var laneConf = {
@@ -6407,10 +6181,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../lane-factory.js": 56,
-        "../track.js": 64
+        "../../lane-factory.js": 54,
+        "../track.js": 62
     } ],
-    66: [ function(require, module, exports) {
+    64: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), train = require("../sprites/buttons/open-train.js"), player = require("../player.js"), TrainLabel = require("../sprites/shop/train-label.js"), StatLabel = require("../sprites/shop/stat-label.js"), addRank = require("../sprites/buttons/add-rank.js"), shopStats = require("../shop-stats.js");
             module.exports = $.Screen({
@@ -6438,19 +6212,19 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../player.js": 59,
-        "../shop-stats.js": 67,
-        "../sprites/buttons/add-rank.js": 68,
-        "../sprites/buttons/open-care.js": 69,
-        "../sprites/buttons/open-gear.js": 70,
-        "../sprites/buttons/open-train.js": 71,
-        "../sprites/buttons/race.js": 72,
-        "../sprites/shop/ranks.js": 75,
-        "../sprites/shop/stat-label.js": 76,
-        "../sprites/shop/train-label.js": 77,
+        "../player.js": 57,
+        "../shop-stats.js": 65,
+        "../sprites/buttons/add-rank.js": 66,
+        "../sprites/buttons/open-care.js": 67,
+        "../sprites/buttons/open-gear.js": 68,
+        "../sprites/buttons/open-train.js": 69,
+        "../sprites/buttons/race.js": 70,
+        "../sprites/shop/ranks.js": 73,
+        "../sprites/shop/stat-label.js": 74,
+        "../sprites/shop/train-label.js": 75,
         dragonjs: 17
     } ],
-    67: [ function(require, module, exports) {
+    65: [ function(require, module, exports) {
         var opts = {};
         module.exports = {
             groom: opts.groom || 0,
@@ -6460,7 +6234,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             coach: opts.coach || 0
         };
     }, {} ],
-    68: [ function(require, module, exports) {
+    66: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, player = require("../../player.js"), ranks = require("../shop/ranks.js");
         module.exports = function(name, onpress) {
             onpress = onpress || function() {};
@@ -6489,11 +6263,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../player.js": 59,
-        "../shop/ranks.js": 75,
+        "../../player.js": 57,
+        "../shop/ranks.js": 73,
         dragonjs: 17
     } ],
-    69: [ function(require, module, exports) {
+    67: [ function(require, module, exports) {
         var $ = require("dragonjs"), height = $.canvas.height * .32, width = .1;
         module.exports = $.ui.Button({
             name: "open-care",
@@ -6516,11 +6290,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             realWidth: $.canvas.width * width
         });
     }, {
-        "./open-gear.js": 70,
-        "./open-train.js": 71,
+        "./open-gear.js": 68,
+        "./open-train.js": 69,
         dragonjs: 17
     } ],
-    70: [ function(require, module, exports) {
+    68: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Button({
             name: "open-gear",
@@ -6540,11 +6314,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "./open-care.js": 69,
-        "./open-train.js": 71,
+        "./open-care.js": 67,
+        "./open-train.js": 69,
         dragonjs: 17
     } ],
-    71: [ function(require, module, exports) {
+    69: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Button({
             name: "open-train",
@@ -6564,11 +6338,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "./open-care.js": 69,
-        "./open-gear.js": 70,
+        "./open-care.js": 67,
+        "./open-gear.js": 68,
         dragonjs: 17
     } ],
-    72: [ function(require, module, exports) {
+    70: [ function(require, module, exports) {
         var $ = require("dragonjs"), Riverton = require("../../screens/tracks/riverton.js"), width = .18;
         module.exports = $.ui.Button({
             pos: $.Point($.canvas.width * (1 - width), 0),
@@ -6588,10 +6362,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             realWidth: $.canvas.width * width
         });
     }, {
-        "../../screens/tracks/riverton.js": 65,
+        "../../screens/tracks/riverton.js": 63,
         dragonjs: 17
     } ],
-    73: [ function(require, module, exports) {
+    71: [ function(require, module, exports) {
         (function(global) {
             var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../stats/horse.js"), shopStats = require("../shop-stats.js");
             module.exports = function(opts) {
@@ -6656,15 +6430,15 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../collisions/racetrack.js": 51,
-        "../illness.js": 55,
-        "../picker.js": 58,
-        "../player.js": 59,
-        "../shop-stats.js": 67,
-        "../stats/horse.js": 87,
+        "../collisions/racetrack.js": 49,
+        "../illness.js": 53,
+        "../picker.js": 56,
+        "../player.js": 57,
+        "../shop-stats.js": 65,
+        "../stats/horse.js": 85,
         dragonjs: 17
     } ],
-    74: [ function(require, module, exports) {
+    72: [ function(require, module, exports) {
         var $ = require("dragonjs"), Roster = require("../picker.js"), Stats = require("../stats/jockey.js");
         module.exports = function(opts) {
             opts = opts || {};
@@ -6682,11 +6456,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../picker.js": 58,
-        "../stats/jockey.js": 89,
+        "../picker.js": 56,
+        "../stats/jockey.js": 87,
         dragonjs: 17
     } ],
-    75: [ function(require, module, exports) {
+    73: [ function(require, module, exports) {
         var $ = require("dragonjs"), stats = require("../../shop-stats.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), width = $.canvas.width, height = $.canvas.height, center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth, realWidth = width * .3, margin = width * .02, scaleWidth = realWidth / 16;
         module.exports = $.Sprite({
             name: "skillrank-master",
@@ -6715,12 +6489,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../../shop-stats.js": 67,
-        "../buttons/open-care.js": 69,
-        "../buttons/race.js": 72,
+        "../../shop-stats.js": 65,
+        "../buttons/open-care.js": 67,
+        "../buttons/race.js": 70,
         dragonjs: 17
     } ],
-    76: [ function(require, module, exports) {
+    74: [ function(require, module, exports) {
         var $ = require("dragonjs"), player = require("../../player.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), cwidth = $.canvas.width, cheight = $.canvas.height, center = (cwidth - race.realWidth - open.realWidth) / 2 + open.realWidth, margin = cwidth * .01, grid = {
             horse: {
                 body: {
@@ -6774,12 +6548,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "../../player.js": 59,
-        "../buttons/open-care.js": 69,
-        "../buttons/race.js": 72,
+        "../../player.js": 57,
+        "../buttons/open-care.js": 67,
+        "../buttons/race.js": 70,
         dragonjs: 17
     } ],
-    77: [ function(require, module, exports) {
+    75: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, ranks = require("./ranks.js");
         module.exports = function(name) {
             var keyname = name.toLowerCase();
@@ -6795,10 +6569,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./ranks.js": 75,
+        "./ranks.js": 73,
         dragonjs: 17
     } ],
-    78: [ function(require, module, exports) {
+    76: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Label({
             name: "countdown",
@@ -6814,7 +6588,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    79: [ function(require, module, exports) {
+    77: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
         module.exports = function(opts) {
             return LaneItem({
@@ -6842,10 +6616,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./lane-item.js": 80,
+        "./lane-item.js": 78,
         dragonjs: 17
     } ],
-    80: [ function(require, module, exports) {
+    78: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             $.mergeDefaults(opts, {
@@ -6857,10 +6631,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             return $.Sprite(opts);
         };
     }, {
-        "../../../collisions/racetrack.js": 51,
+        "../../../collisions/racetrack.js": 49,
         dragonjs: 17
     } ],
-    81: [ function(require, module, exports) {
+    79: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
         module.exports = function(opts) {
             return LaneItem({
@@ -6877,10 +6651,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./lane-item.js": 80,
+        "./lane-item.js": 78,
         dragonjs: 17
     } ],
-    82: [ function(require, module, exports) {
+    80: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneName = require("./lanename.js");
         module.exports = function(opts) {
             var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 50 + 40, height = $.canvas.height / 20, name = LaneName({
@@ -6916,10 +6690,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./lanename.js": 83,
+        "./lanename.js": 81,
         dragonjs: 17
     } ],
-    83: [ function(require, module, exports) {
+    81: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             return $.ui.Label({
@@ -6948,7 +6722,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    84: [ function(require, module, exports) {
+    82: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = {
             win: $.Sprite({
@@ -6971,7 +6745,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    85: [ function(require, module, exports) {
+    83: [ function(require, module, exports) {
         module.exports = function(Core) {
             var modifiers = {};
             var group = {
@@ -7007,7 +6781,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             return group;
         };
     }, {} ],
-    86: [ function(require, module, exports) {
+    84: [ function(require, module, exports) {
         module.exports = function(opts) {
             var set;
             opts = opts || {};
@@ -7046,16 +6820,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         };
     }, {} ],
-    87: [ function(require, module, exports) {
+    85: [ function(require, module, exports) {
         var Core = require("./horse.core.js"), Group = require("./group.js");
         module.exports = function(opts) {
             return Group(Core(opts));
         };
     }, {
-        "./group.js": 85,
-        "./horse.core.js": 86
+        "./group.js": 83,
+        "./horse.core.js": 84
     } ],
-    88: [ function(require, module, exports) {
+    86: [ function(require, module, exports) {
         module.exports = function(opts) {
             var set;
             opts = opts || {};
@@ -7094,13 +6868,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         };
     }, {} ],
-    89: [ function(require, module, exports) {
+    87: [ function(require, module, exports) {
         var Core = require("./jockey.core.js"), Group = require("./group.js");
         module.exports = function(opts) {
             return Group(Core(opts));
         };
     }, {
-        "./group.js": 85,
-        "./jockey.core.js": 88
+        "./group.js": 83,
+        "./jockey.core.js": 86
     } ]
-}, {}, [ 53, 54, 55, 56, 57, 58, 59, 67 ]);
+}, {}, [ 51, 52, 53, 54, 55, 56, 57, 65 ]);
