@@ -9,9 +9,7 @@ module.exports = function (opts) {
         name: opts.name || Roster.next.jockey.name,
         kind: 'jockey',
         strips: {
-            'jockey': $.AnimationStrip({
-                src: 'jockey.png'
-            })
+            jockey: 'jockey.png'
         },
         size: $.Dimension(64, 64),
         pos: $.Point(100, 100),

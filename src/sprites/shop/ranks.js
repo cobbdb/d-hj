@@ -1,9 +1,4 @@
 var $ = require('dragonjs'),
-    pips = $.AnimationStrip({
-        src: 'icons/train-pips.png',
-        size: $.Dimension(16, 4),
-        frames: 6
-    }),
     stats = require('../../shop-stats.js'),
     race = require('../buttons/race.js'),
     open = require('../buttons/open-care.js'),
@@ -12,30 +7,35 @@ var $ = require('dragonjs'),
     center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth,
     realWidth = width * 0.3,
     margin = width * 0.02,
-    scaleWidth = realWidth / 16,
-    pos = {
+    scaleWidth = realWidth / 16;
+
+module.exports = $.Sprite({
+    name: 'skillrank-master',
+    strips: {
+        strip: $.AnimationStrip('icons/train-pips.png', {
+            frames: 6
+        })
+    }
+}).extend({
+    skillpos: {
         facility: $.Point(center - margin - realWidth, height * 0.5),
         groom: $.Point(center - margin - realWidth, height * 0.7),
         doctor: $.Point(center - margin - realWidth, height * 0.9),
         gym: $.Point(center + margin, height * 0.5),
         coach: $.Point(center + margin, height * 0.7)
-    };
-
-pips.load();
-
-module.exports = {
+    },
+    realWidth: realWidth,
+    realHeight: 12,
+    update: function () {},
     draw: function (ctx) {
         var key, value;
         for (key in stats) {
-            pips.frame = stats[key];
-            pips.draw(
+            this.strip.frame = stats[key];
+            this.strip.draw(
                 ctx,
-                pos[key],
+                this.skillpos[key],
                 $.Dimension(scaleWidth, 3)
             );
         }
-    },
-    pos: pos,
-    realWidth: realWidth,
-    realHeight: 12
-};
+    }
+});

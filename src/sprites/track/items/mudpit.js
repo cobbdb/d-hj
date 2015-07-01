@@ -1,21 +1,22 @@
 ﻿var $ = require('dragonjs'),
-    LaneItem = require('./lane-item.js'),
-    img = $.pipeline.add.image('mudpit.png');
+    LaneItem = require('./lane-item.js');
 
 /**
+ * @class Mudpit
+ * @extends LaneItem
  * @param {Number} position Percentage of track where this item lives.
- * @return {Sprite}
  */
 module.exports = function (opts) {
     return LaneItem({
+        mask: $.Rectangle(),
+        strips: 'mudpit.png',
         on: {
             'collide.horse': function (horse) {
                 console.debug('slow it down', horse.name);
             }
         },
-        size: $.Dimension(10, 3),
-        mask: $.Rectangle()
-    }, img).extend({
+        size: $.Dimension(10, 3)
+    }).extend({
         lanePos: opts.position
     });
 };

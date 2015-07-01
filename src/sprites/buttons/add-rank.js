@@ -7,17 +7,13 @@ module.exports = function (name, onpress) {
     onpress = onpress || function () {};
     return $.ui.Button({
         pos: $.Point(
-            ranks.pos[name].x + ranks.realWidth - len,
-            ranks.pos[name].y - len - 2
+            ranks.skillpos[name].x + ranks.realWidth - len,
+            ranks.skillpos[name].y - len - 2
         ),
         size: $.Dimension(len, len),
-        up: {
-            src: 'buttons/plus.png',
-            size: $.Dimension(8, 8)
-        },
-        down: {
-            src: 'buttons/plus.null.png',
-            size: $.Dimension(8, 8)
+        strips: {
+            up: 'buttons/plus.png',
+            down: 'buttons/plus.null.png'
         },
         onpress: function () {
             if (player.stats[name] < 5) {

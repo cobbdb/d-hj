@@ -2,7 +2,7 @@ var $ = require('dragonjs');
 
 module.exports = $.Screen({
     name: 'care',
-    spriteSet: [
+    sprites: [
         require('../sprites/buttons/open-gear.js'),
         require('../sprites/buttons/open-train.js'),
         require('../sprites/buttons/open-care.js'),

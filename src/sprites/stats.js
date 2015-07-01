@@ -1,5 +1,4 @@
 var $ = require('dragonjs'),
-    BaseClass = require('baseclassjs'),
     player = require('../player.js'),
     marks = {
         horse: {

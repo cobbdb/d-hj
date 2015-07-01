@@ -1,6 +1,4 @@
 var $ = require('dragonjs'),
-    StartRace = require('./startrace.js'),
-    RaceResult = require('./raceresult.js'),
     player = require('../player.js'),
     LaneOrdering = require('../lane-ordering.js');
 
@@ -23,10 +21,8 @@ module.exports = function (opts) {
 
     return $.Screen({
         name: 'track',
-        collisions: [
-            require('../collisions/racetrack.js')
-        ],
-        spriteSet: lanes.concat(items),
+        collisions: require('../collisions/racetrack.js'),
+        sprites: lanes.concat(items),
         depth: 0,
         on: {
             ready: function () {
@@ -37,8 +33,8 @@ module.exports = function (opts) {
         trackLength: 0,
         start: function () {
             $.addScreens([
-                StartRace(),
-                RaceResult()
+                require('./startrace.js'),
+                require('./raceresult.js')
             ]);
             this.base.start();
         },

@@ -1,7 +1,6 @@
 var $ = require('dragonjs'),
     train = require('../sprites/buttons/open-train.js'),
     player = require('../player.js'),
-    ranks = require('../sprites/shop/ranks.js'),
     TrainLabel = require('../sprites/shop/train-label.js'),
     StatLabel = require('../sprites/shop/stat-label.js'),
     addRank = require('../sprites/buttons/add-rank.js'),
@@ -9,7 +8,8 @@ var $ = require('dragonjs'),
 
 module.exports = $.Screen({
     name: 'train',
-    spriteSet: [
+    sprites: [
+        require('../sprites/shop/ranks.js'),
         require('../sprites/buttons/open-gear.js'),
         train,
         require('../sprites/buttons/open-care.js'),
@@ -52,7 +52,6 @@ module.exports = $.Screen({
     draw: function (ctx) {
         ctx.fillStyle = '#fde142';
         ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
-        ranks.draw(ctx);
         this.base.draw(ctx);
     }
 });

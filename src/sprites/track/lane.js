@@ -1,6 +1,5 @@
 var $ = require('dragonjs'),
-    LaneName = require('./lanename.js'),
-    img = $.pipeline.add.image('lane.png');
+    LaneName = require('./lanename.js');
 
 /**
  * @param {Horse} opts.horse
@@ -29,9 +28,7 @@ module.exports = function (opts) {
 
     return $.Sprite({
         name: 'lane',
-        strips: {
-            'lane': $.AnimationStrip(img)
-        },
+        strips: 'lane.png',
         size: $.Dimension(
             $.canvas.width,
             height

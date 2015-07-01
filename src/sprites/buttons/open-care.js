@@ -4,7 +4,10 @@ var $ = require('dragonjs'),
 
 module.exports = $.ui.Button({
     name: 'open-care',
-    src: 'buttons/care.png',
+    strips: {
+        up: 'buttons/care.png',
+        down: 'buttons/care.down.png'
+    },
     pos: $.Point(0, $.canvas.height - height),
     size: $.Dimension(
         $.canvas.width * width,

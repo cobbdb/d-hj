@@ -26,16 +26,14 @@ module.exports = function (opts) {
         name: opts.name || Roster.next.horse.name,
         kind: 'horse',
         depth: 100,
-        collisionSets: [
+        collisions: [
             require('../collisions/racetrack.js'),
             $.collisions
         ],
         mask: $.Rectangle(),
         //size: $.Dimension(25, 18),
         strips: {
-            'horse': $.AnimationStrip({
-                src: 'horse.png'
-            })
+            horse: 'horse.png'
         },
         scale: 0.5,
         on: {

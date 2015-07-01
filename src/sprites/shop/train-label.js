@@ -7,8 +7,8 @@ module.exports = function (name) {
     return $.ui.Label({
         text: name,
         pos: $.Point(
-            ranks.pos[keyname].x + ranks.realWidth - len,
-            ranks.pos[keyname].y - 5
+            ranks.skillpos[keyname].x + ranks.realWidth - len,
+            ranks.skillpos[keyname].y - 5
         ),
         style: function (ctx) {
             ctx.font = '16px Wonder';

@@ -7,11 +7,9 @@ module.exports = $.ui.Button({
         $.canvas.width * 0.1,
         $.canvas.height * 0.32
     ),
-    up: {
-        image: $.image('buttons/gear.png')
-    },
-    down: {
-        iamge: $.image('buttons/gear.down.png')
+    strips: {
+        up: 'buttons/gear.png',
+        down: 'buttons/gear.down.png'
     },
     onpress: function () {
         $.screen('train').stop();
