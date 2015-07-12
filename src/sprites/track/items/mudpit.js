@@ -11,7 +11,7 @@ module.exports = function (opts) {
         mask: $.Rectangle(),
         strips: 'mudpit.png',
         on: {
-            'collide.horse': function (horse) {
+            '$collide.horse': function (horse) {
                 console.debug('slow it down', horse.name);
             }
         },

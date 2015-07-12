@@ -41,7 +41,7 @@ module.exports = $.Screen({
         StatLabel('jockey', 'temper')
     ],
     one: {
-        ready: function () {
+        $added: function () {
             this.start();
             train.pause();
             train.useStrip('down');

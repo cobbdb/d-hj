@@ -21,10 +21,10 @@ module.exports = function (opts) {
         ],
         mask: $.Rectangle(),
         on: {
-            'collide#screenhold': function () {
+            '$collide#screenhold': function () {
                 this.text = opts.longname;
             },
-            'separate#screenhold': function () {
+            '$separate#screenhold': function () {
                 this.text = opts.name;
             }
         }

@@ -14,7 +14,7 @@ module.exports = function (opts) {
             })
         },
         on: {
-            'colliding.horse': function (horse) {
+            '$colliding.horse': function (horse) {
                 horse.flush(this);
                 this.mask.resize($.Dimension(
                     this.mask.width,
