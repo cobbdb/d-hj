@@ -4233,7 +4233,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {} ],
     8: [ function(require, module, exports) {
         (function(global) {
-            var Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), pipeline = require("./assets/pipeline.js"), Obj = require("./util/object.js");
+            var Item = require("./item.js"), Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), pipeline = require("./assets/pipeline.js"), Obj = require("./util/object.js");
             module.exports = function(src, opts) {
                 var img = pipeline.get.image(src), timeLastFrame, timeSinceLastFrame = 0, updating = false, firstFrame, direction = 1;
                 opts = Obj.mergeDefaults(opts, {
@@ -4244,7 +4244,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 });
                 opts.size = opts.size || Dimension(img.width / opts.frames, img.height);
                 firstFrame = Point(opts.size.width * opts.start.x, opts.size.height * opts.start.y);
-                return {
+                return Item(opts).extend({
                     size: opts.size,
                     frame: 0,
                     speed: opts.speed || 0,
@@ -4285,16 +4285,17 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         return this.frame;
                     },
                     draw: function(ctx, size) {
-                        var offset = this.frame * size.width;
-                        ctx.drawImage(img, firstFrame.x + offset, firstFrame.y, this.size.width, this.size.height, 0, 0, size.width, size.height);
+                        var offset = this.frame * this.size.width;
+                        ctx.drawImage(img, firstFrame.x + offset, firstFrame.y, this.size.width, this.size.height, 0, 0, size.width || this.size.width, size.height || this.size.height);
                     }
-                };
+                });
             };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
         "./assets/pipeline.js": 12,
         "./geom/dimension.js": 22,
         "./geom/point.js": 23,
+        "./item.js": 35,
         "./util/object.js": 52
     } ],
     9: [ function(require, module, exports) {
@@ -5969,17 +5970,24 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: Rectangle(),
                 collisions: [],
                 startingStrip: "up",
-                onpress: function() {}
+                onpress: function() {},
+                auto: true
             });
             opts.collisions = [].concat(opts.collisions, require("../dragon-collisions.js"));
             opts.on["$collide#screentap"] = function() {
-                this.useStrip("down");
+                if (this.auto) {
+                    this.useStrip("down");
+                }
                 opts.onpress.call(this);
             };
             opts.on["$miss#screenhold"] = function() {
-                this.useStrip("up");
+                if (this.auto) {
+                    this.useStrip("up");
+                }
             };
-            return Sprite(opts);
+            return Sprite(opts).extend({
+                auto: opts.auto
+            });
         };
     }, {
         "../dragon-collisions.js": 18,
@@ -6527,7 +6535,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     sprites: lanes.concat(items),
                     depth: 0,
                     on: {
-                        ready: function() {
+                        $added: function() {
                             this.start();
                         }
                     }
@@ -6657,14 +6665,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         player.stats[name] += 1;
                         onpress();
                     }
-                }
-            }).extend({
-                update: function() {
-                    if (player.stats[name] < 5) {
-                        this.base.update();
-                    } else {
+                    if (player.stats[name] >= 5) {
+                        this.auto = false;
                         this.useStrip("down");
-                        this.base.base.update();
                     }
                 }
             });
@@ -6868,7 +6871,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 17
     } ],
     80: [ function(require, module, exports) {
-        var $ = require("dragonjs"), stats = require("../../shop-stats.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), width = $.canvas.width, height = $.canvas.height, center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth, realWidth = width * .3, margin = width * .02, scaleWidth = realWidth / 16;
+        var $ = require("dragonjs"), stats = require("../../shop-stats.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), width = $.canvas.width, height = $.canvas.height, center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth, realWidth = width * .3, margin = width * .02;
         module.exports = $.Sprite({
             name: "skillrank-master",
             strips: {
@@ -6888,10 +6891,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             realHeight: 12,
             update: function() {},
             draw: function(ctx) {
-                var key, value;
+                var key;
                 for (key in stats) {
                     this.strip.frame = stats[key];
-                    this.strip.draw(ctx, this.skillpos[key], $.Dimension(scaleWidth, 3));
+                    this.move(this.skillpos[key]);
+                    this.base.base.draw(ctx);
+                    this.strip.draw(ctx, $.Dimension(realWidth, 8));
                 }
             }
         });

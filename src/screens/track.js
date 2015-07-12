@@ -25,7 +25,7 @@ module.exports = function (opts) {
         sprites: lanes.concat(items),
         depth: 0,
         on: {
-            ready: function () {
+            $added: function () {
                 this.start();
             }
         }

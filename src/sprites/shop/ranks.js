@@ -6,8 +6,7 @@ var $ = require('dragonjs'),
     height = $.canvas.height,
     center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth,
     realWidth = width * 0.3,
-    margin = width * 0.02,
-    scaleWidth = realWidth / 16;
+    margin = width * 0.02;
 
 module.exports = $.Sprite({
     name: 'skillrank-master',
@@ -28,13 +27,13 @@ module.exports = $.Sprite({
     realHeight: 12,
     update: function () {},
     draw: function (ctx) {
-        var key, value;
+        var key;
         for (key in stats) {
             this.strip.frame = stats[key];
-            this.strip.draw(
-                ctx,
-                this.skillpos[key],
-                $.Dimension(scaleWidth, 3)
+            this.move(this.skillpos[key]);
+            this.base.base.draw(ctx);
+            this.strip.draw(ctx,
+                $.Dimension(realWidth, 8)
             );
         }
     }

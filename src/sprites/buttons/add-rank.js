@@ -20,14 +20,9 @@ module.exports = function (name, onpress) {
                 player.stats[name] += 1;
                 onpress();
             }
-        }
-    }).extend({
-        update: function () {
-            if (player.stats[name] < 5) {
-                this.base.update();
-            } else {
+            if (player.stats[name] >= 5) {
+                this.auto = false;
                 this.useStrip('down');
-                this.base.base.update();
             }
         }
     });
