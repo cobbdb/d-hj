@@ -4431,7 +4431,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 opts.offset = opts.mask.pos();
                 opts.mask.move(pos.add(opts.offset));
                 if (!opts.mask.width && !opts.mask.height) {
-                    opts.mask.resize(size);
+                    opts.mask.resize(adjsize);
                 }
             }
             return CollisionItem(opts).extend({
@@ -4555,6 +4555,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.set.forEach(function(item) {
                         if (this.drawing && item.drawing && !item.removed) {
                             ctx.globalAlpha = 1;
+                            ctx.resetTransform();
                             item.draw(ctx);
                         }
                     }, this);
@@ -6489,7 +6490,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 sprites: countdown,
                 depth: 10,
                 on: {
-                    ready: function() {
+                    $added: function() {
                         this.start();
                     }
                 }
@@ -6787,9 +6788,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     depth: 100,
                     collisions: [ require("../collisions/racetrack.js"), $.collisions ],
                     mask: $.Rectangle(),
-                    strips: {
-                        horse: "horse.png"
-                    },
+                    strips: "horse.png",
                     scale: .5,
                     on: {
                         "$collide#screenedge/right": function() {
@@ -7119,7 +7118,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     ctx.textAlign = "left";
                     ctx.fillStyle = "black";
                 },
-                collisionSets: [ $.collisions ],
+                collisions: [ $.collisions ],
                 mask: $.Rectangle(),
                 on: {
                     "$collide#screenhold": function() {

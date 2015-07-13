@@ -6,7 +6,7 @@ module.exports = $.Screen({
     sprites: countdown,
     depth: 10,
     on: {
-        ready: function () {
+        $added: function () {
             this.start();
         }
     }

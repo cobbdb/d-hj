@@ -32,9 +32,7 @@ module.exports = function (opts) {
         ],
         mask: $.Rectangle(),
         //size: $.Dimension(25, 18),
-        strips: {
-            horse: 'horse.png'
-        },
+        strips: 'horse.png',
         scale: 0.5,
         on: {
             '$collide#screenedge/right': function () {

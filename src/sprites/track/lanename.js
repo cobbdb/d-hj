@@ -16,7 +16,7 @@ module.exports = function (opts) {
             ctx.textAlign = 'left';
             ctx.fillStyle = 'black';
         },
-        collisionSets: [
+        collisions: [
             $.collisions
         ],
         mask: $.Rectangle(),
