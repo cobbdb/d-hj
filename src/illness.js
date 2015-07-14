@@ -1,3 +1,4 @@
+console.debug('illness.js', 'required');
 module.exports = {
     none: function () {},
     flu: function (set) {

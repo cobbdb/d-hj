@@ -10,7 +10,7 @@ var $ = require('dragonjs'),
         'medium': 8,
         'high': 12
     };
-
+console.debug('lane-factory.js', 'required');
 /**
  * @param {Number} difficulty [0, 6] 0/false if player's lane.
  * @param {String} opts.density ['none', 'low', 'medium', 'high']
@@ -23,7 +23,8 @@ module.exports = function (difficulty, opts) {
     var i,
         len = itemCount[opts.density],
         bonus = $.random() * itemCount[opts.density] / 2,
-        itemSet = [];
+        itemSet = [],
+        horse = difficulty ? makeHorse(difficulty - 1) : player.horse;
 
     len += bonus;
     len = 1; // <-- debug
@@ -42,7 +43,7 @@ module.exports = function (difficulty, opts) {
      */
     return function (order) {
         return Lane({
-            horse: (difficulty) ? makeHorse(difficulty - 1) : player.horse,
+            horse: horse,
             order: order,
             items: itemSet
         });

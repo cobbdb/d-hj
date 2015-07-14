@@ -1,5 +1,5 @@
 var $ = require('dragonjs');
-
+console.debug('screens/gear.js', 'required');
 module.exports = $.Screen({
     name: 'gear',
     sprites: [

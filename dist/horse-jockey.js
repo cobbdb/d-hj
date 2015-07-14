@@ -5549,7 +5549,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             return BaseClass({
                 name: opts.name || "$:item",
                 kind: opts.kind || "$:item",
-                depth: 0,
+                depth: opts.depth || 0,
                 removed: false,
                 updating: "updating" in opts ? opts.updating : true,
                 drawing: "drawing" in opts ? opts.drawing : true,
@@ -6295,8 +6295,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         $.addFont("Wonder", {
             src: "8-bit-wonder.TTF"
         });
+        console.debug("game.js", "loadAssets()");
         $.loadAssets(function() {
             $.debug();
+            console.debug("game.js", "addScreens()");
             $.addScreens([ require("./screens/gear.js"), require("./screens/train.js"), require("./screens/care.js") ]);
         });
     }, {
@@ -6327,6 +6329,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 17
     } ],
     60: [ function(require, module, exports) {
+        console.debug("illness.js", "required");
         module.exports = {
             none: function() {},
             flu: function(set) {
@@ -6349,8 +6352,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             medium: 8,
             high: 12
         };
+        console.debug("lane-factory.js", "required");
         module.exports = function(difficulty, opts) {
-            var i, len = itemCount[opts.density], bonus = $.random() * itemCount[opts.density] / 2, itemSet = [];
+            var i, len = itemCount[opts.density], bonus = $.random() * itemCount[opts.density] / 2, itemSet = [], horse = difficulty ? makeHorse(difficulty - 1) : player.horse;
             len += bonus;
             len = 1;
             for (i = 0; i < len; i += 1) {
@@ -6363,7 +6367,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
             return function(order) {
                 return Lane({
-                    horse: difficulty ? makeHorse(difficulty - 1) : player.horse,
+                    horse: horse,
                     order: order,
                     items: itemSet
                 });
@@ -6379,6 +6383,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     62: [ function(require, module, exports) {
         var $ = require("dragonjs");
+        console.debug("lane-ordering.js", "required");
         module.exports = function(length) {
             return $.shuffle($.range(length));
         };
@@ -6406,10 +6411,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     64: [ function(require, module, exports) {
         var Horse = require("./sprites/horse.js"), Jockey = require("./sprites/jockey.js");
+        console.debug("player.js", "required");
         module.exports = {
             money: 100,
             stats: require("./shop-stats.js"),
-            horse: Horse(),
+            horse: Horse().extend({
+                kind: "player-horse"
+            }),
             jockey: Jockey()
         };
     }, {
@@ -6439,6 +6447,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     66: [ function(require, module, exports) {
         var $ = require("dragonjs");
+        console.debug("screens/gear.js", "required");
         module.exports = $.Screen({
             name: "gear",
             sprites: [ require("../sprites/buttons/open-gear.js"), require("../sprites/buttons/open-train.js"), require("../sprites/buttons/open-care.js"), require("../sprites/buttons/race.js") ],
@@ -6511,7 +6520,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                             }
                         };
                     }
-                    count(4)();
+                    count(1)();
                     this.base.start();
                 }
             });
@@ -6591,7 +6600,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 type: "rural"
             };
             return Track({
-                laneFactories: [ makeLane(false, laneConf), makeLane(2, laneConf), makeLane(1, laneConf), makeLane(1, laneConf) ]
+                laneFactories: [ makeLane(false, laneConf), makeLane(2, laneConf), makeLane(1, laneConf), makeLane(1, laneConf), makeLane(1, laneConf) ]
             }).extend({
                 trackLength: 3e3
             });
@@ -6642,6 +6651,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     72: [ function(require, module, exports) {
         var opts = {};
+        console.debug("shop-stats.js", "required");
         module.exports = {
             groom: opts.groom || 0,
             facility: opts.facility || 0,
@@ -7288,4 +7298,4 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./group.js": 90,
         "./jockey.core.js": 93
     } ]
-}, {}, [ 58, 59, 60, 61, 62, 63, 64, 72 ]);
+}, {}, [ 58 ]);

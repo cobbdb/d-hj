@@ -33,7 +33,7 @@ module.exports = $.Screen({
             };
         }
         // Begin the countdown.
-        count(4)();
+        count(1)();
         this.base.start();
     }
 });

@@ -17,6 +17,7 @@ module.exports = function () {
             makeLane(false, laneConf),
             makeLane(2, laneConf),
             makeLane(1, laneConf),
+            makeLane(1, laneConf),
             makeLane(1, laneConf)
         ]
     }).extend({
