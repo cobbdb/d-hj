@@ -10,7 +10,7 @@ var $ = require('dragonjs'),
         'medium': 8,
         'high': 12
     };
-console.debug('lane-factory.js', 'required');
+
 /**
  * @param {Number} difficulty [0, 6] 0/false if player's lane.
  * @param {String} opts.density ['none', 'low', 'medium', 'high']
