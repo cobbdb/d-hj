@@ -10,6 +10,7 @@ var $ = require('dragonjs'),
  */
 module.exports = function (opts) {
     var height, starty,
+        startFriction = 0.01,
         // Number of trots for speed boost.
         boost,
         // Speed of the up and down animation cycle.
@@ -23,6 +24,8 @@ module.exports = function (opts) {
     opts = opts || {};
 
     return $.Sprite({
+        gravity: 0.4, // <- maybe play with this later?
+        friction: startFriction,
         name: opts.name || Roster.next.horse.name,
         kind: 'horse',
         depth: 100,
@@ -31,7 +34,6 @@ module.exports = function (opts) {
             $.collisions
         ],
         mask: $.Rectangle(),
-        //size: $.Dimension(25, 18),
         strips: 'horse.png',
         scale: 0.5,
         on: {
@@ -49,42 +51,44 @@ module.exports = function (opts) {
         }
     }).extend({
         stats: Stats(),
-        racing: false,
+        resetFriction: function () {
+            this.friction = startFriction;
+        },
         endRace: function () {
             this.racing = false;
             this.scale(0.5);
             this.rotation = 0;
         },
         race: function (trackLength) {
-            this.racing = true;
             starty = this.pos.y;
             trot = 0.08 * $.random();
             boost = $.random() * 10 + 2;
             this.speed.x = stride = this.stats.adj.body / trackLength;
         },
+        jump: function () {
+            // Jump.
+            this.speed.y = -($.random() * 1.5 + 3);
+
+            // Rotate.
+            lean *= -1;
+            this.rotation = lean * 0.1 * (
+                1 + $.random()
+            );
+
+            // Speed boost.
+            boost -= 1;
+            if (boost < -8) {
+                // Reset boost.
+                boost = $.random() * 10 + 2;
+                this.speed.x = stride * 2.5;
+            } else if (boost < 0) {
+                // Boost is over - normal speed for a bit.
+                this.speed.x = stride;
+            }
+        },
         update: function () {
-            if (this.racing) {
-                theta += 0.15 + trot;
-                if (theta > 3.14) {
-                    height = 8 + 10 * $.random();
-                    lean *= -1;
-                    this.rotation = lean * 0.1 * (
-                        1 + $.random()
-                    );
-                    boost -= 1;
-                    if (boost < -8) {
-                        // Reset boost.
-                        boost = $.random() * 10 + 2;
-                        this.speed.x = stride * 2.5;
-                    } else if (boost < 0) {
-                        // Boost is over - normal speed for a bit.
-                        this.speed.x = stride;
-                    }
-                }
-                theta %= 3.14;
-                this.pos.y = starty - height * global.Math.abs(
-                    global.Math.sin(theta)
-                );
+            if (this.pos.y >= starty) {
+                // this.jump();
             }
             this.base.update();
         }

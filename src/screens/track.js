@@ -61,8 +61,7 @@ module.exports = function (opts) {
             this.pause();
         },
         draw: function (ctx) {
-            ctx.fillStyle = '#67fb04';
-            ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+            $.canvas.clear('#67fb04');
             this.base.draw(ctx);
         }
     });

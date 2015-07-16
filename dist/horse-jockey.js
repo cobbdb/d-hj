@@ -4739,15 +4739,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             Polar: require("./geom/polar.js"),
             FrameCounter: require("./util/frame-counter.js"),
             IdCounter: require("./util/id-counter.js"),
-            random: require("./util/random.js"),
-            range: SetUtil.range,
-            shuffle: SetUtil.shuffle,
             mergeLeft: ObjUtil.mergeLeft,
             mergeDefaults: ObjUtil.mergeDefaults,
             timer: timer,
             setTimeout: timer.setTimeout,
             setInterval: timer.setInterval,
             clear: timer.clear,
+            random: require("./util/random.js"),
+            range: SetUtil.range,
+            shuffle: SetUtil.shuffle,
+            math: require("./util/number.js"),
             Mouse: require("./io/mouse.js"),
             Key: require("./io/keyboard.js"),
             canvas: require("./io/canvas.js"),
@@ -4811,6 +4812,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./ui/label.js": 47,
         "./util/frame-counter.js": 49,
         "./util/id-counter.js": 50,
+        "./util/number.js": 51,
         "./util/object.js": 52,
         "./util/random.js": 53,
         "./util/set.js": 54,
@@ -5378,9 +5380,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     canvas.ctx.setTransform(1, 0, 0, 1, 0, 0);
                 };
             }
-            canvas.clear = function() {
+            canvas.clear = function(color) {
                 canvas.ctx.resetTransform();
-                canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (color) {
+                    canvas.ctx.fillStyle = color;
+                    canvas.ctx.fillRect(0, 0, canvas.width, canvas.height);
+                } else {
+                    canvas.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
             };
             canvas.mask = Rectangle(Point(0, 0), Dimension(canvas.width, canvas.height));
             canvas.center = Point(canvas.width / 2, canvas.height / 2);
@@ -6429,8 +6436,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             depth: 0
         }).extend({
             draw: function(ctx) {
-                ctx.fillStyle = "#fde142";
-                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                $.canvas.clear("#fde142");
                 this.base.draw(ctx);
             }
         });
@@ -6449,8 +6455,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             depth: 0
         }).extend({
             draw: function(ctx) {
-                ctx.fillStyle = "#fde142";
-                ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                $.canvas.clear("#fde142");
                 this.base.draw(ctx);
             }
         });
@@ -6564,8 +6569,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.pause();
                 },
                 draw: function(ctx) {
-                    ctx.fillStyle = "#67fb04";
-                    ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                    $.canvas.clear("#67fb04");
                     this.base.draw(ctx);
                 }
             });
@@ -6618,8 +6622,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 depth: 0
             }).extend({
                 draw: function(ctx) {
-                    ctx.fillStyle = "#fde142";
-                    ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                    $.canvas.clear("#fde142");
                     this.base.draw(ctx);
                 }
             });
@@ -6774,67 +6777,64 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 17
     } ],
     78: [ function(require, module, exports) {
-        (function(global) {
-            var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../stats/horse.js"), shopStats = require("../shop-stats.js");
-            module.exports = function(opts) {
-                var height, starty, boost, trot, stride, lean = -1, theta = 3.14;
-                opts = opts || {};
-                return $.Sprite({
-                    name: opts.name || Roster.next.horse.name,
-                    kind: "horse",
-                    depth: 100,
-                    collisions: [ require("../collisions/racetrack.js"), $.collisions ],
-                    mask: $.Rectangle(),
-                    strips: "horse.png",
-                    scale: .5,
-                    on: {
-                        "$collide#screenedge/right": function() {
-                            this.speed.x = 0;
-                            this.scale(2);
-                            this.rotation = 0;
-                            this.pos.x = $.canvas.width / 2 - this.size().width / 2;
-                            this.pos.y = $.canvas.height / 2 - this.size().height / 2;
-                            $.screen("track").endRace(this === require("../player.js").horse, this);
-                        }
-                    }
-                }).extend({
-                    stats: Stats(),
-                    racing: false,
-                    endRace: function() {
-                        this.racing = false;
-                        this.scale(.5);
+        var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../stats/horse.js"), shopStats = require("../shop-stats.js");
+        module.exports = function(opts) {
+            var height, starty, startFriction = .01, boost, trot, stride, lean = -1, theta = 3.14;
+            opts = opts || {};
+            return $.Sprite({
+                gravity: .4,
+                friction: startFriction,
+                name: opts.name || Roster.next.horse.name,
+                kind: "horse",
+                depth: 100,
+                collisions: [ require("../collisions/racetrack.js"), $.collisions ],
+                mask: $.Rectangle(),
+                strips: "horse.png",
+                scale: .5,
+                on: {
+                    "$collide#screenedge/right": function() {
+                        this.speed.x = 0;
+                        this.scale(2);
                         this.rotation = 0;
-                    },
-                    race: function(trackLength) {
-                        this.racing = true;
-                        starty = this.pos.y;
-                        trot = .08 * $.random();
-                        boost = $.random() * 10 + 2;
-                        this.speed.x = stride = this.stats.adj.body / trackLength;
-                    },
-                    update: function() {
-                        if (this.racing) {
-                            theta += .15 + trot;
-                            if (theta > 3.14) {
-                                height = 8 + 10 * $.random();
-                                lean *= -1;
-                                this.rotation = lean * .1 * (1 + $.random());
-                                boost -= 1;
-                                if (boost < -8) {
-                                    boost = $.random() * 10 + 2;
-                                    this.speed.x = stride * 2.5;
-                                } else if (boost < 0) {
-                                    this.speed.x = stride;
-                                }
-                            }
-                            theta %= 3.14;
-                            this.pos.y = starty - height * global.Math.abs(global.Math.sin(theta));
-                        }
-                        this.base.update();
+                        this.pos.x = $.canvas.width / 2 - this.size().width / 2;
+                        this.pos.y = $.canvas.height / 2 - this.size().height / 2;
+                        $.screen("track").endRace(this === require("../player.js").horse, this);
                     }
-                });
-            };
-        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+                }
+            }).extend({
+                stats: Stats(),
+                resetFriction: function() {
+                    this.friction = startFriction;
+                },
+                endRace: function() {
+                    this.racing = false;
+                    this.scale(.5);
+                    this.rotation = 0;
+                },
+                race: function(trackLength) {
+                    starty = this.pos.y;
+                    trot = .08 * $.random();
+                    boost = $.random() * 10 + 2;
+                    this.speed.x = stride = this.stats.adj.body / trackLength;
+                },
+                jump: function() {
+                    this.speed.y = -($.random() * 1.5 + 3);
+                    lean *= -1;
+                    this.rotation = lean * .1 * (1 + $.random());
+                    boost -= 1;
+                    if (boost < -8) {
+                        boost = $.random() * 10 + 2;
+                        this.speed.x = stride * 2.5;
+                    } else if (boost < 0) {
+                        this.speed.x = stride;
+                    }
+                },
+                update: function() {
+                    if (this.pos.y >= starty) {}
+                    this.base.update();
+                }
+            });
+        };
     }, {
         "../collisions/racetrack.js": 56,
         "../illness.js": 60,
@@ -7008,19 +7008,23 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 on: {
                     "$colliding.horse": function(horse) {
                         horse.flush(this);
-                        this.mask.resize($.Dimension(this.mask.width, this.mask.height * .98));
-                        this.mask.move($.Point(this.mask.x, this.pos.y + this.size().height - this.mask.height));
-                        if (this.mask.height < 4) {
-                            this.strip.frame = 2;
-                        } else if (this.mask.height < 7) {
-                            this.strip.frame = 1;
-                        }
+                        horse.jump();
+                        this.shrink();
                     }
                 },
                 size: $.Dimension(10, 10),
                 mask: $.Rectangle()
             }).extend({
-                lanePos: opts.position
+                lanePos: opts.position,
+                shrink: function() {
+                    this.mask.resize($.Dimension(this.mask.width, this.mask.height * .92));
+                    this.mask.move($.Point(this.mask.x, this.pos.y + this.size().height - this.mask.height));
+                    if (this.mask.height < 4) {
+                        this.strip.frame = 2;
+                    } else if (this.mask.height < 7) {
+                        this.strip.frame = 1;
+                    }
+                }
             });
         };
     }, {
@@ -7045,12 +7049,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     86: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
         module.exports = function(opts) {
+            var severity = .15;
             return LaneItem({
                 mask: $.Rectangle(),
                 strips: "mudpit.png",
                 on: {
                     "$collide.horse": function(horse) {
-                        console.debug("slow it down", horse.name);
+                        horse.friction = severity;
+                    },
+                    "$separate.horse": function(horse) {
+                        horse.resetFriction();
                     }
                 },
                 size: $.Dimension(10, 3)
@@ -7070,23 +7078,33 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 longname: horse.name,
                 pos: $.Point(2, ypos)
             });
-            horse.start();
+            horse.pause();
             horse.move($.Point(20, ypos));
             items.forEach(function(item) {
                 item.move($.Point(item.lanePos * $.canvas.width, ypos + height - item.size().height));
             });
             return $.Sprite({
-                name: "lane",
+                kind: "lane",
                 strips: "lane.png",
                 size: $.Dimension($.canvas.width, height),
+                collisions: require("../../collisions/racetrack.js"),
+                mask: $.Rectangle($.Point(0, height), $.Dimension($.canvas.width, 10)),
                 pos: $.Point(0, ypos),
-                depth: 1
+                depth: 1,
+                on: {
+                    "$colliding.horse": function(other) {
+                        if (other === horse) {
+                            horse.jump();
+                        }
+                    }
+                }
             }).extend({
                 getSprites: function() {
                     return items.concat(name, horse);
                 },
                 update: function() {
                     items.forEach(function(item) {});
+                    this.base.update();
                 },
                 pause: function() {
                     horse.pause();
@@ -7094,11 +7112,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.base.pause();
                 },
                 race: function(length) {
+                    horse.start();
                     horse.race(length);
                 }
             });
         };
     }, {
+        "../../collisions/racetrack.js": 56,
         "./lanename.js": 88,
         dragonjs: 17
     } ],

@@ -5,14 +5,19 @@
  * @class Mudpit
  * @extends LaneItem
  * @param {Number} position Percentage of track where this item lives.
+ * @param {Number} [severity] TODO
  */
 module.exports = function (opts) {
+    var severity = 0.15;
     return LaneItem({
         mask: $.Rectangle(),
         strips: 'mudpit.png',
         on: {
             '$collide.horse': function (horse) {
-                console.debug('slow it down', horse.name);
+                horse.friction = severity;
+            },
+            '$separate.horse': function (horse) {
+                horse.resetFriction();
             }
         },
         size: $.Dimension(10, 3)

@@ -18,7 +18,7 @@ module.exports = function (opts) {
             pos: $.Point(2, ypos)
         });
 
-    horse.start();
+    horse.pause();
     horse.move($.Point(20, ypos));
     items.forEach(function (item) {
         item.move($.Point(
@@ -28,14 +28,26 @@ module.exports = function (opts) {
     });
 
     return $.Sprite({
-        name: 'lane',
+        kind: 'lane',
         strips: 'lane.png',
         size: $.Dimension(
             $.canvas.width,
             height
         ),
+        collisions: require('../../collisions/racetrack.js'),
+        mask: $.Rectangle(
+            $.Point(0, height),
+            $.Dimension($.canvas.width, 10)
+        ),
         pos: $.Point(0, ypos),
-        depth: 1
+        depth: 1,
+        on: {
+            '$colliding.horse': function (other) {
+                if (other === horse) {
+                    horse.jump();
+                }
+            }
+        }
     }).extend({
         getSprites: function () {
             return items.concat(name, horse);
@@ -44,6 +56,7 @@ module.exports = function (opts) {
             items.forEach(function (item) {
                 // >>>> turn items on/off when in view.
             });
+            this.base.update();
         },
         pause: function () {
             horse.pause();
@@ -51,6 +64,7 @@ module.exports = function (opts) {
             this.base.pause();
         },
         race: function (length) {
+            horse.start();
             horse.race(length);
         }
     });

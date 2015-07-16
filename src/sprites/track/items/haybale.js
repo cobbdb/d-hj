@@ -16,24 +16,35 @@ module.exports = function (opts) {
         on: {
             '$colliding.horse': function (horse) {
                 horse.flush(this);
-                this.mask.resize($.Dimension(
-                    this.mask.width,
-                    this.mask.height * 0.98
-                ));
-                this.mask.move($.Point(
-                    this.mask.x,
-                    this.pos.y + this.size().height - this.mask.height
-                ));
-                if (this.mask.height < 4) {
-                    this.strip.frame = 2;
-                } else if (this.mask.height < 7) {
-                    this.strip.frame = 1;
-                }
+                horse.jump();
+                this.shrink();
             }
         },
         size: $.Dimension(10, 10),
         mask: $.Rectangle()
     }).extend({
-        lanePos: opts.position
+        lanePos: opts.position,
+        /**
+         * Explosion effect to show damage.
+         */
+        spark: function () {
+        },
+        shrink: function () {
+            this.mask.resize($.Dimension(
+                this.mask.width,
+                this.mask.height * 0.92
+            ));
+            this.mask.move($.Point(
+                this.mask.x,
+                this.pos.y + this.size().height - this.mask.height
+            ));
+            if (this.mask.height < 4) {
+                this.strip.frame = 2;
+                this.spark();
+            } else if (this.mask.height < 7) {
+                this.strip.frame = 1;
+                this.spark();
+            }
+        }
     });
 };
