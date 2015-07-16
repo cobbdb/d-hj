@@ -12,21 +12,21 @@ module.exports = $.Screen({
     }
 }).extend({
     start: function () {
-        var that = this;
         function count(time) {
             return function () {
                 if (time > 0) {
                     // Keep counting down to zero.
                     countdown.text = time;
-                    global.setTimeout(
+                    $.setTimeout(
                         count(time - 1),
                         1000
                     );
                 } else {
                     // Start the race and show final count frame.
                     countdown.text = "and they're off!";
-                    global.setTimeout(function () {
-                        that.stop();
+                    $.setTimeout(function () {
+                        $.screen('startrace').stop();
+                        $.removeScreen('startrace');
                     }, 1000);
                     $.screen('track').race();
                 }

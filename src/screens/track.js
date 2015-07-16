@@ -26,18 +26,15 @@ module.exports = function (opts) {
         depth: 0,
         on: {
             $added: function () {
+                $.addScreens([
+                    require('./startrace.js'),
+                    require('./raceresult.js')
+                ]);
                 this.start();
             }
         }
     }).extend({
         trackLength: 0,
-        start: function () {
-            $.addScreens([
-                require('./startrace.js'),
-                require('./raceresult.js')
-            ]);
-            this.base.start();
-        },
         race: function () {
             lanes.forEach(function (lane) {
                 lane.race(this.trackLength);
@@ -52,10 +49,12 @@ module.exports = function (opts) {
                 lane.pause();
             });
             $.screen('raceresult').start(playerWon);
-            global.setTimeout(function () {
+            $.setTimeout(function () {
                 player.horse.endRace();
-                $.removeScreen('startrace');
+
+                $.screen('raceresult').stop();
                 $.removeScreen('raceresult');
+
                 $.removeScreen('track');
                 $.screen('train').start();
             }, 2000);

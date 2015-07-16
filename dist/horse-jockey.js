@@ -4262,10 +4262,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         updating = false;
                     },
                     update: function() {
-                        var now, elapsed, timeBetweenFrames;
-                        timeBetweenFrames = 1 / this.speed * 1e3;
-                        now = global.Date.now();
-                        elapsed = now - timeLastFrame;
+                        var timeBetweenFrames = 1 / this.speed * 1e3, now = global.Date.now(), elapsed = now - timeLastFrame;
                         timeSinceLastFrame += elapsed;
                         if (timeSinceLastFrame >= timeBetweenFrames) {
                             timeSinceLastFrame = 0;
@@ -4731,7 +4728,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./util/object.js": 52
     } ],
     17: [ function(require, module, exports) {
-        var Game = require("./game.js"), SetUtil = require("./util/set.js"), ObjUtil = require("./util/object.js"), heartbeat = require("./heartbeat.js"), pipeline = require("./assets/pipeline.js");
+        var Game = require("./game.js"), SetUtil = require("./util/set.js"), ObjUtil = require("./util/object.js"), heartbeat = require("./heartbeat.js"), pipeline = require("./assets/pipeline.js"), timer = require("./util/timer.js");
         module.exports = {
             Shape: require("./geom/shape.js"),
             Circle: require("./geom/circle.js"),
@@ -4742,12 +4739,15 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             Polar: require("./geom/polar.js"),
             FrameCounter: require("./util/frame-counter.js"),
             IdCounter: require("./util/id-counter.js"),
-            timer: require("./util/timer.js"),
             random: require("./util/random.js"),
             range: SetUtil.range,
             shuffle: SetUtil.shuffle,
             mergeLeft: ObjUtil.mergeLeft,
             mergeDefaults: ObjUtil.mergeDefaults,
+            timer: timer,
+            setTimeout: timer.setTimeout,
+            setInterval: timer.setInterval,
+            clear: timer.clear,
             Mouse: require("./io/mouse.js"),
             Key: require("./io/keyboard.js"),
             canvas: require("./io/canvas.js"),
@@ -4892,7 +4892,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             addScreens: function(set) {
                 this.base.add(set);
             },
-            removeScreen: function(screen) {
+            removeScreen: function(name) {
+                var screen = this.map[name];
                 this.base.remove(screen);
             }
         });
@@ -6410,7 +6411,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         module.exports = {
             money: 100,
             stats: require("./shop-stats.js"),
-            horse: Horse(),
+            horse: Horse().extend({
+                name: "player"
+            }),
             jockey: Jockey()
         };
     }, {
@@ -6484,96 +6487,89 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 17
     } ],
     68: [ function(require, module, exports) {
-        (function(global) {
-            var $ = require("dragonjs"), countdown = require("../sprites/track/countdown.js");
-            module.exports = $.Screen({
-                name: "startrace",
-                sprites: countdown,
-                depth: 10,
-                on: {
-                    $added: function() {
-                        this.start();
-                    }
+        var $ = require("dragonjs"), countdown = require("../sprites/track/countdown.js");
+        module.exports = $.Screen({
+            name: "startrace",
+            sprites: countdown,
+            depth: 10,
+            on: {
+                $added: function() {
+                    this.start();
                 }
-            }).extend({
-                start: function() {
-                    var that = this;
-                    function count(time) {
-                        return function() {
-                            if (time > 0) {
-                                countdown.text = time;
-                                global.setTimeout(count(time - 1), 1e3);
-                            } else {
-                                countdown.text = "and they're off!";
-                                global.setTimeout(function() {
-                                    that.stop();
-                                }, 1e3);
-                                $.screen("track").race();
-                            }
-                        };
-                    }
-                    count(1)();
-                    this.base.start();
+            }
+        }).extend({
+            start: function() {
+                function count(time) {
+                    return function() {
+                        if (time > 0) {
+                            countdown.text = time;
+                            $.setTimeout(count(time - 1), 1e3);
+                        } else {
+                            countdown.text = "and they're off!";
+                            $.setTimeout(function() {
+                                $.screen("startrace").stop();
+                                $.removeScreen("startrace");
+                            }, 1e3);
+                            $.screen("track").race();
+                        }
+                    };
                 }
-            });
-        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+                count(1)();
+                this.base.start();
+            }
+        });
     }, {
         "../sprites/track/countdown.js": 83,
         dragonjs: 17
     } ],
     69: [ function(require, module, exports) {
-        (function(global) {
-            var $ = require("dragonjs"), player = require("../player.js"), LaneOrdering = require("../lane-ordering.js");
-            module.exports = function(opts) {
-                var items = [], lanes = [], laneOrdering = LaneOrdering(opts.laneFactories.length);
-                opts.laneFactories.forEach(function(factory, i) {
-                    var lane = factory(laneOrdering[i]);
-                    lanes.push(lane);
-                    items = items.concat(lane.getSprites());
-                });
-                return $.Screen({
-                    name: "track",
-                    collisions: require("../collisions/racetrack.js"),
-                    sprites: lanes.concat(items),
-                    depth: 0,
-                    on: {
-                        $added: function() {
-                            this.start();
-                        }
-                    }
-                }).extend({
-                    trackLength: 0,
-                    start: function() {
+        var $ = require("dragonjs"), player = require("../player.js"), LaneOrdering = require("../lane-ordering.js");
+        module.exports = function(opts) {
+            var items = [], lanes = [], laneOrdering = LaneOrdering(opts.laneFactories.length);
+            opts.laneFactories.forEach(function(factory, i) {
+                var lane = factory(laneOrdering[i]);
+                lanes.push(lane);
+                items = items.concat(lane.getSprites());
+            });
+            return $.Screen({
+                name: "track",
+                collisions: require("../collisions/racetrack.js"),
+                sprites: lanes.concat(items),
+                depth: 0,
+                on: {
+                    $added: function() {
                         $.addScreens([ require("./startrace.js"), require("./raceresult.js") ]);
-                        this.base.start();
-                    },
-                    race: function() {
-                        lanes.forEach(function(lane) {
-                            lane.race(this.trackLength);
-                        }, this);
-                    },
-                    endRace: function(playerWon, winner) {
-                        lanes.forEach(function(lane) {
-                            lane.pause();
-                        });
-                        $.screen("raceresult").start(playerWon);
-                        global.setTimeout(function() {
-                            player.horse.endRace();
-                            $.removeScreen("startrace");
-                            $.removeScreen("raceresult");
-                            $.removeScreen("track");
-                            $.screen("train").start();
-                        }, 2e3);
-                        this.pause();
-                    },
-                    draw: function(ctx) {
-                        ctx.fillStyle = "#67fb04";
-                        ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
-                        this.base.draw(ctx);
+                        this.start();
                     }
-                });
-            };
-        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
+                }
+            }).extend({
+                trackLength: 0,
+                race: function() {
+                    lanes.forEach(function(lane) {
+                        lane.race(this.trackLength);
+                    }, this);
+                },
+                endRace: function(playerWon, winner) {
+                    lanes.forEach(function(lane) {
+                        lane.pause();
+                    });
+                    $.screen("raceresult").start(playerWon);
+                    $.setTimeout(function() {
+                        player.horse.endRace();
+                        $.screen("raceresult").stop();
+                        $.removeScreen("raceresult");
+                        $.removeScreen("track");
+                        $.screen("train").start();
+                    }, 2e3);
+                    this.pause();
+                },
+                draw: function(ctx) {
+                    ctx.fillStyle = "#67fb04";
+                    ctx.fillRect(0, 0, $.canvas.width, $.canvas.height);
+                    this.base.draw(ctx);
+                }
+            });
+        };
     }, {
         "../collisions/racetrack.js": 56,
         "../lane-ordering.js": 62,
@@ -7074,6 +7070,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 longname: horse.name,
                 pos: $.Point(2, ypos)
             });
+            horse.start();
             horse.move($.Point(20, ypos));
             items.forEach(function(item) {
                 item.move($.Point(item.lanePos * $.canvas.width, ypos + height - item.size().height));

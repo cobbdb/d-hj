@@ -18,6 +18,7 @@ module.exports = function (opts) {
             pos: $.Point(2, ypos)
         });
 
+    horse.start();
     horse.move($.Point(20, ypos));
     items.forEach(function (item) {
         item.move($.Point(
