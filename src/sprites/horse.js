@@ -85,12 +85,6 @@ module.exports = function (opts) {
                 // Boost is over - normal speed for a bit.
                 this.speed.x = stride;
             }
-        },
-        update: function () {
-            if (this.pos.y >= starty) {
-                // this.jump();
-            }
-            this.base.update();
         }
     });
 };
