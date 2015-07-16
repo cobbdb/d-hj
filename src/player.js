@@ -4,8 +4,6 @@ var Horse = require('./sprites/horse.js'),
 module.exports = {
     money: 100,
     stats: require('./shop-stats.js'),
-    horse: Horse().extend({
-        kind: 'player-horse'
-    }),
+    horse: Horse(),
     jockey: Jockey()
 };

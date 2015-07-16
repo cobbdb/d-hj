@@ -6410,9 +6410,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         module.exports = {
             money: 100,
             stats: require("./shop-stats.js"),
-            horse: Horse().extend({
-                kind: "player-horse"
-            }),
+            horse: Horse(),
             jockey: Jockey()
         };
     }, {
