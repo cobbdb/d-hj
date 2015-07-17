@@ -5710,6 +5710,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 draw: function(ctx) {
                     this.base.draw(ctx);
                     opts.style(ctx);
+                },
+                move: function(newpos) {
+                    startPos = newpos;
                 }
             });
         };
@@ -5756,12 +5759,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 style: function() {},
                 conf: function() {}
             });
-            function step() {
-                var set = bank.splice(0, this.volume), i, id, len = set.length;
-                for (i = 0; i < len; i += 1) {
-                    set[i].start();
-                }
-            }
             return Collection(opts).extend({
                 sorted: false,
                 speed: opts.speed,
@@ -5777,9 +5774,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         this.set.push(particle);
                     }
                     if (this.speed) {
-                        hash = timer.setInterval(step, this.speed, this);
+                        hash = timer.setInterval(function() {
+                            this.fire();
+                        }, this.speed, this);
                     }
-                    step.call(this);
+                },
+                fire: function() {
+                    var set = bank.splice(0, this.volume), i, id, len = set.length;
+                    for (i = 0; i < len; i += 1) {
+                        set[i].start();
+                    }
                 },
                 draw: function(ctx) {
                     opts.style(ctx);
@@ -5791,6 +5795,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 reclaim: function(particle) {
                     particle.reset();
                     bank.push(particle);
+                },
+                move: function(newpos) {
+                    this.set.forEach(function(particle) {
+                        particle.move(newpos);
+                    });
                 }
             });
         };
@@ -6331,8 +6340,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "./picker.js": 63,
-        "./sprites/horse.js": 78,
-        "./stats/horse.js": 92,
+        "./sprites/horse.js": 79,
+        "./stats/horse.js": 93,
         dragonjs: 17
     } ],
     60: [ function(require, module, exports) {
@@ -6381,9 +6390,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "./horse-factory.js": 59,
         "./player.js": 64,
-        "./sprites/track/items/haybale.js": 84,
-        "./sprites/track/items/mudpit.js": 86,
-        "./sprites/track/lane.js": 87,
+        "./sprites/track/items/haybale.js": 85,
+        "./sprites/track/items/mudpit.js": 87,
+        "./sprites/track/lane.js": 88,
         dragonjs: 17
     } ],
     62: [ function(require, module, exports) {
@@ -6425,8 +6434,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "./shop-stats.js": 72,
-        "./sprites/horse.js": 78,
-        "./sprites/jockey.js": 79
+        "./sprites/horse.js": 79,
+        "./sprites/jockey.js": 80
     } ],
     65: [ function(require, module, exports) {
         var $ = require("dragonjs");
@@ -6488,7 +6497,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/track/raceresult.js": 89,
+        "../sprites/track/raceresult.js": 90,
         dragonjs: 17
     } ],
     68: [ function(require, module, exports) {
@@ -6524,7 +6533,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             }
         });
     }, {
-        "../sprites/track/countdown.js": 83,
+        "../sprites/track/countdown.js": 84,
         dragonjs: 17
     } ],
     69: [ function(require, module, exports) {
@@ -6635,9 +6644,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../sprites/buttons/open-gear.js": 75,
         "../sprites/buttons/open-train.js": 76,
         "../sprites/buttons/race.js": 77,
-        "../sprites/shop/ranks.js": 80,
-        "../sprites/shop/stat-label.js": 81,
-        "../sprites/shop/train-label.js": 82,
+        "../sprites/shop/ranks.js": 81,
+        "../sprites/shop/stat-label.js": 82,
+        "../sprites/shop/train-label.js": 83,
         dragonjs: 17
     } ],
     72: [ function(require, module, exports) {
@@ -6675,7 +6684,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "../../player.js": 64,
-        "../shop/ranks.js": 80,
+        "../shop/ranks.js": 81,
         dragonjs: 17
     } ],
     74: [ function(require, module, exports) {
@@ -6777,6 +6786,40 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         dragonjs: 17
     } ],
     78: [ function(require, module, exports) {
+        var $ = require("dragonjs");
+        module.exports = function(opts) {
+            opts = opts || {};
+            return $.particle.Emitter({
+                name: "haybale-emitter",
+                type: $.particle.Square,
+                pos: opts.pos || $.Point(),
+                volume: 8,
+                speed: 1e3,
+                style: function(ctx) {
+                    if (this.damage === 0) {
+                        ctx.fillStyle = "#eac644";
+                    } else if (this.damage === 1) {
+                        ctx.fillStyle = "#7f6a00";
+                    } else {
+                        ctx.fillStyle = "#7f0000";
+                    }
+                },
+                conf: function() {
+                    return {
+                        friction: .06,
+                        lifespan: 1e3,
+                        gravity: .015,
+                        speed: $.Vector(($.random() - .5) * 6, ($.random() - .5) * 6)
+                    };
+                }
+            }).extend({
+                damage: 0
+            });
+        };
+    }, {
+        dragonjs: 17
+    } ],
+    79: [ function(require, module, exports) {
         var $ = require("dragonjs"), Roster = require("../picker.js"), Illness = require("../illness.js"), Stats = require("../stats/horse.js"), shopStats = require("../shop-stats.js");
         module.exports = function(opts) {
             var height, starty, startFriction = .01, boost, trot, stride, lean = -1, theta = 3.14;
@@ -6828,10 +6871,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     } else if (boost < 0) {
                         this.speed.x = stride;
                     }
-                },
-                update: function() {
-                    if (this.pos.y >= starty) {}
-                    this.base.update();
                 }
             });
         };
@@ -6841,10 +6880,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../picker.js": 63,
         "../player.js": 64,
         "../shop-stats.js": 72,
-        "../stats/horse.js": 92,
+        "../stats/horse.js": 93,
         dragonjs: 17
     } ],
-    79: [ function(require, module, exports) {
+    80: [ function(require, module, exports) {
         var $ = require("dragonjs"), Roster = require("../picker.js"), Stats = require("../stats/jockey.js");
         module.exports = function(opts) {
             opts = opts || {};
@@ -6863,10 +6902,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "../picker.js": 63,
-        "../stats/jockey.js": 94,
+        "../stats/jockey.js": 95,
         dragonjs: 17
     } ],
-    80: [ function(require, module, exports) {
+    81: [ function(require, module, exports) {
         var $ = require("dragonjs"), stats = require("../../shop-stats.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), width = $.canvas.width, height = $.canvas.height, center = (width - race.realWidth - open.realWidth) / 2 + open.realWidth, realWidth = width * .3, margin = width * .02;
         module.exports = $.Sprite({
             name: "skillrank-master",
@@ -6902,7 +6941,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../buttons/race.js": 77,
         dragonjs: 17
     } ],
-    81: [ function(require, module, exports) {
+    82: [ function(require, module, exports) {
         var $ = require("dragonjs"), player = require("../../player.js"), race = require("../buttons/race.js"), open = require("../buttons/open-care.js"), cwidth = $.canvas.width, cheight = $.canvas.height, center = (cwidth - race.realWidth - open.realWidth) / 2 + open.realWidth, margin = cwidth * .01, grid = {
             horse: {
                 body: {
@@ -6961,7 +7000,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../buttons/race.js": 77,
         dragonjs: 17
     } ],
-    82: [ function(require, module, exports) {
+    83: [ function(require, module, exports) {
         var $ = require("dragonjs"), len = $.canvas.height * .1, ranks = require("./ranks.js");
         module.exports = function(name) {
             var keyname = name.toLowerCase();
@@ -6977,10 +7016,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./ranks.js": 80,
+        "./ranks.js": 81,
         dragonjs: 17
     } ],
-    83: [ function(require, module, exports) {
+    84: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = $.ui.Label({
             name: "countdown",
@@ -6996,9 +7035,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    84: [ function(require, module, exports) {
-        var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
+    85: [ function(require, module, exports) {
+        var $ = require("dragonjs"), LaneItem = require("./lane-item.js"), Emitter = require("../../effects/haybale-emitter.js");
         module.exports = function(opts) {
+            var emitter = Emitter();
             return LaneItem({
                 strips: {
                     normal: $.AnimationStrip("haybale.png", {
@@ -7016,22 +7056,46 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: $.Rectangle()
             }).extend({
                 lanePos: opts.position,
+                spark: function() {
+                    console.debug("boom!");
+                    emitter.fire();
+                    this.fire();
+                },
+                move: function(pos) {
+                    emitter.move(pos);
+                    this.base.move(pos);
+                },
+                update: function() {
+                    emitter.update();
+                    this.base.update();
+                },
+                draw: function(ctx) {
+                    emitter.draw(ctx);
+                    this.base.draw(ctx);
+                },
+                teardown: function() {
+                    emitter.teardown();
+                    this.base.teardown();
+                },
                 shrink: function() {
-                    this.mask.resize($.Dimension(this.mask.width, this.mask.height * .92));
+                    this.mask.resize($.Dimension(this.mask.width, this.mask.height * .5));
                     this.mask.move($.Point(this.mask.x, this.pos.y + this.size().height - this.mask.height));
                     if (this.mask.height < 4) {
                         this.strip.frame = 2;
+                        this.spark();
                     } else if (this.mask.height < 7) {
                         this.strip.frame = 1;
+                        this.spark();
                     }
                 }
             });
         };
     }, {
-        "./lane-item.js": 85,
+        "../../effects/haybale-emitter.js": 78,
+        "./lane-item.js": 86,
         dragonjs: 17
     } ],
-    85: [ function(require, module, exports) {
+    86: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             $.mergeDefaults(opts, {
@@ -7046,7 +7110,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../../../collisions/racetrack.js": 56,
         dragonjs: 17
     } ],
-    86: [ function(require, module, exports) {
+    87: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js");
         module.exports = function(opts) {
             var severity = .15;
@@ -7067,10 +7131,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./lane-item.js": 85,
+        "./lane-item.js": 86,
         dragonjs: 17
     } ],
-    87: [ function(require, module, exports) {
+    88: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneName = require("./lanename.js");
         module.exports = function(opts) {
             var items = opts.items || [], horse = opts.horse, order = opts.order, ypos = order * 50 + 40, height = $.canvas.height / 20, name = LaneName({
@@ -7119,10 +7183,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "../../collisions/racetrack.js": 56,
-        "./lanename.js": 88,
+        "./lanename.js": 89,
         dragonjs: 17
     } ],
-    88: [ function(require, module, exports) {
+    89: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = function(opts) {
             return $.ui.Label({
@@ -7151,7 +7215,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    89: [ function(require, module, exports) {
+    90: [ function(require, module, exports) {
         var $ = require("dragonjs");
         module.exports = {
             win: $.Sprite({
@@ -7174,7 +7238,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         dragonjs: 17
     } ],
-    90: [ function(require, module, exports) {
+    91: [ function(require, module, exports) {
         module.exports = function(Core) {
             var modifiers = {};
             var group = {
@@ -7210,7 +7274,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             return group;
         };
     }, {} ],
-    91: [ function(require, module, exports) {
+    92: [ function(require, module, exports) {
         module.exports = function(opts) {
             var set;
             opts = opts || {};
@@ -7249,16 +7313,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         };
     }, {} ],
-    92: [ function(require, module, exports) {
+    93: [ function(require, module, exports) {
         var Core = require("./horse.core.js"), Group = require("./group.js");
         module.exports = function(opts) {
             return Group(Core(opts));
         };
     }, {
-        "./group.js": 90,
-        "./horse.core.js": 91
+        "./group.js": 91,
+        "./horse.core.js": 92
     } ],
-    93: [ function(require, module, exports) {
+    94: [ function(require, module, exports) {
         module.exports = function(opts) {
             var set;
             opts = opts || {};
@@ -7297,13 +7361,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             };
         };
     }, {} ],
-    94: [ function(require, module, exports) {
+    95: [ function(require, module, exports) {
         var Core = require("./jockey.core.js"), Group = require("./group.js");
         module.exports = function(opts) {
             return Group(Core(opts));
         };
     }, {
-        "./group.js": 90,
-        "./jockey.core.js": 93
+        "./group.js": 91,
+        "./jockey.core.js": 94
     } ]
 }, {}, [ 58 ]);
