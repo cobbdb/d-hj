@@ -30,9 +30,11 @@ module.exports = function (difficulty, opts) {
     len = 1; // <-- debug
     for (i = 0; i < len; i += 1) {
         itemSet.push(HayBale({
+            horse: horse,
             position: 0.3
         }));
         itemSet.push(MudPit({
+            horse: horse,
             position: 0.5
         }));
     }

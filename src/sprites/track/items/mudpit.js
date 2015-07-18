@@ -6,6 +6,7 @@
  * @extends LaneItem
  * @param {Number} position Percentage of track where this item lives.
  * @param {Number} [severity] TODO
+ * @param {Horse} opts.horse
  */
 module.exports = function (opts) {
     var severity = 0.15;
@@ -14,10 +15,14 @@ module.exports = function (opts) {
         strips: 'mudpit.png',
         on: {
             '$collide.horse': function (horse) {
-                horse.friction = severity;
+                if (horse === opts.horse) {
+                    horse.friction = severity;
+                }
             },
             '$separate.horse': function (horse) {
-                horse.resetFriction();
+                if (horse === opts.horse) {
+                    horse.resetFriction();
+                }
             }
         },
         size: $.Dimension(10, 3)

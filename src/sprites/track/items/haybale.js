@@ -5,7 +5,8 @@ var $ = require('dragonjs'),
 /**
  * @class Haybale
  * @extends LaneItem
- * @param {Number} position Percentage of track where this item lives.
+ * @param {Number} opts.position Percentage of track where this item lives.
+ * @param {Horse} opts.horse
  */
 module.exports = function (opts) {
     var emitter = Emitter();
@@ -17,9 +18,11 @@ module.exports = function (opts) {
         },
         on: {
             '$colliding.horse': function (horse) {
-                horse.flush(this);
-                horse.jump();
-                this.shrink();
+                if (horse === opts.horse) {
+                    horse.flush(this);
+                    horse.jump();
+                    this.shrink();
+                }
             }
         },
         size: $.Dimension(10, 10),
