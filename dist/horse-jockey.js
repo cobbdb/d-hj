@@ -5057,11 +5057,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     },
                     move: function(pos, shallow) {
                         var target = shallow ? this : this.clone();
-                        try {
-                            target.x = pos.x;
-                        } catch (err) {
-                            var thing = 123;
-                        }
+                        target.x = pos.x;
                         target.y = pos.y;
                         return target;
                     },
@@ -6377,9 +6373,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             len = 1;
             for (i = 0; i < len; i += 1) {
                 itemSet.push(HayBale({
+                    horse: horse,
                     position: .3
                 }));
                 itemSet.push(MudPit({
+                    horse: horse,
                     position: .5
                 }));
             }
@@ -7049,9 +7047,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 on: {
                     "$colliding.horse": function(horse) {
-                        horse.flush(this);
-                        horse.jump();
-                        this.shrink();
+                        if (horse === opts.horse) {
+                            horse.flush(this);
+                            horse.jump();
+                            this.shrink();
+                        }
                     }
                 },
                 size: $.Dimension(10, 10),
@@ -7119,10 +7119,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 strips: "mudpit.png",
                 on: {
                     "$collide.horse": function(horse) {
-                        horse.friction = severity;
+                        if (horse === opts.horse) {
+                            horse.friction = severity;
+                        }
                     },
                     "$separate.horse": function(horse) {
-                        horse.resetFriction();
+                        if (horse === opts.horse) {
+                            horse.resetFriction();
+                        }
                     }
                 },
                 size: $.Dimension(10, 3)
