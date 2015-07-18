@@ -29,10 +29,7 @@ module.exports = function (opts) {
         /**
          * Explosion effect to show damage.
          */
-        spark: function () {
-            console.debug('boom!');
-            emitter.fire();
-        },
+        spark: emitter.fire,
         move: function (pos) {
             emitter.move(pos);
             this.base.move(pos);
@@ -52,16 +49,18 @@ module.exports = function (opts) {
         shrink: function () {
             this.mask.resize($.Dimension(
                 this.mask.width,
-                this.mask.height * 0.5//0.92
+                this.mask.height * 0.91
             ));
             this.mask.move($.Point(
                 this.mask.x,
                 this.pos.y + this.size().height - this.mask.height
             ));
-            if (this.mask.height < 4) {
+            if (emitter.damage === 1 && this.mask.height < 4) {
+                emitter.damage = 2;
                 this.strip.frame = 2;
                 this.spark();
-            } else if (this.mask.height < 7) {
+            } else if (emitter.damage === 0 && this.mask.height < 7) {
+                emitter.damage = 1;
                 this.strip.frame = 1;
                 this.spark();
             }

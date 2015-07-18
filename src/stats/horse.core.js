@@ -2,7 +2,7 @@ module.exports = function (opts) {
     var set;
     opts = opts || {};
     set = {
-        body: opts.body || 120,
+        body: opts.body || 500,
         mind: opts.mind || 1,
         health: opts.health || 1
     };

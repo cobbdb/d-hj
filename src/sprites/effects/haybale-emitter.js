@@ -3,17 +3,14 @@
 /**
  * @class HaybaleEmitter
  * @extends Dragon.Emitter
- * @param {Point} [opts.pos]
  */
-module.exports = function (opts) {
-    opts = opts || {};
-
+module.exports = function () {
     return $.particle.Emitter({
         name: 'haybale-emitter',
         type: $.particle.Square,
-        pos: opts.pos || $.Point(),
+        pos: $.Point(),
         volume: 8,
-        speed: 1000,
+        speed: 0,
         style: function (ctx) {
             if (this.damage === 0) {
                 ctx.fillStyle = '#eac644';
@@ -25,12 +22,11 @@ module.exports = function (opts) {
         },
         conf: function () {
             return {
-                friction: 0.06,
-                lifespan: 1000,
-                gravity: 0.015,
+                friction: 0.05,
+                gravity: 0.1,
                 speed: $.Vector(
-                    ($.random() - 0.5) * 6,
-                    ($.random() - 0.5) * 6
+                    ($.random() - 0.5) * 5,
+                    -$.random() * 5
                 )
             };
         }

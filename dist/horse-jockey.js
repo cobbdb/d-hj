@@ -5057,7 +5057,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     },
                     move: function(pos, shallow) {
                         var target = shallow ? this : this.clone();
-                        target.x = pos.x;
+                        try {
+                            target.x = pos.x;
+                        } catch (err) {
+                            var thing = 123;
+                        }
                         target.y = pos.y;
                         return target;
                     },
@@ -5665,7 +5669,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     39: [ function(require, module, exports) {
         var ClearSprite = require("../clear-sprite.js"), Vector = require("../geom/vector.js"), Dimension = require("../geom/dimension.js"), Point = require("../geom/point.js"), random = require("../util/random.js"), Obj = require("../util/object.js"), timer = require("../util/timer.js");
         module.exports = function(opts) {
-            var fadeout = false, hash, startPos = opts.pos.clone(), startSpeed;
+            var fadeout = false, hash, startSpeed;
             opts = Obj.mergeDefaults(opts, {
                 name: "$:particle",
                 kind: "$:particle",
@@ -5682,14 +5686,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 _create: function() {
                     this.stop();
                 },
-                reset: function() {
+                reset: function(origin) {
                     this.stop();
                     timer.clear(hash);
                     fadeout = false;
                     this.alpha = 1;
                     this.rotation = 0;
                     this.rotationSpeed = opts.rotationSpeed;
-                    this.move(startPos);
+                    this.move(origin);
                     this.speed = startSpeed.clone();
                 },
                 start: function() {
@@ -5710,9 +5714,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 draw: function(ctx) {
                     this.base.draw(ctx);
                     opts.style(ctx);
-                },
-                move: function(newpos) {
-                    startPos = newpos;
                 }
             });
         };
@@ -5765,6 +5766,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 volume: opts.volume,
                 _create: function() {
                     var i, particle, conf;
+                    opts.style = opts.style.bind(this);
                     for (i = 0; i < 50; i += 1) {
                         conf = opts.conf() || {};
                         conf.owner = this;
@@ -5780,7 +5782,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 },
                 fire: function() {
-                    var set = bank.splice(0, this.volume), i, id, len = set.length;
+                    var set = bank.splice(0, this.volume), i, len = set.length;
                     for (i = 0; i < len; i += 1) {
                         set[i].start();
                     }
@@ -5793,12 +5795,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     timer.clear(hash);
                 },
                 reclaim: function(particle) {
-                    particle.reset();
+                    particle.reset(this.pos);
                     bank.push(particle);
                 },
+                pos: opts.pos,
                 move: function(newpos) {
+                    this.pos = newpos;
                     this.set.forEach(function(particle) {
-                        particle.move(newpos);
+                        particle.reset(newpos);
                     });
                 }
             });
@@ -6787,14 +6791,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     78: [ function(require, module, exports) {
         var $ = require("dragonjs");
-        module.exports = function(opts) {
-            opts = opts || {};
+        module.exports = function() {
             return $.particle.Emitter({
                 name: "haybale-emitter",
                 type: $.particle.Square,
-                pos: opts.pos || $.Point(),
+                pos: $.Point(),
                 volume: 8,
-                speed: 1e3,
+                speed: 0,
                 style: function(ctx) {
                     if (this.damage === 0) {
                         ctx.fillStyle = "#eac644";
@@ -6806,10 +6809,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 conf: function() {
                     return {
-                        friction: .06,
-                        lifespan: 1e3,
-                        gravity: .015,
-                        speed: $.Vector(($.random() - .5) * 6, ($.random() - .5) * 6)
+                        friction: .05,
+                        gravity: .1,
+                        speed: $.Vector(($.random() - .5) * 5, -$.random() * 5)
                     };
                 }
             }).extend({
@@ -7056,11 +7058,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: $.Rectangle()
             }).extend({
                 lanePos: opts.position,
-                spark: function() {
-                    console.debug("boom!");
-                    emitter.fire();
-                    this.fire();
-                },
+                spark: emitter.fire,
                 move: function(pos) {
                     emitter.move(pos);
                     this.base.move(pos);
@@ -7078,12 +7076,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.base.teardown();
                 },
                 shrink: function() {
-                    this.mask.resize($.Dimension(this.mask.width, this.mask.height * .5));
+                    this.mask.resize($.Dimension(this.mask.width, this.mask.height * .91));
                     this.mask.move($.Point(this.mask.x, this.pos.y + this.size().height - this.mask.height));
-                    if (this.mask.height < 4) {
+                    if (emitter.damage === 1 && this.mask.height < 4) {
+                        emitter.damage = 2;
                         this.strip.frame = 2;
                         this.spark();
-                    } else if (this.mask.height < 7) {
+                    } else if (emitter.damage === 0 && this.mask.height < 7) {
+                        emitter.damage = 1;
                         this.strip.frame = 1;
                         this.spark();
                     }
@@ -7279,7 +7279,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             var set;
             opts = opts || {};
             set = {
-                body: opts.body || 120,
+                body: opts.body || 500,
                 mind: opts.mind || 1,
                 health: opts.health || 1
             };
