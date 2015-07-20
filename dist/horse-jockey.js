@@ -4690,7 +4690,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         if (!updated) {
                             updated = true;
                             collisionSets.forEach(function(handler) {
-                                handler.update(this);
+                                try {
+                                    handler.update(this);
+                                } catch (err) {
+                                    var thing = 123;
+                                }
                             }, this);
                         }
                     },
@@ -4925,6 +4929,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                             return vect.magnitude < this.radius;
                         },
                         circle: function(circ) {
+                            throw Error("!! CIRCLES are deprecated!");
                             var vect = Vector(circ.x - this.x, circ.y - this.y);
                             return vect.magnitude < this.radius + circ.radius;
                         }
@@ -5134,6 +5139,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         return this.x < rect.right && this.right > rect.x && this.y < rect.bottom && this.bottom > rect.y;
                     },
                     circle: function(circ) {
+                        throw Error("!! CIRCLES are deprecated!");
                         var vect, pt = Point(circ.x, circ.y);
                         if (circ.x > this.right) pt.x = this.right; else if (circ.x < this.x) pt.x = this.x;
                         if (circ.y > this.bottom) pt.y = this.bottom; else if (circ.y < this.y) pt.y = this.y;
@@ -5505,6 +5511,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 get down() {
                     return isDown;
                 },
+                get up() {
+                    return !isDown;
+                },
                 get dragging() {
                     return isDragging;
                 },
@@ -5590,17 +5599,20 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         baseclassjs: 3
     } ],
     36: [ function(require, module, exports) {
-        var CollisionItem = require("../collision-item.js"), Circle = require("../geom/circle.js"), Point = require("../geom/point.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js");
+        var CollisionItem = require("../collision-item.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js"), Rectangle = require("../geom/rectangle.js"), Dimension = require("../geom/dimension.js"), reset = false, safePos = Point(-999, -999);
         module.exports = CollisionItem({
             name: "screendrag",
-            mask: Circle(Point(), 8),
-            collisions: dragonCollisions
+            mask: Rectangle(safePos, Dimension(12, 12)),
+            collisions: dragonCollisions,
+            offset: Vector(-6, -6)
         }).extend({
             update: function() {
                 if (Mouse.is.dragging) {
+                    reset = false;
                     this.move(Mouse.offset);
-                } else {
-                    this.move(Point(-999, -999));
+                } else if (!reset) {
+                    reset = true;
+                    this.move(safePos);
                 }
                 this.base.update();
             }
@@ -5608,22 +5620,27 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "../collision-item.js": 16,
         "../dragon-collisions.js": 18,
-        "../geom/circle.js": 21,
+        "../geom/dimension.js": 22,
         "../geom/point.js": 23,
+        "../geom/rectangle.js": 25,
+        "../geom/vector.js": 27,
         "../io/mouse.js": 34
     } ],
     37: [ function(require, module, exports) {
-        var CollisionItem = require("../collision-item.js"), Circle = require("../geom/circle.js"), Point = require("../geom/point.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js");
+        var CollisionItem = require("../collision-item.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js"), Rectangle = require("../geom/rectangle.js"), Dimension = require("../geom/dimension.js"), reset = false, safePos = Point(-999, -999);
         module.exports = CollisionItem({
             name: "screenhold",
-            mask: Circle(Point(), 8),
-            collisions: dragonCollisions
+            mask: Rectangle(safePos, Dimension(12, 12)),
+            collisions: dragonCollisions,
+            offset: Vector(-6, -6)
         }).extend({
             update: function() {
                 if (Mouse.is.down && !Mouse.is.dragging) {
+                    reset = false;
                     this.move(Mouse.offset);
-                } else {
-                    this.move(Point(-999, -999));
+                } else if (!reset) {
+                    reset = true;
+                    this.move(safePos);
                 }
                 this.base.update();
             }
@@ -5631,26 +5648,30 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "../collision-item.js": 16,
         "../dragon-collisions.js": 18,
-        "../geom/circle.js": 21,
+        "../geom/dimension.js": 22,
         "../geom/point.js": 23,
+        "../geom/rectangle.js": 25,
+        "../geom/vector.js": 27,
         "../io/mouse.js": 34
     } ],
     38: [ function(require, module, exports) {
-        var CollisionItem = require("../collision-item.js"), Circle = require("../geom/circle.js"), Point = require("../geom/point.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js"), tapping = false;
-        Mouse.on.down(function() {
-            tapping = true;
-        });
+        var CollisionItem = require("../collision-item.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), Mouse = require("../io/mouse.js"), dragonCollisions = require("../dragon-collisions.js"), Rectangle = require("../geom/rectangle.js"), Dimension = require("../geom/dimension.js"), tapped = false, reset = false, safePos = Point(-999, -999);
         module.exports = CollisionItem({
             name: "screentap",
-            mask: Circle(Point(), 8),
-            collisions: dragonCollisions
+            mask: Rectangle(safePos, Dimension(12, 12)),
+            collisions: dragonCollisions,
+            offset: Vector(-6, -6)
         }).extend({
             update: function() {
-                if (tapping) {
-                    tapping = false;
+                if (tapped && !reset) {
+                    reset = true;
+                    this.move(safePos);
+                } else if (!tapped && Mouse.is.down) {
+                    tapped = true;
+                    reset = false;
                     this.move(Mouse.offset);
-                } else {
-                    this.move(Point(-999, -999));
+                } else if (tapped && Mouse.is.up) {
+                    tapped = false;
                 }
                 this.base.update();
             }
@@ -5658,8 +5679,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {
         "../collision-item.js": 16,
         "../dragon-collisions.js": 18,
-        "../geom/circle.js": 21,
+        "../geom/dimension.js": 22,
         "../geom/point.js": 23,
+        "../geom/rectangle.js": 25,
+        "../geom/vector.js": 27,
         "../io/mouse.js": 34
     } ],
     39: [ function(require, module, exports) {
@@ -5800,7 +5823,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.set.forEach(function(particle) {
                         particle.reset(newpos);
                     });
-                }
+                },
+                teardown: function() {}
             });
         };
     }, {
@@ -7038,7 +7062,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     85: [ function(require, module, exports) {
         var $ = require("dragonjs"), LaneItem = require("./lane-item.js"), Emitter = require("../../effects/haybale-emitter.js");
         module.exports = function(opts) {
-            var emitter = Emitter();
             return LaneItem({
                 strips: {
                     normal: $.AnimationStrip("haybale.png", {
@@ -7058,35 +7081,18 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 mask: $.Rectangle()
             }).extend({
                 lanePos: opts.position,
-                spark: emitter.fire,
                 move: function(pos) {
-                    emitter.move(pos);
                     this.base.move(pos);
                 },
                 update: function() {
-                    emitter.update();
                     this.base.update();
                 },
                 draw: function(ctx) {
-                    emitter.draw(ctx);
                     this.base.draw(ctx);
-                },
-                teardown: function() {
-                    emitter.teardown();
-                    this.base.teardown();
                 },
                 shrink: function() {
                     this.mask.resize($.Dimension(this.mask.width, this.mask.height * .91));
                     this.mask.move($.Point(this.mask.x, this.pos.y + this.size().height - this.mask.height));
-                    if (emitter.damage === 1 && this.mask.height < 4) {
-                        emitter.damage = 2;
-                        this.strip.frame = 2;
-                        this.spark();
-                    } else if (emitter.damage === 0 && this.mask.height < 7) {
-                        emitter.damage = 1;
-                        this.strip.frame = 1;
-                        this.spark();
-                    }
                 }
             });
         };

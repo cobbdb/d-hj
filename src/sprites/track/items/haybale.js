@@ -9,7 +9,7 @@ var $ = require('dragonjs'),
  * @param {Horse} opts.horse
  */
 module.exports = function (opts) {
-    var emitter = Emitter();
+    //var emitter = Emitter();
     return LaneItem({
         strips: {
             'normal': $.AnimationStrip('haybale.png', {
@@ -32,22 +32,18 @@ module.exports = function (opts) {
         /**
          * Explosion effect to show damage.
          */
-        spark: emitter.fire,
+        //spark: emitter.fire,
         move: function (pos) {
-            emitter.move(pos);
+            //emitter.move(pos);
             this.base.move(pos);
         },
         update: function () {
-            emitter.update();
+            //emitter.update();
             this.base.update();
         },
         draw: function (ctx) {
-            emitter.draw(ctx);
+            //emitter.draw(ctx);
             this.base.draw(ctx);
-        },
-        teardown: function () {
-            emitter.teardown();
-            this.base.teardown();
         },
         shrink: function () {
             this.mask.resize($.Dimension(
@@ -58,7 +54,7 @@ module.exports = function (opts) {
                 this.mask.x,
                 this.pos.y + this.size().height - this.mask.height
             ));
-            if (emitter.damage === 1 && this.mask.height < 4) {
+            /*if (emitter.damage === 1 && this.mask.height < 4) {
                 emitter.damage = 2;
                 this.strip.frame = 2;
                 this.spark();
@@ -66,7 +62,7 @@ module.exports = function (opts) {
                 emitter.damage = 1;
                 this.strip.frame = 1;
                 this.spark();
-            }
+            }*/
         }
     });
 };
