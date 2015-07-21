@@ -4514,14 +4514,17 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 set: [],
                 map: {},
                 add: function(set) {
+                    var i, len, item;
                     if (set) {
                         set = [].concat(set);
-                        set.forEach(function(item) {
+                        len = set.length;
+                        for (i = 0; i < len; i += 1) {
+                            item = set[i];
                             item.removed = false;
                             this.set.push(item);
                             this.map[item.name] = item;
                             item.trigger("$added");
-                        }, this);
+                        }
                         if (this.sorted) {
                             this.set.sort(function(a, b) {
                                 return a.depth - b.depth;
@@ -4542,27 +4545,33 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     return this.map[name];
                 },
                 update: function() {
-                    this.set.forEach(function(item) {
+                    var i, item, len = this.set.length;
+                    for (i = 0; i < len; i += 1) {
+                        item = this.set[i];
                         if (this.updating && item.updating && !item.removed) {
                             item.update();
                         }
-                    }, this);
+                    }
                 },
                 draw: function(ctx) {
-                    this.set.forEach(function(item) {
+                    var i, item, len = this.set.length;
+                    for (i = 0; i < len; i += 1) {
+                        item = this.set[i];
                         if (this.drawing && item.drawing && !item.removed) {
                             ctx.globalAlpha = 1;
                             ctx.resetTransform();
                             item.draw(ctx);
                         }
-                    }, this);
+                    }
                 },
                 teardown: function() {
-                    this.set.forEach(function(item) {
+                    var i, item, len = this.set.length;
+                    for (i = 0; i < len; i += 1) {
+                        item = this.set[i];
                         if (this.updating && item.updating && !item.removed) {
                             item.teardown();
                         }
-                    }, this);
+                    }
                     if (removed) {
                         this.set = this.set.filter(function(item) {
                             return !item.removed;
@@ -4586,9 +4595,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
             return Item(opts).extend({
                 draw: function(ctx) {
-                    activeCollisions.forEach(function(collidable) {
-                        collidable.mask.draw(ctx);
-                    });
+                    var i, len = activeCollisions.length;
+                    for (i = 0; i < len; i += 1) {
+                        activeCollisions[i].mask.draw(ctx);
+                    }
                 },
                 clearCollisions: function() {
                     activeCollisions = [];
@@ -4597,9 +4607,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     activeCollisions.push(collidable);
                 },
                 handleCollisions: function() {
-                    activeCollisions.forEach(function(pivot) {
-                        activeCollisions.forEach(function(other) {
-                            var intersects, colliding, valid = pivot.canCollideWith(other.id);
+                    var i, j, len, pivot, other, intersects, colliding, valid;
+                    len = activeCollisions.length;
+                    for (i = 0; i < len; i += 1) {
+                        pivot = activeCollisions[i];
+                        for (j = 0; j < len; j += 1) {
+                            other = activeCollisions[j];
+                            valid = pivot.canCollideWith(other.id);
                             if (valid) {
                                 intersects = pivot.intersects(other.mask);
                                 colliding = pivot.isCollidingWith(other.id);
@@ -4621,8 +4635,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                                     pivot.trigger("$miss." + other.kind, other);
                                 }
                             }
-                        });
-                    });
+                        }
+                    }
                 },
                 teardown: function() {
                     this.clearCollisions();
@@ -4687,15 +4701,13 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         return this.mask.intersects(mask);
                     },
                     update: function() {
+                        var i, len;
                         if (!updated) {
                             updated = true;
-                            collisionSets.forEach(function(handler) {
-                                try {
-                                    handler.update(this);
-                                } catch (err) {
-                                    var thing = 123;
-                                }
-                            }, this);
+                            len = collisionSets.length;
+                            for (i = 0; i < len; i += 1) {
+                                collisionSets[i].update(this);
+                            }
                         }
                     },
                     teardown: function() {
@@ -5336,15 +5348,18 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     singles[name] = [];
                 },
                 trigger: function(name, data) {
+                    var i, len;
                     if (name in events) {
-                        events[name].forEach(function(cb) {
-                            cb.call(this, data);
-                        }, this);
+                        len = events[name].length;
+                        for (i = 0; i < len; i += 1) {
+                            events[name][i].call(this, data);
+                        }
                     }
                     if (name in singles) {
-                        singles[name].forEach(function(cb) {
-                            cb.call(this, data);
-                        }, this);
+                        len = singles[name].length;
+                        for (i = 0; i < len; i += 1) {
+                            singles[name][i].call(this, data);
+                        }
                         singles[name] = [];
                     }
                 }
@@ -5819,10 +5834,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 pos: opts.pos,
                 move: function(newpos) {
+                    var i, len = this.set.length;
                     this.pos = newpos;
-                    this.set.forEach(function(particle) {
-                        particle.reset(newpos);
-                    });
+                    for (i = 0; i < len; i += 1) {
+                        this.set[i].reset(newpos);
+                    }
                 },
                 teardown: function() {}
             });
@@ -5876,7 +5892,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         var Collection = require("./collection.js"), Obj = require("./util/object.js"), Game = require("./game.js");
         module.exports = function(opts) {
             var collisions = Collection({
-                name: "$:screen-collisions"
+                name: "$:screen-collisions",
+                sorted: false
             }).add(opts.collisions);
             opts = Obj.mergeDefaults(opts, {
                 name: "$:screen",
@@ -5914,10 +5931,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.base.clear();
                 },
                 update: function() {
+                    var i, len = collisions.length;
                     this.base.update();
-                    collisions.set.forEach(function(handler) {
-                        handler.handleCollisions();
-                    });
+                    for (i = 0; i < len; i += 1) {
+                        collisions.set[i].handleCollisions();
+                    }
                 },
                 draw: function(ctx) {
                     this.base.draw(ctx);
@@ -6157,10 +6175,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             module.exports = {
                 cloneArray: function(arr) {
-                    var clone = [];
-                    arr.forEach(function(item) {
+                    var i, len = arr.length, item, clone = [];
+                    for (i = 0; i < len; i += 1) {
+                        item = arr[i];
                         clone.push(this.clone(item));
-                    }, this);
+                    }
                     return clone;
                 },
                 cloneObject: function(root) {
@@ -6254,8 +6273,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             var Item = require("../item.js"), Counter = require("./id-counter.js"), timeLastUpdate = global.Date.now(), clearSet = {}, timeouts = [], timeoutsToAdd = [], intervals = [], intervalsToAdd = [];
             module.exports = Item().extend({
                 update: function() {
-                    var now = global.Date.now(), diff = now - timeLastUpdate, dormantTimeouts = [], dormantIntervals = [];
-                    timeouts.forEach(function(entry) {
+                    var i, entry, len, now = global.Date.now(), diff = now - timeLastUpdate, dormantTimeouts = [], dormantIntervals = [];
+                    len = timeouts.length;
+                    for (i = 0; i < len; i += 1) {
+                        entry = timeouts[i];
                         if (!(entry.id in clearSet)) {
                             entry.life -= diff;
                             if (entry.life <= 0) {
@@ -6264,10 +6285,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                                 dormantTimeouts.push(entry);
                             }
                         }
-                    });
+                    }
                     timeouts = dormantTimeouts.concat(timeoutsToAdd);
                     timeoutsToAdd = [];
-                    intervals.forEach(function(entry) {
+                    len = intervals.length;
+                    for (i = 0; i < len; i += 1) {
+                        entry = intervals[i];
                         if (!(entry.id in clearSet)) {
                             entry.life -= diff;
                             if (entry.life <= 0) {
@@ -6276,7 +6299,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                             }
                             dormantIntervals.push(entry);
                         }
-                    });
+                    }
                     intervals = dormantIntervals.concat(intervalsToAdd);
                     intervalsToAdd = [];
                     timeLastUpdate = now;
