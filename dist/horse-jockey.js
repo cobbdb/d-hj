@@ -4603,8 +4603,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 clearCollisions: function() {
                     activeCollisions = [];
                 },
-                update: function(collidable) {
-                    activeCollisions.push(collidable);
+                update: function(item) {
+                    activeCollisions.push(item);
                 },
                 handleCollisions: function() {
                     var i, j, len, pivot, other, intersects, colliding, valid;
@@ -5544,15 +5544,21 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             },
             on: {
                 down: function(cb, thisArg) {
-                    canvas.addEventListener(startEventName, cb.bind(thisArg));
+                    canvas.addEventListener(startEventName, function() {
+                        cb.call(thisArg);
+                    });
                 },
                 click: function(cb, thisArg) {},
                 dclick: function(cb, thisArg) {},
                 up: function(cb, thisArg) {
-                    document.addEventListener(endEventName, cb.bind(thisArg));
+                    document.addEventListener(endEventName, function() {
+                        cb.call(thisArg);
+                    });
                 },
                 move: function(cb, thisArg) {
-                    canvas.addEventListener(moveEventName, cb.bind(thisArg));
+                    canvas.addEventListener(moveEventName, function() {
+                        cb.call(thisArg);
+                    });
                 },
                 drag: function(cb, thisArg) {
                     canvas.addEventListener(moveEventName, function() {
@@ -5800,7 +5806,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 volume: opts.volume,
                 _create: function() {
                     var i, particle, conf;
-                    opts.style = opts.style.bind(this);
                     for (i = 0; i < 50; i += 1) {
                         conf = opts.conf() || {};
                         conf.owner = this;
@@ -5822,7 +5827,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 },
                 draw: function(ctx) {
-                    opts.style(ctx);
+                    opts.style.call(this, ctx);
                     this.base.draw(ctx);
                 },
                 kill: function() {
@@ -5931,7 +5936,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     this.base.clear();
                 },
                 update: function() {
-                    var i, len = collisions.length;
+                    var i, len = collisions.set.length;
                     this.base.update();
                     for (i = 0; i < len; i += 1) {
                         collisions.set[i].handleCollisions();
@@ -6175,10 +6180,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         (function(global) {
             module.exports = {
                 cloneArray: function(arr) {
-                    var i, len = arr.length, item, clone = [];
+                    var i, len = arr.length, clone = [];
                     for (i = 0; i < len; i += 1) {
-                        item = arr[i];
-                        clone.push(this.clone(item));
+                        clone.push(this.clone(arr[i]));
                     }
                     return clone;
                 },
@@ -6280,7 +6284,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         if (!(entry.id in clearSet)) {
                             entry.life -= diff;
                             if (entry.life <= 0) {
-                                entry.event(-entry.life);
+                                entry.event.call(entry.thisArg, -entry.life);
                             } else {
                                 dormantTimeouts.push(entry);
                             }
@@ -6294,7 +6298,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         if (!(entry.id in clearSet)) {
                             entry.life -= diff;
                             if (entry.life <= 0) {
-                                entry.event(-entry.life);
+                                entry.event.call(entry.thisArg, -entry.life);
                                 entry.life = entry.delay;
                             }
                             dormantIntervals.push(entry);
@@ -6307,7 +6311,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 setTimeout: function(cb, delay, thisArg) {
                     var hash = Counter.nextId;
                     timeoutsToAdd.push({
-                        event: cb.bind(thisArg),
+                        event: cb,
+                        thisArg: thisArg,
                         life: delay,
                         id: hash
                     });
@@ -6316,7 +6321,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 setInterval: function(cb, delay, thisArg) {
                     var hash = Counter.nextId;
                     intervalsToAdd.push({
-                        event: cb.bind(thisArg),
+                        event: cb,
+                        thisArg: thisArg,
                         life: delay,
                         delay: delay,
                         id: hash
