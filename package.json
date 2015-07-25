@@ -10,5 +10,8 @@
   "dependencies": {
     "baseclassjs": "^2.3.0",
     "dragonjs": "*"
+  },
+  "scripts": {
+    "deploy": "sftp harbinger \"cd public_html/bin; put -o app.zip\""
   }
 }
