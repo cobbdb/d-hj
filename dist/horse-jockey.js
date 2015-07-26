@@ -4662,17 +4662,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             var Counter = require("./util/id-counter.js"), Rectangle = require("./geom/rectangle.js"), Vector = require("./geom/vector.js"), Item = require("./item.js"), Mouse = require("./io/mouse.js"), canvas = require("./io/canvas.js"), Util = require("./util/object.js");
             module.exports = function(opts) {
                 var activeCollisions = {}, collisionsThisFrame = {}, updated = false, collisionSets = [].concat(opts.collisions || []);
-                opts = Util.mergeDefaults(opts, {
-                    name: "$:collidable",
-                    kind: "$:collidable",
-                    on: {}
-                });
+                opts.name = opts.name || "$:collidable";
+                opts.kind = opts.kind || "$:collidable";
+                opts.on = opts.on || {};
                 opts.on["$collide#screendrag"] = [].concat(opts.on["$collide#screendrag"] || [], function() {
+                    var that = this;
                     if (!this.dragging) {
                         this.dragging = true;
-                        Mouse.on.up(function() {
-                            this.dragging = false;
-                        }, this);
+                        Mouse.on("$up", function() {
+                            that.dragging = false;
+                        });
                     }
                 });
                 return Item(opts).extend({
@@ -5251,8 +5250,11 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 var self = {
                     x: x || 0,
                     y: y || 0,
-                    get magnitude() {
-                        return global.Math.abs(global.Math.sqrt(this.y * this.y + this.x * this.x));
+                    magnitude: function() {
+                        return global.Math.sqrt(global.Math.pow(this.x, 2) + global.Math.pow(this.y, 2));
+                    },
+                    D: function() {
+                        return global.Math.pow(this.x, 2) + global.Math.pow(this.y, 2);
                     },
                     clone: function() {
                         return module.exports(this.x, this.y);
@@ -5490,106 +5492,72 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {} ],
     35: [ function(require, module, exports) {
-        var Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), canvas = require("./canvas.js"), timer = require("../util/timer.js"), dragStart = null, isDown = false, isDragging = false, isHolding = false, current = Point(), last = Point(), shift = Vector(), startEventName, moveEventName, endEventName;
-        if (canvas.mobile) {
-            startEventName = "touchstart";
-            moveEventName = "touchmove";
-            endEventName = "touchend";
-        } else {
-            startEventName = "mousedown";
-            moveEventName = "mousemove";
-            endEventName = "mouseup";
-        }
-        function getOffset(event) {
-            if (canvas.mobile) {
-                return Point(event.touches[0].clientX, event.touches[0].clientY);
-            }
-            return Point(event.offsetX, event.offsetY);
-        }
-        canvas.addEventListener(startEventName, function(event) {
-            isDown = true;
-            current = getOffset(event);
-            timer.setTimeout(function() {
-                if (isDown) {
-                    isHolding = true;
-                }
-            }, 200);
-        });
-        document.addEventListener(endEventName, function(event) {
-            isDown = isDragging = isHolding = false;
-            dragStart = null;
-        });
-        canvas.addEventListener(moveEventName, function(event) {
-            last = current;
-            current = getOffset(event);
-            if (isDown && !isDragging) {
-                shift.x = current.x - last.x;
-                shift.y = current.y - last.y;
-                if (shift.magnitude > 1) {
-                    isDragging = true;
-                    dragStart = current;
+        (function(global) {
+            var BaseClass = require("baseclassjs"), Eventable = require("../interface/eventable.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), canvas = require("./canvas.js"), mobile = require("../util/detect-mobile.js"), timer = require("../util/timer.js"), dragStart = null, is = {
+                down: false,
+                up: true,
+                dragging: false,
+                holding: false
+            }, current = Point(), last = Point(), shift = Vector(), startEventName = mobile ? "touchstart" : "mousedown", moveEventName = mobile ? "touchmove" : "mousemove", endEventName = mobile ? "touchend" : "mouseup", moveHash = true;
+            function updateCurrent(event) {
+                if (mobile) {
+                    current.x = event.touches[0].clientX;
+                    current.y = event.touches[0].clientY;
+                } else {
+                    current.x = event.offsetX;
+                    current.y = event.offsetY;
                 }
             }
-        });
-        module.exports = {
-            is: {
-                get down() {
-                    return isDown;
-                },
-                get up() {
-                    return !isDown;
-                },
-                get dragging() {
-                    return isDragging;
-                },
-                get holding() {
-                    return isHolding;
-                }
-            },
-            get offset() {
-                return current;
-            },
-            get dragStart() {
-                return dragStart;
-            },
-            on: {
-                down: function(cb, thisArg) {
-                    canvas.addEventListener(startEventName, function() {
-                        cb.call(thisArg);
-                    });
-                },
-                click: function(cb, thisArg) {},
-                dclick: function(cb, thisArg) {},
-                up: function(cb, thisArg) {
-                    document.addEventListener(endEventName, function() {
-                        cb.call(thisArg);
-                    });
-                },
-                move: function(cb, thisArg) {
-                    canvas.addEventListener(moveEventName, function() {
-                        cb.call(thisArg);
-                    });
-                },
-                drag: function(cb, thisArg) {
-                    canvas.addEventListener(moveEventName, function() {
-                        if (isDragging) {
-                            cb.call(thisArg);
+            canvas.addEventListener(startEventName, function(event) {
+                is.down = is.holding = true;
+                is.up = false;
+                updateCurrent(event);
+                module.exports.trigger("$down", current);
+            });
+            global.document.addEventListener(endEventName, function() {
+                is.down = is.dragging = is.holding = false;
+                is.up = true;
+                dragStart = null;
+                module.exports.trigger("$up", current);
+            });
+            canvas.addEventListener(moveEventName, function(event) {
+                last.x = current.x;
+                last.y = current.y;
+                updateCurrent(event);
+                if (is.down && !moveHash) {
+                    is.holding = false;
+                    if (!is.dragging) {
+                        shift.x = current.x - last.x;
+                        shift.y = current.y - last.y;
+                        if (shift.D() > 1) {
+                            is.dragging = true;
+                            dragStart = current;
                         }
-                    });
-                },
-                swipe: function(dir, cb, thisArg) {}
-            },
-            eventName: {
-                start: startEventName,
-                move: moveEventName,
-                end: endEventName
-            }
-        };
+                    }
+                    if (is.dragging) {
+                        module.exports.trigger("$drag", current);
+                    }
+                }
+            });
+            module.exports = BaseClass({
+                is: is,
+                offset: current,
+                dragStart: dragStart,
+                eventName: {
+                    start: startEventName,
+                    move: moveEventName,
+                    end: endEventName
+                }
+            }).implement(Eventable());
+        }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
         "../geom/point.js": 24,
         "../geom/vector.js": 28,
+        "../interface/eventable.js": 31,
+        "../util/detect-mobile.js": 49,
         "../util/timer.js": 56,
-        "./canvas.js": 33
+        "./canvas.js": 33,
+        baseclassjs: 4
     } ],
     36: [ function(require, module, exports) {
         var BaseClass = require("baseclassjs"), Eventable = require("./interface/eventable.js");
