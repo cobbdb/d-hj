@@ -4243,15 +4243,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {} ],
     9: [ function(require, module, exports) {
         (function(global) {
-            var Item = require("./item.js"), Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), pipeline = require("./assets/pipeline.js"), Obj = require("./util/object.js");
+            var Item = require("./item.js"), Dimension = require("./geom/dimension.js"), Point = require("./geom/point.js"), pipeline = require("./assets/pipeline.js");
             module.exports = function(src, opts) {
                 var img = pipeline.get.image(src), timeLastFrame, timeSinceLastFrame = 0, updating = false, firstFrame, direction = 1;
-                opts = Obj.mergeDefaults(opts, {
-                    kind: "$:animation-strip",
-                    sinusoid: false,
-                    start: Point(),
-                    frames: 1
-                });
+                opts = opts || {};
+                opts.kind = opts.kind || "$:animation-strip";
+                opts.sinusoid = opts.sinusoid || false;
+                opts.start = opts.start || Point();
+                opts.frames = opts.frames || 1;
                 opts.size = opts.size || Dimension(img.width / opts.frames, img.height);
                 firstFrame = Point(opts.size.width * opts.start.x, opts.size.height * opts.start.y);
                 return Item(opts).extend({
@@ -4302,8 +4301,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./assets/pipeline.js": 13,
         "./geom/dimension.js": 23,
         "./geom/point.js": 24,
-        "./item.js": 36,
-        "./util/object.js": 53
+        "./item.js": 36
     } ],
     10: [ function(require, module, exports) {
         module.exports = function(url, onload) {
@@ -4426,14 +4424,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./image.js": 12
     } ],
     14: [ function(require, module, exports) {
-        var CollisionItem = require("./collision-item.js"), Point = require("./geom/point.js"), Vector = require("./geom/vector.js"), Dimension = require("./geom/dimension.js"), Rectangle = require("./geom/rectangle.js"), Obj = require("./util/object.js"), Num = require("./util/number.js");
+        var CollisionItem = require("./collision-item.js"), Point = require("./geom/point.js"), Vector = require("./geom/vector.js"), Dimension = require("./geom/dimension.js"), Rectangle = require("./geom/rectangle.js"), Num = require("./util/number.js");
         module.exports = function(opts) {
             var pos = opts.pos || Point(), size = opts.size || Dimension(), scale = opts.scale || 1, adjsize = size.multiply(Dimension(scale, scale));
-            opts = Obj.mergeDefaults(opts, {
-                name: "$:clear-sprite",
-                kind: "$:clear-sprite",
-                mask: Rectangle()
-            });
+            opts.name = opts.name || "$:clear-sprite";
+            opts.kind = opts.kind || "$:clear-sprite";
+            opts.mask = opts.mask || Rectangle();
             if (!opts.freemask) {
                 opts.offset = opts.mask.pos();
                 opts.mask.move(pos.add(opts.offset));
@@ -4508,17 +4504,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./geom/point.js": 24,
         "./geom/rectangle.js": 26,
         "./geom/vector.js": 28,
-        "./util/number.js": 52,
-        "./util/object.js": 53
+        "./util/number.js": 52
     } ],
     15: [ function(require, module, exports) {
-        var Item = require("./item.js"), Obj = require("./util/object.js");
+        var Item = require("./item.js");
         module.exports = function(opts) {
             var removed = false;
-            opts = Obj.mergeDefaults(opts, {
-                name: "$:collection",
-                kind: "$:collection"
-            });
+            opts.name = opts.name || "$:collection";
+            opts.kind = opts.kind || "$:collection";
             return Item(opts).extend({
                 sorted: "sorted" in opts ? opts.sorted : true,
                 set: [],
@@ -4548,7 +4541,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     removed = true;
                 },
                 clear: function() {
-                    this.set = [];
+                    this.set.length = 0;
                     this.map = {};
                 },
                 get: function(name) {
@@ -4592,17 +4585,14 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
             });
         };
     }, {
-        "./item.js": 36,
-        "./util/object.js": 53
+        "./item.js": 36
     } ],
     16: [ function(require, module, exports) {
         var Util = require("./util/object.js"), Item = require("./item.js");
         module.exports = function(opts) {
             var activeCollisions = [];
-            opts = Util.mergeDefaults(opts, {
-                name: "$:collision-handler",
-                kind: "$:collision-handler"
-            });
+            opts.name = opts.name || "$:collision-handler";
+            opts.kind = opts.kind || "$:collision-handler";
             return Item(opts).extend({
                 draw: function(ctx) {
                     var i, len = activeCollisions.length;
@@ -4611,7 +4601,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 },
                 clearCollisions: function() {
-                    activeCollisions = [];
+                    activeCollisions.length = 0;
                 },
                 update: function(item) {
                     activeCollisions.push(item);
@@ -4649,7 +4639,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 },
                 teardown: function() {
-                    this.clearCollisions();
+                    activeCollisions.length = 0;
                 }
             });
         };
@@ -4659,7 +4649,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     17: [ function(require, module, exports) {
         (function(global) {
-            var Counter = require("./util/id-counter.js"), Rectangle = require("./geom/rectangle.js"), Vector = require("./geom/vector.js"), Item = require("./item.js"), Mouse = require("./io/mouse.js"), canvas = require("./io/canvas.js"), Util = require("./util/object.js");
+            var Counter = require("./util/id-counter.js"), Rectangle = require("./geom/rectangle.js"), Vector = require("./geom/vector.js"), Item = require("./item.js"), Mouse = require("./io/mouse.js"), canvas = require("./io/canvas.js");
             module.exports = function(opts) {
                 var activeCollisions = {}, collisionsThisFrame = {}, updated = false, collisionSets = [].concat(opts.collisions || []);
                 opts.name = opts.name || "$:collidable";
@@ -4675,7 +4665,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     }
                 });
                 return Item(opts).extend({
-                    id: Counter.nextId,
+                    id: Counter.nextId(),
                     dragging: false,
                     mask: opts.mask || Rectangle(),
                     offset: opts.offset || Vector(),
@@ -4749,8 +4739,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./io/canvas.js": 33,
         "./io/mouse.js": 35,
         "./item.js": 36,
-        "./util/id-counter.js": 51,
-        "./util/object.js": 53
+        "./util/id-counter.js": 51
     } ],
     18: [ function(require, module, exports) {
         var Game = require("./game.js"), SetUtil = require("./util/set.js"), ObjUtil = require("./util/object.js"), heartbeat = require("./heartbeat.js"), pipeline = require("./assets/pipeline.js"), timer = require("./util/timer.js");
@@ -5493,12 +5482,12 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     }, {} ],
     35: [ function(require, module, exports) {
         (function(global) {
-            var BaseClass = require("baseclassjs"), Eventable = require("../interface/eventable.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), canvas = require("./canvas.js"), mobile = require("../util/detect-mobile.js"), timer = require("../util/timer.js"), dragStart = null, is = {
+            var BaseClass = require("baseclassjs"), Eventable = require("../interface/eventable.js"), Point = require("../geom/point.js"), Vector = require("../geom/vector.js"), canvas = require("./canvas.js"), mobile = require("../util/detect-mobile.js"), dragStart = null, is = {
                 down: false,
                 up: true,
                 dragging: false,
                 holding: false
-            }, current = Point(), last = Point(), shift = Vector(), startEventName = mobile ? "touchstart" : "mousedown", moveEventName = mobile ? "touchmove" : "mousemove", endEventName = mobile ? "touchend" : "mouseup", moveHash = true;
+            }, current = Point(), last = Point(), shift = Vector(), startEventName = mobile ? "touchstart" : "mousedown", moveEventName = mobile ? "touchmove" : "mousemove", endEventName = mobile ? "touchend" : "mouseup";
             function updateCurrent(event) {
                 if (mobile) {
                     current.x = event.touches[0].clientX;
@@ -5524,7 +5513,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 last.x = current.x;
                 last.y = current.y;
                 updateCurrent(event);
-                if (is.down && !moveHash) {
+                if (is.down) {
                     is.holding = false;
                     if (!is.dragging) {
                         shift.x = current.x - last.x;
@@ -5555,7 +5544,6 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../geom/vector.js": 28,
         "../interface/eventable.js": 31,
         "../util/detect-mobile.js": 49,
-        "../util/timer.js": 56,
         "./canvas.js": 33,
         baseclassjs: 4
     } ],
@@ -5766,18 +5754,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./base.js": 40
     } ],
     42: [ function(require, module, exports) {
-        var Collection = require("../collection.js"), Point = require("../geom/point.js"), Obj = require("../util/object.js"), canvas = require("../io/canvas.js"), timer = require("../util/timer.js");
+        var BaseClass = require("baseclassjs"), Collection = require("../collection.js"), Point = require("../geom/point.js"), canvas = require("../io/canvas.js"), timer = require("../util/timer.js");
         module.exports = function(opts) {
             var hash, bank = [];
-            opts = Obj.mergeDefaults(opts, {
-                name: "$:emitter",
-                kind: "$:emitter",
-                pos: Point(),
-                speed: 250,
-                volume: 4,
-                style: function() {},
-                conf: function() {}
-            });
+            opts.name = opts.name || "$:emitter";
+            opts.kind = opts.kind || "$:emitter";
+            opts.pos = opts.pos || Point();
+            opts.speed = opts.speed || 250;
+            opts.volume = opts.volume || 4;
+            opts.style = opts.style || BaseClass.Stub;
+            opts.conf = opts.conf || BaseClass.Stub;
             return Collection(opts).extend({
                 sorted: false,
                 speed: opts.speed,
@@ -5830,8 +5816,8 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "../collection.js": 15,
         "../geom/point.js": 24,
         "../io/canvas.js": 33,
-        "../util/object.js": 53,
-        "../util/timer.js": 56
+        "../util/timer.js": 56,
+        baseclassjs: 4
     } ],
     43: [ function(require, module, exports) {
         var Particle = require("./base.js"), Obj = require("../util/object.js"), pipeline = require("../assets/pipeline.js");
@@ -5872,18 +5858,16 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         "./base.js": 40
     } ],
     45: [ function(require, module, exports) {
-        var Collection = require("./collection.js"), Obj = require("./util/object.js"), Game = require("./game.js");
+        var Collection = require("./collection.js"), debug = require("./game.js").debug;
         module.exports = function(opts) {
             var collisions = Collection({
                 name: "$:screen-collisions",
                 sorted: false
             }).add(opts.collisions);
-            opts = Obj.mergeDefaults(opts, {
-                name: "$:screen",
-                kind: "$:screen",
-                updating: false,
-                drawing: false
-            });
+            opts.name = opts.name || "$.screen";
+            opts.kind = opts.kind || "$.screen";
+            opts.updating = opts.updating || false;
+            opts.drawing = opts.drawing || false;
             return Collection(opts).extend({
                 _create: function() {
                     this.add(opts.sprites);
@@ -5922,7 +5906,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 },
                 draw: function(ctx) {
                     this.base.draw(ctx);
-                    if (Game.debug) {
+                    if (debug) {
                         collisions.draw(ctx);
                     }
                 },
@@ -5934,8 +5918,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
         };
     }, {
         "./collection.js": 15,
-        "./game.js": 21,
-        "./util/object.js": 53
+        "./game.js": 21
     } ],
     46: [ function(require, module, exports) {
         (function(global) {
@@ -5953,11 +5936,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                         stripMap[name] = AnimationStrip(strip);
                     }
                 }
-                opts = Util.mergeDefaults(opts, {
-                    name: "$:sprite",
-                    kind: "$:sprite",
-                    startingStrip: opts.startingStrip || global.Object.keys(stripMap)[0]
-                });
+                opts.name = opts.name || "$:sprite";
+                opts.kind = opts.kind || "$.sprite";
+                opts.startingStrip = opts.startingStrip || global.Object.keys(stripMap)[0];
                 opts.size = opts.size || (stripMap[opts.startingStrip] || {}).size;
                 return ClearSprite(opts).extend({
                     strip: stripMap[opts.startingStrip],
@@ -6114,10 +6095,10 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     51: [ function(require, module, exports) {
         var counter = 0;
         module.exports = {
-            get lastId() {
+            lastId: function() {
                 return counter;
             },
-            get nextId() {
+            nextId: function() {
                 counter += 1;
                 return counter;
             }
@@ -6249,42 +6230,48 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
     } ],
     56: [ function(require, module, exports) {
         (function(global) {
-            var Item = require("../item.js"), Counter = require("./id-counter.js"), timeLastUpdate = global.Date.now(), clearSet = {}, timeouts = [], timeoutsToAdd = [], intervals = [], intervalsToAdd = [];
-            module.exports = Item().extend({
+            var Counter = require("./id-counter.js"), timeLastUpdate = global.Date.now(), clearSet = {}, timeouts = [], timeoutsToAdd = [], intervals = [], intervalsToAdd = [];
+            module.exports = {
                 update: function() {
-                    var i, entry, len, now = global.Date.now(), diff = now - timeLastUpdate, dormantTimeouts = [], dormantIntervals = [];
+                    var i, entry, len, now = global.Date.now(), diff = now - timeLastUpdate;
                     len = timeouts.length;
                     for (i = 0; i < len; i += 1) {
                         entry = timeouts[i];
-                        if (!(entry.id in clearSet)) {
+                        if (entry.id in clearSet) {
+                            timeouts.splice(i, 1);
+                            i -= 1;
+                            len -= 1;
+                        } else {
                             entry.life -= diff;
                             if (entry.life <= 0) {
                                 entry.event.call(entry.thisArg, -entry.life);
-                            } else {
-                                dormantTimeouts.push(entry);
+                                clearSet[entry.id] = true;
                             }
                         }
                     }
-                    timeouts = dormantTimeouts.concat(timeoutsToAdd);
-                    timeoutsToAdd = [];
+                    timeouts.push.apply(timeouts, timeoutsToAdd);
+                    timeoutsToAdd.length = 0;
                     len = intervals.length;
                     for (i = 0; i < len; i += 1) {
                         entry = intervals[i];
-                        if (!(entry.id in clearSet)) {
+                        if (entry.id in clearSet) {
+                            intervals.splice(i, 1);
+                            i -= 1;
+                            len -= 1;
+                        } else {
                             entry.life -= diff;
                             if (entry.life <= 0) {
                                 entry.event.call(entry.thisArg, -entry.life);
                                 entry.life = entry.delay;
                             }
-                            dormantIntervals.push(entry);
                         }
                     }
-                    intervals = dormantIntervals.concat(intervalsToAdd);
-                    intervalsToAdd = [];
+                    intervals.push.apply(intervals, intervalsToAdd);
+                    intervalsToAdd.length = 0;
                     timeLastUpdate = now;
                 },
                 setTimeout: function(cb, delay, thisArg) {
-                    var hash = Counter.nextId;
+                    var hash = Counter.nextId();
                     timeoutsToAdd.push({
                         event: cb,
                         thisArg: thisArg,
@@ -6294,7 +6281,7 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                     return hash;
                 },
                 setInterval: function(cb, delay, thisArg) {
-                    var hash = Counter.nextId;
+                    var hash = Counter.nextId();
                     intervalsToAdd.push({
                         event: cb,
                         thisArg: thisArg,
@@ -6307,10 +6294,9 @@ Cocoon.define("Cocoon.Multiplayer", function(extension) {
                 clear: function(hash) {
                     clearSet[hash] = true;
                 }
-            });
+            };
         }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
     }, {
-        "../item.js": 36,
         "./id-counter.js": 51
     } ],
     57: [ function(require, module, exports) {

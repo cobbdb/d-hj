@@ -16,6 +16,7 @@ module.exports = function (grunt) {
         'browserify',
         'uglify:raw',
         'uglify:build',
-        'compress'
+        'compress',
+        'exec:deploy'
     ]);
 };
