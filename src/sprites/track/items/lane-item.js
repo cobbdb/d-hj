@@ -6,12 +6,10 @@ var $ = require('dragonjs');
  * @param {Object} opts Map of Sprite options.
  */
 module.exports = function (opts) {
-    $.mergeDefaults(opts, {
-        kind: 'lane-item',
-        collisions: [],
-        depth: 2
-    });
-    opts.collisions = [].concat(
+    opts = opts || {};
+    opts.kind = opts.kind || 'lane-item';
+    opts.depth = opts.depth || 2;
+    opts.collisions = $.concatLeft(
         opts.collisions,
         require('../../../collisions/racetrack.js')
     );

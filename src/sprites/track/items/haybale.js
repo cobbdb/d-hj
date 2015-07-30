@@ -46,14 +46,14 @@ module.exports = function (opts) {
             this.base.draw(ctx);
         },
         shrink: function () {
-            this.mask.resize($.Dimension(
+            this.mask.resizeFixed(
                 this.mask.width,
                 this.mask.height * 0.91
-            ));
-            this.mask.move($.Point(
+            );
+            this.mask.moveFixed(
                 this.mask.x,
                 this.pos.y + this.size().height - this.mask.height
-            ));
+            );
             /*if (emitter.damage === 1 && this.mask.height < 4) {
                 emitter.damage = 2;
                 this.strip.frame = 2;

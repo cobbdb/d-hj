@@ -8,21 +8,24 @@ var $ = require('dragonjs'),
 module.exports = function (opts) {
     var items = [],
         lanes = [],
-        laneOrdering = LaneOrdering(opts.laneFactories.length);
+        lane, factory, i, len = opts.laneFactories.length,
+        laneOrdering = LaneOrdering(len);
 
     // Setup the lanes.
-    opts.laneFactories.forEach(function (factory, i) {
-        var lane = factory(laneOrdering[i]);
+    for (i = 0; i < len; i += 1) {
+        factory = opts.laneFactories[i];
+        lane = factory(laneOrdering[i]);
         lanes.push(lane);
-        items = items.concat(
+        $.concatLeft(
+            items,
             lane.getSprites()
         );
-    });
+    }
 
     return $.Screen({
         name: 'track',
         collisions: require('../collisions/racetrack.js'),
-        sprites: lanes.concat(items),
+        sprites: $.concat(lanes, items),
         depth: 0,
         on: {
             $added: function () {
@@ -36,18 +39,21 @@ module.exports = function (opts) {
     }).extend({
         trackLength: 0,
         race: function () {
-            lanes.forEach(function (lane) {
-                lane.race(this.trackLength);
-            }, this);
+            var i, len = lanes.length;
+            for (i = 0; i < len; i += 1) {
+                lanes[i].race(this.trackLength);
+            }
         },
         /**
          * @param {Boolean} playerWon
          * @param {Horse} winner
          */
         endRace: function (playerWon, winner) {
-            lanes.forEach(function (lane) {
-                lane.pause();
-            });
+            var i, len = lanes.length;
+            for (i = 0; i < len; i += 1) {
+                lanes[i].pause();
+            }
+
             $.screen('raceresult').start(playerWon);
             $.setTimeout(function () {
                 player.horse.endRace();
@@ -58,6 +64,7 @@ module.exports = function (opts) {
                 $.removeScreen('track');
                 $.screen('train').start();
             }, 2000);
+
             this.pause();
         },
         draw: function (ctx) {

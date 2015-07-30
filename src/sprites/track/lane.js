@@ -8,6 +8,7 @@ var $ = require('dragonjs'),
  */
 module.exports = function (opts) {
     var items = opts.items || [],
+        item, i, len = items.length,
         horse = opts.horse,
         order = opts.order,
         ypos = order * 50 + 40,
@@ -19,13 +20,14 @@ module.exports = function (opts) {
         });
 
     horse.pause();
-    horse.move($.Point(20, ypos));
-    items.forEach(function (item) {
-        item.move($.Point(
+    horse.moveFixed(20, ypos);
+    for (i = 0; i < len; i += 1) {
+        item = items[i];
+        item.moveFixed(
             item.lanePos * $.canvas.width,
             ypos + height - item.size().height
-        ));
-    });
+        );
+    }
 
     return $.Sprite({
         kind: 'lane',
@@ -35,10 +37,7 @@ module.exports = function (opts) {
             height
         ),
         collisions: require('../../collisions/racetrack.js'),
-        mask: $.Rectangle(
-            $.Point(0, height),
-            $.Dimension($.canvas.width, 10)
-        ),
+        mask: $.Rectangle(0, height, $.canvas.width, 10),
         pos: $.Point(0, ypos),
         depth: 1,
         on: {
@@ -50,12 +49,13 @@ module.exports = function (opts) {
         }
     }).extend({
         getSprites: function () {
-            return items.concat(name, horse);
+            return $.concat(items, name, horse);
         },
         update: function () {
-            items.forEach(function (item) {
+            var item, i, len = items.length;
+            for (i = 0; i < len; i += 1) {
                 // >>>> turn items on/off when in view.
-            });
+            }
             this.base.update();
         },
         pause: function () {
